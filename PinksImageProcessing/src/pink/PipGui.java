@@ -92,7 +92,7 @@ public class PipGui extends JFrame {
 				centerPanel.setSize(image.getWidth(), image.getHeight());
 				Graphics g = image.getGraphics();
 				//centerPanel.paintComponents(g);
-				g.drawImage(image, 15, 15, centerPanel);
+				g.drawImage(image, 0, 0, centerPanel);
 				getGui().setExtendedState(getGui().getExtendedState() | JFrame.MAXIMIZED_BOTH);
 				//centerPanel.repaint();
 				//JOptionPane.showConfirmDialog(null, filePath);
