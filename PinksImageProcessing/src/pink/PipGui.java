@@ -84,16 +84,18 @@ public class PipGui extends JFrame {
 			if (val == JFileChooser.APPROVE_OPTION) {
 				String filePath = choose.getSelectedFile().getAbsolutePath();
 				BufferedImage image = null;
+				Graphics g = null;
 				try {
 					image = fileHandler.createImage(filePath);
+					centerPanel.setSize(image.getWidth(), image.getHeight());
+					g = image.getGraphics();
+					getGui().setExtendedState(getGui().getExtendedState() | JFrame.MAXIMIZED_BOTH);
 				} catch (IOException e) {
 					JOptionPane.showMessageDialog(null, "Image could not be processed");
 				}
-				centerPanel.setSize(image.getWidth(), image.getHeight());
-				Graphics g = image.getGraphics();
+				
 				//centerPanel.paintComponents(g);
 				g.drawImage(image, 0, 0, centerPanel);
-				getGui().setExtendedState(getGui().getExtendedState() | JFrame.MAXIMIZED_BOTH);
 				//centerPanel.repaint();
 				//JOptionPane.showConfirmDialog(null, filePath);
 			}
