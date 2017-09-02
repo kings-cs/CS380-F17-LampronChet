@@ -40,11 +40,13 @@ public class PipGui extends JFrame {
 	/** The main back panel. */
 	private JPanel backPanel;
 	/** The backPanels center component. */
-	private JPanel centerPanel;
+	private CenterPainter centerPanel;
+	/** The current image. */
+	private BufferedImage image;
 
 	public PipGui() {
 		fileHandler = new FileHandler();
-		
+
 		this.setTitle("Pinks Image Processor");
 		String iconPath = "Docs/PinkIcon.jpg";
 		ImageIcon icon = new ImageIcon(iconPath);
@@ -63,14 +65,13 @@ public class PipGui extends JFrame {
 		JMenuItem open = new JMenuItem("Open");
 		open.addActionListener(new OpenFile());
 		file.add(open);
-		
+
 		backPanel = new JPanel();
 		backPanel.setLayout(new BorderLayout());
 		this.add(backPanel);
-		centerPanel = new JPanel();
+		centerPanel = new CenterPainter();
 		centerPanel.setLayout(new FlowLayout());
 		backPanel.add(centerPanel, BorderLayout.CENTER);
-		
 
 	}
 
@@ -83,21 +84,22 @@ public class PipGui extends JFrame {
 
 			if (val == JFileChooser.APPROVE_OPTION) {
 				String filePath = choose.getSelectedFile().getAbsolutePath();
-				BufferedImage image = null;
+				image = null;
 				Graphics g = null;
 				try {
 					image = fileHandler.createImage(filePath);
 					centerPanel.setSize(image.getWidth(), image.getHeight());
 					g = image.getGraphics();
-					getGui().setExtendedState(getGui().getExtendedState() | JFrame.MAXIMIZED_BOTH);
+					// getGui().setExtendedState(getGui().getExtendedState() |
+					// JFrame.MAXIMIZED_BOTH);
+					g.drawImage(image, 0, 0, centerPanel);
+					centerPanel.paintComponents(g);
 				} catch (IOException e) {
 					JOptionPane.showMessageDialog(null, "Image could not be processed");
 				}
-				
-				//centerPanel.paintComponents(g);
-				g.drawImage(image, 0, 0, centerPanel);
-				//centerPanel.repaint();
-				//JOptionPane.showConfirmDialog(null, filePath);
+
+				// centerPanel.repaint();
+				// JOptionPane.showConfirmDialog(null, filePath);
 			}
 		}
 
@@ -119,8 +121,23 @@ public class PipGui extends JFrame {
 		display.setSize(400, 400);
 		display.setVisible(true);
 	}
-	
+
 	private PipGui getGui() {
 		return this;
+	}
+
+	private class CenterPainter extends JPanel {
+		/**
+		 * Default Serial Number
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void paintComponent(Graphics g) {
+			super.paintComponents(g);
+			if (image != null) {
+				g.drawImage(image, 0, 0, this);
+			}
+		}
 	}
 }
