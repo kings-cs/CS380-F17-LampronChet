@@ -22,6 +22,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  * GUI for an image processor.
@@ -80,6 +82,8 @@ public class PipGui extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			JFileChooser choose = new JFileChooser("Select your image: ");
+			FileFilter filter = new FileNameExtensionFilter("Pictures", new String[] {"jpg", "jpeg", "png", "gif"});
+			choose.setFileFilter(filter);
 			int val = choose.showOpenDialog(null);
 
 			if (val == JFileChooser.APPROVE_OPTION) {
