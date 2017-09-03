@@ -93,7 +93,7 @@ public class PipGui extends JFrame {
 		BufferedImage borderImage = fileHandler.createImage(borderFilePath);
 		Graphics borderGraphics = borderImage.getGraphics();
 		//borderGraphics.drawImage(borderImage, 0, 0, sides);
-		sides.paintComponent(borderGraphics);
+		sides.repaint();
 		
 
 	}
@@ -125,7 +125,7 @@ public class PipGui extends JFrame {
 					// getGui().setExtendedState(getGui().getExtendedState() |
 					// JFrame.MAXIMIZED_BOTH);
 					g.drawImage(image, 0, 0, centerPanel);
-					centerPanel.paintComponent(g);
+					centerPanel.repaint();
 				} catch (IOException e) {
 					JOptionPane.showMessageDialog(null, "Image could not be processed");
 				}

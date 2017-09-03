@@ -1,5 +1,6 @@
 package pink;
 
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -14,6 +15,8 @@ public class FileHandler {
 		BufferedImage readIn = ImageIO.read(file);
 		
 		BufferedImage returnImage = new BufferedImage(readIn.getWidth(), readIn.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		Graphics g = returnImage.getGraphics();
+		g.drawImage(readIn, 0, 0, null);
 		return returnImage;
 	}
 }
