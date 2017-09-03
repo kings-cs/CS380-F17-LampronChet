@@ -5,6 +5,7 @@ package pink;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
@@ -89,7 +90,7 @@ public class PipGui extends JFrame {
 		backPanel.add(centerPanel, BorderLayout.CENTER);
 
 		leftSide = new MuralPanel();
-		leftSide.setSize(100, 350);
+		leftSide.setPreferredSize(new Dimension(50, 350));
 		//leftSide.setBackground(Color.red);
 		backPanel.add(leftSide, BorderLayout.WEST);
 		String borderFilePath = "Docs/sideMural.jpg";
@@ -99,11 +100,11 @@ public class PipGui extends JFrame {
 		leftSide.repaint();
 
 		rightSide = new MuralPanel();
-		rightSide.setSize(100, 350);
+		rightSide.setPreferredSize(new Dimension(50, 350));
 		//rightSide.setBackground(Color.red);
 		backPanel.add(rightSide, BorderLayout.EAST);
 		rightSide.repaint();
-
+		
 	}
 
 	/**
@@ -126,7 +127,8 @@ public class PipGui extends JFrame {
 				image = null;
 				try {
 					image = fileHandler.createImage(filePath);
-					centerPanel.setSize(1024, 1024);
+					centerPanel.setPreferredSize(new Dimension(720, 720));
+					getGui().setSize(new Dimension(1024, 1024));
 
 					//getGui().setExtendedState(getGui().getExtendedState() | JFrame.MAXIMIZED_BOTH);
 					centerPanel.repaint();
@@ -203,7 +205,7 @@ public class PipGui extends JFrame {
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
 			if (image != null) {
-				g.drawImage(image, 0, 0, this);
+				g.drawImage(image, 120, 120, this);
 			}
 		}
 	}
