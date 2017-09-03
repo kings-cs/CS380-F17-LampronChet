@@ -4,9 +4,9 @@
 package pink;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -50,11 +50,14 @@ public class PipGui extends JFrame {
 	/** The temporary side walls. */
 	private BufferedImage sideMural;
 	/** The side panels. */
-	private MuralPanel sides;
+	private MuralPanel leftSide;
+	/** The side panels. */
+	private MuralPanel rightSide;
 
 	/**
 	 * Constructor for a PipGui.
-	 * @throws IOException 
+	 * 
+	 * @throws IOException
 	 */
 	public PipGui() throws IOException {
 		fileHandler = new FileHandler();
@@ -84,17 +87,22 @@ public class PipGui extends JFrame {
 		centerPanel = new CenterPainter();
 		centerPanel.setLayout(new FlowLayout());
 		backPanel.add(centerPanel, BorderLayout.CENTER);
-		
-		
-		sides = new MuralPanel();
-		backPanel.add(sides, BorderLayout.EAST);
-		backPanel.add(sides, BorderLayout.WEST);
+
+		leftSide = new MuralPanel();
+		leftSide.setSize(100, 350);
+		//leftSide.setBackground(Color.red);
+		backPanel.add(leftSide, BorderLayout.WEST);
 		String borderFilePath = "Docs/sideMural.jpg";
 		BufferedImage borderImage = fileHandler.createImage(borderFilePath);
 		Graphics borderGraphics = borderImage.getGraphics();
-		//borderGraphics.drawImage(borderImage, 0, 0, sides);
-		sides.repaint();
-		
+		// borderGraphics.drawImage(borderImage, 0, 0, leftSide);
+		leftSide.repaint();
+
+		rightSide = new MuralPanel();
+		rightSide.setSize(100, 350);
+		//rightSide.setBackground(Color.red);
+		backPanel.add(rightSide, BorderLayout.EAST);
+		rightSide.repaint();
 
 	}
 
@@ -116,22 +124,16 @@ public class PipGui extends JFrame {
 			if (val == JFileChooser.APPROVE_OPTION) {
 				String filePath = choose.getSelectedFile().getAbsolutePath();
 				image = null;
-				Graphics g = null;
 				try {
 					image = fileHandler.createImage(filePath);
-					centerPanel.setSize(image.getWidth(), image.getHeight());
+					centerPanel.setSize(1024, 1024);
 
-					g = image.getGraphics();
-					// getGui().setExtendedState(getGui().getExtendedState() |
-					// JFrame.MAXIMIZED_BOTH);
-					//g.drawImage(image, 0, 0, centerPanel);
+					//getGui().setExtendedState(getGui().getExtendedState() | JFrame.MAXIMIZED_BOTH);
 					centerPanel.repaint();
 				} catch (IOException e) {
 					JOptionPane.showMessageDialog(null, "Image could not be processed");
 				}
 
-				// centerPanel.repaint();
-				// JOptionPane.showConfirmDialog(null, filePath);
 			}
 		}
 
@@ -169,13 +171,15 @@ public class PipGui extends JFrame {
 	private PipGui getGui() {
 		return this;
 	}
-	
+
 	private void setCurrentGui(PipGui current) {
 		currentGui = current;
 	}
+
 	/**
+	 * The MuralPanel class that will be the sides of the GUI.
 	 * 
-	 * @author Chet
+	 * @author Chet Lampron.
 	 *
 	 */
 	private class MuralPanel extends JPanel {
@@ -183,8 +187,8 @@ public class PipGui extends JFrame {
 		@Override
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
-			if(sideMural != null) {
-				g.fillRect(0, 0, sides.getWidth(), sides.getHeight());
+			if (sideMural != null) {
+				g.drawImage(sideMural, 0, 0, this);
 			}
 		}
 	}
