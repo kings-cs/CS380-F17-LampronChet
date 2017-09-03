@@ -93,8 +93,8 @@ public class PipGui extends JFrame {
 		//leftSide.setBackground(Color.red);
 		backPanel.add(leftSide, BorderLayout.WEST);
 		String borderFilePath = "Docs/sideMural.jpg";
-		BufferedImage borderImage = fileHandler.createImage(borderFilePath);
-		Graphics borderGraphics = borderImage.getGraphics();
+		sideMural = fileHandler.createImage(borderFilePath);
+		//Graphics borderGraphics = borderImage.getGraphics();
 		// borderGraphics.drawImage(borderImage, 0, 0, leftSide);
 		leftSide.repaint();
 
