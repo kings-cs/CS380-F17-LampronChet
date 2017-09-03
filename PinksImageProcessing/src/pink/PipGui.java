@@ -124,7 +124,7 @@ public class PipGui extends JFrame {
 					g = image.getGraphics();
 					// getGui().setExtendedState(getGui().getExtendedState() |
 					// JFrame.MAXIMIZED_BOTH);
-					g.drawImage(image, 0, 0, centerPanel);
+					//g.drawImage(image, 0, 0, centerPanel);
 					centerPanel.repaint();
 				} catch (IOException e) {
 					JOptionPane.showMessageDialog(null, "Image could not be processed");
