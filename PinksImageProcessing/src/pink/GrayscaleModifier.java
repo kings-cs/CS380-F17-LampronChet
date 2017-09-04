@@ -46,7 +46,6 @@ public class GrayscaleModifier extends PixelModifier {
 		
 		DataBufferInt resultDataBuffer = new DataBufferInt(resultData, resultData.length);
 		Raster resultRastor = Raster.createRaster(source.getSampleModel(), resultDataBuffer, new Point(0, 0));
-		
 		image.setData(resultRastor);
 		
 		return image;
