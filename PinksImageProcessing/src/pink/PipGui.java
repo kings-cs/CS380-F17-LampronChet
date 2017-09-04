@@ -54,6 +54,8 @@ public class PipGui extends JFrame {
 	private MuralPanel leftSide;
 	/** The side panels. */
 	private MuralPanel rightSide;
+	
+	private boolean isSaved;
 
 	/**
 	 * Constructor for a PipGui.
@@ -61,6 +63,7 @@ public class PipGui extends JFrame {
 	 * @throws IOException
 	 */
 	public PipGui() throws IOException {
+		isSaved = false;
 		fileHandler = new FileHandler();
 
 		this.setTitle("Pinks Image Processor");
@@ -73,6 +76,7 @@ public class PipGui extends JFrame {
 		JMenu file = new JMenu("File");
 		JMenu options = new JMenu("Options");
 		JMenuItem grayscale = new JMenuItem("Grayscale");
+		grayscale.addActionListener(new GrayscaleImage());
 		options.add(grayscale);
 		JMenu about = new JMenu("About");
 		menuBar.add(file);
@@ -139,6 +143,19 @@ public class PipGui extends JFrame {
 			}
 		}
 
+	}
+	
+	private class GrayscaleImage implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			GrayscaleModifier pixelModifier = new GrayscaleModifier();
+			
+			image = pixelModifier.modifyPixel(image);
+			centerPanel.repaint();
+			
+		}
+		
 	}
 
 	public static void main(String[] args) {
