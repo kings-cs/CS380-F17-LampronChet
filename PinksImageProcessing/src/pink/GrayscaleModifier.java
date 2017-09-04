@@ -37,7 +37,7 @@ public class GrayscaleModifier extends PixelModifier {
 				int blue = (pixel & PixelModifier.BLUE_MASK) >> PixelModifier.BLUE_OFFSET;
 				
 				
-				int gray = (int) ((int) red * 0.299 + green * 0.587 + blue * 0.114);
+				int gray = ( Math.max(red, Math.max(green, blue)) + Math.min(red, Math.min(green, blue))) / 2;
 				System.out.println(gray);
 				resultData[index] = gray;
 					
