@@ -1,10 +1,6 @@
-/**
- * 
- */
 package pink;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
@@ -95,20 +91,20 @@ public class PipGui extends JFrame {
 
 		leftSide = new MuralPanel();
 		leftSide.setPreferredSize(new Dimension(50, 350));
-		//leftSide.setBackground(Color.red);
+		// leftSide.setBackground(Color.red);
 		backPanel.add(leftSide, BorderLayout.WEST);
 		String borderFilePath = "Docs/sideMural.jpg";
 		sideMural = fileHandler.createImage(borderFilePath);
-		//Graphics borderGraphics = borderImage.getGraphics();
+		// Graphics borderGraphics = borderImage.getGraphics();
 		// borderGraphics.drawImage(borderImage, 0, 0, leftSide);
 		leftSide.repaint();
 
 		rightSide = new MuralPanel();
 		rightSide.setPreferredSize(new Dimension(50, 350));
-		//rightSide.setBackground(Color.red);
+		// rightSide.setBackground(Color.red);
 		backPanel.add(rightSide, BorderLayout.EAST);
 		rightSide.repaint();
-		
+
 	}
 
 	/**
@@ -134,7 +130,8 @@ public class PipGui extends JFrame {
 					centerPanel.setPreferredSize(new Dimension(720, 720));
 					getGui().setSize(new Dimension(1024, 1024));
 
-					//getGui().setExtendedState(getGui().getExtendedState() | JFrame.MAXIMIZED_BOTH);
+					// getGui().setExtendedState(getGui().getExtendedState() |
+					// JFrame.MAXIMIZED_BOTH);
 					centerPanel.repaint();
 				} catch (IOException e) {
 					JOptionPane.showMessageDialog(null, "Image could not be processed");
@@ -144,18 +141,22 @@ public class PipGui extends JFrame {
 		}
 
 	}
-	
+
 	private class GrayscaleImage implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			GrayscaleModifier pixelModifier = new GrayscaleModifier();
-			
-			image = pixelModifier.modifyPixel(image);
-			centerPanel.repaint();
-			
+			if (image != null) {
+				GrayscaleModifier pixelModifier = new GrayscaleModifier();
+
+				image = pixelModifier.modifyPixel(image);
+				centerPanel.repaint();
+			}else {
+				JOptionPane.showMessageDialog(null, "Please load an image first");
+			}
+
 		}
-		
+
 	}
 
 	public static void main(String[] args) {
@@ -222,7 +223,7 @@ public class PipGui extends JFrame {
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
 			if (image != null) {
-				g.drawImage(image, 120, 120, this);
+				g.drawImage(image, 0, 0, this);
 			}
 		}
 	}
