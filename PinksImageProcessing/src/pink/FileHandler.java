@@ -19,4 +19,10 @@ public class FileHandler {
 		g.drawImage(readIn, 0, 0, null);
 		return returnImage;
 	}
+	
+	public void saveImage(String filePath, BufferedImage image, String fileType) throws IOException {
+		File outputFile = new File(filePath);
+		
+		ImageIO.write(image, "png", outputFile);
+	}
 }

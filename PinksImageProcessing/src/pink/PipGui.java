@@ -50,7 +50,7 @@ public class PipGui extends JFrame {
 	private MuralPanel leftSide;
 	/** The side panels. */
 	private MuralPanel rightSide;
-	
+
 	private boolean isSaved;
 
 	/**
@@ -62,7 +62,7 @@ public class PipGui extends JFrame {
 		isSaved = false;
 		fileHandler = new FileHandler();
 
-		this.setTitle("Pinks Image Processor");
+		this.setTitle("PIP!");
 		String iconPath = "Docs/PinkIcon.jpg";
 		ImageIcon icon = new ImageIcon(iconPath);
 		this.setIconImage(icon.getImage());
@@ -81,6 +81,14 @@ public class PipGui extends JFrame {
 		JMenuItem open = new JMenuItem("Open");
 		open.addActionListener(new OpenFile());
 		file.add(open);
+
+		JMenuItem save = new JMenuItem("Save");
+		file.add(save);
+		save.addActionListener(new SaveFile());
+		
+		JMenuItem close = new JMenuItem("Close");
+		file.add(close);
+		close.addActionListener(new CloseFile());
 
 		backPanel = new JPanel();
 		backPanel.setLayout(new BorderLayout());
@@ -105,6 +113,7 @@ public class PipGui extends JFrame {
 		backPanel.add(rightSide, BorderLayout.EAST);
 		rightSide.repaint();
 
+		
 	}
 
 	/**
@@ -142,6 +151,40 @@ public class PipGui extends JFrame {
 
 	}
 
+	private class SaveFile implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			JFileChooser save = new JFileChooser("Select your file or save a new one: ");
+			FileFilter filter = new FileNameExtensionFilter("Pictures", new String[] { "jpg", "jpeg", "png", "gif" });
+			save.setFileFilter(filter);
+			int val = save.showSaveDialog(null);
+
+			if (val == JFileChooser.APPROVE_OPTION) {
+				String filePath = save.getSelectedFile().getAbsolutePath();
+				String[] parts = filePath.split("\\.");
+				try {
+					fileHandler.saveImage(parts[0], image, parts[1]);
+
+				} catch (IOException e) {
+					JOptionPane.showMessageDialog(null, "Image could not be saved");
+				}
+				isSaved = true;
+			}
+
+		}
+	}
+	
+	private class CloseFile implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			image = null;
+			centerPanel.repaint();
+		}
+		
+	}
+
 	private class GrayscaleImage implements ActionListener {
 
 		@Override
@@ -151,7 +194,7 @@ public class PipGui extends JFrame {
 
 				image = pixelModifier.modifyPixel(image);
 				centerPanel.repaint();
-			}else {
+			} else {
 				JOptionPane.showMessageDialog(null, "Please load an image first");
 			}
 
@@ -203,6 +246,11 @@ public class PipGui extends JFrame {
 	 *
 	 */
 	private class MuralPanel extends JPanel {
+
+		/**
+		 * Default Serial Number.
+		 */
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void paintComponent(Graphics g) {
