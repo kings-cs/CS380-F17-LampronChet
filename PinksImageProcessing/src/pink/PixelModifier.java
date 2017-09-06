@@ -1,10 +1,9 @@
 package pink;
 
-import java.awt.Point;
+
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferInt;
-import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 
 /**
@@ -32,6 +31,18 @@ public class PixelModifier {
 	protected static final int BLUE_MASK = 0x000000ff;
 	/** The blue offset. */
 	protected static final int BLUE_OFFSET = 0;
+	/**
+	 * Unwraps the image from abstractions.
+	 * @param image The image to work on.
+	 * @return The source data of the image.
+	 */
+	public int[] unwrapImage(BufferedImage image) {
+		WritableRaster source = image.getRaster();
+		DataBuffer sourceBuffer = source.getDataBuffer();
+		DataBufferInt sourceBytes = (DataBufferInt) sourceBuffer;
+		int[] sourceData = sourceBytes.getData();
+		return sourceData;
+	}
 
 	/**
 	 * Modifies each pixel to change the image.
@@ -41,14 +52,10 @@ public class PixelModifier {
 	 * @return The modified image.
 	 */
 	public BufferedImage modifyPixel(BufferedImage image) {
+		/*
 		int width = image.getWidth();
 		int height = image.getHeight();
-		
-		WritableRaster source = image.getRaster();
-		DataBuffer sourceBuffer = source.getDataBuffer();
-		DataBufferInt sourceBytes = (DataBufferInt) sourceBuffer;
-		int[] sourceData = sourceBytes.getData();
-		
+		int[] sourceData = unwrapImage(image);
 		int[] resultData = new int[sourceData.length];
 		
 		for (int row = 0; row < height; row++) {
@@ -69,9 +76,11 @@ public class PixelModifier {
 		}
 		
 		DataBufferInt resultDataBuffer = new DataBufferInt(resultData, resultData.length);
-		Raster resultRastor = Raster.createRaster(source.getSampleModel(), resultDataBuffer, new Point(0, 0));
+		Raster resultRastor = Raster.createRaster(image.getRaster().getSampleModel(), resultDataBuffer, new Point(0, 0));
 		
 		image.setData(resultRastor);
+		*/
+		//TODO by sublass
 		
 		return image;
 	}

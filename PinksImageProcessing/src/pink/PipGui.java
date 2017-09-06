@@ -1,12 +1,21 @@
 package pink;
 
 import java.awt.BorderLayout;
+//import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
+//import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+//import java.io.BufferedReader;
+//import java.io.File;
+//import java.io.FileNotFoundException;
+//import java.io.FileReader;
 import java.io.IOException;
 
 import javax.swing.ImageIcon;
@@ -17,8 +26,10 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -50,16 +61,21 @@ public class PipGui extends JFrame {
 	private MuralPanel leftSide;
 	/** The side panels. */
 	private MuralPanel rightSide;
-
+	/** Stores the saved status of the file. */
 	private boolean isSaved;
+	/** The save item. */
+	private JMenuItem save;
+	/** The open item. */
+	private JMenuItem open;
 
 	/**
 	 * Constructor for a PipGui.
 	 * 
 	 * @throws IOException
+	 *             When file data is lost.
 	 */
 	public PipGui() throws IOException {
-		isSaved = false;
+		isSaved = true;
 		fileHandler = new FileHandler();
 
 		this.setTitle("PIP!");
@@ -74,18 +90,19 @@ public class PipGui extends JFrame {
 		JMenuItem grayscale = new JMenuItem("Grayscale");
 		grayscale.addActionListener(new GrayscaleImage());
 		options.add(grayscale);
-		JMenu about = new JMenu("About");
+		JMenuItem about = new JMenuItem("About");
+		about.addActionListener(new AboutFile());
 		menuBar.add(file);
 		menuBar.add(options);
 		menuBar.add(about);
-		JMenuItem open = new JMenuItem("Open");
+		open = new JMenuItem("Open");
 		open.addActionListener(new OpenFile());
 		file.add(open);
 
-		JMenuItem save = new JMenuItem("Save");
+		save = new JMenuItem("Save", KeyEvent.VK_S);
 		file.add(save);
 		save.addActionListener(new SaveFile());
-		
+
 		JMenuItem close = new JMenuItem("Close");
 		file.add(close);
 		close.addActionListener(new CloseFile());
@@ -96,6 +113,13 @@ public class PipGui extends JFrame {
 		centerPanel = new CenterPainter();
 		centerPanel.setLayout(new FlowLayout());
 		backPanel.add(centerPanel, BorderLayout.CENTER);
+
+		JScrollPane scrollImage = new JScrollPane(centerPanel);
+		scrollImage.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		scrollImage.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollImage.setPreferredSize(centerPanel.getPreferredSize());
+		backPanel.add(scrollImage, BorderLayout.CENTER);
+		
 
 		leftSide = new MuralPanel();
 		leftSide.setPreferredSize(new Dimension(50, 350));
@@ -113,13 +137,14 @@ public class PipGui extends JFrame {
 		backPanel.add(rightSide, BorderLayout.EAST);
 		rightSide.repaint();
 
-		
+		this.addWindowListener(new ExitListener());
+
 	}
 
 	/**
 	 * Class to listen to the open option button.
 	 * 
-	 * @author Chet
+	 * @author Chet Lampron
 	 *
 	 */
 	private class OpenFile implements ActionListener {
@@ -132,18 +157,22 @@ public class PipGui extends JFrame {
 			int val = choose.showOpenDialog(null);
 
 			if (val == JFileChooser.APPROVE_OPTION) {
-				String filePath = choose.getSelectedFile().getAbsolutePath();
-				image = null;
 				try {
+					String filePath = choose.getSelectedFile().getAbsolutePath();
+					image = null;
 					image = fileHandler.createImage(filePath);
-					centerPanel.setPreferredSize(new Dimension(720, 720));
-					getGui().setSize(new Dimension(1024, 1024));
-
+					centerPanel.setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));
+					getGui().setSize(new Dimension(720, 720));
+					isSaved = false;
 					// getGui().setExtendedState(getGui().getExtendedState() |
 					// JFrame.MAXIMIZED_BOTH);
 					centerPanel.repaint();
+					centerPanel.revalidate();
 				} catch (IOException e) {
 					JOptionPane.showMessageDialog(null, "Image could not be processed");
+				} catch(NullPointerException n) {
+					JOptionPane.showMessageDialog(null, "Oops! Looks like you double clicked your folder instead of a file. Try again!");
+					open.doClick();
 				}
 
 			}
@@ -151,40 +180,132 @@ public class PipGui extends JFrame {
 
 	}
 
-	private class SaveFile implements ActionListener {
+	/**
+	 * Listens for the window closing to make sure no file goes unsaved.
+	 * 
+	 * @author Chet Lampron
+	 *
+	 */
+	private class ExitListener extends WindowAdapter {
+
+		@Override
+		public void windowClosing(WindowEvent e) {
+			if (!isSaved) {
+				int ans = JOptionPane.showConfirmDialog(null, "Would you like to save this file?");
+				if (ans == JOptionPane.YES_OPTION) {
+					save.doClick();
+					dispose();
+					System.exit(0);
+				} else {
+					dispose();
+					System.exit(0);
+				}
+			}
+		}
+		
+		@Override
+		public void windowClosed(WindowEvent e) {
+			dispose();
+			System.exit(0);
+		}
+	}
+	/**
+	 * Opens the readme file for the user.
+	 * @author Chet Lampron
+	 *
+	 */
+	private class AboutFile implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			JFileChooser save = new JFileChooser("Select your file or save a new one: ");
-			FileFilter filter = new FileNameExtensionFilter("Pictures", new String[] { "jpg", "jpeg", "png", "gif" });
-			save.setFileFilter(filter);
-			int val = save.showSaveDialog(null);
+			/*
+			try {
+				BufferedReader br = new BufferedReader(new FileReader("Docs/Readme.md"));
+				String line = "";
+				while((line = br.readLine()) != null) {
+					JOptionPane.showMessageDialog(null, line);
 
-			if (val == JFileChooser.APPROVE_OPTION) {
-				String filePath = save.getSelectedFile().getAbsolutePath();
-				String[] parts = filePath.split("\\.");
-				try {
-					fileHandler.saveImage(parts[0], image, parts[1]);
-
-				} catch (IOException e) {
-					JOptionPane.showMessageDialog(null, "Image could not be saved");
 				}
-				isSaved = true;
+			} catch (HeadlessException | IOException e) {
+				JOptionPane.showMessageDialog(null, "The Readme could not be found :(");
 			}
-
-		}
-	}
-	
-	private class CloseFile implements ActionListener{
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			image = null;
-			centerPanel.repaint();
+			*/
+			JOptionPane.showMessageDialog(null, "Coming soon!");
 		}
 		
 	}
 
+	/**
+	 * Class used to save files to the hard drive.
+	 * 
+	 * @author Chet
+	 *
+	 */
+	private class SaveFile implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			if (image != null) {
+				JFileChooser save = new JFileChooser("Select your file or save a new one: ");
+				FileFilter filter = new FileNameExtensionFilter("Pictures",
+						new String[] { "jpg", "jpeg", "png", "gif" });
+				save.setFileFilter(filter);
+				int val = save.showSaveDialog(null);
+
+				if (val == JFileChooser.APPROVE_OPTION) {
+					String filePath = save.getSelectedFile().getAbsolutePath();
+					String[] parts = filePath.split("\\.");
+					try {
+						if (!save.getSelectedFile().exists()) {
+							fileHandler.saveImage(parts[0], image, parts[1]);
+							isSaved = true;
+						} else {
+							int ans = JOptionPane.showConfirmDialog(null, "Would you like to Overwrite this file?");
+							if (ans == JOptionPane.YES_OPTION) {
+								fileHandler.saveImage(filePath, image, parts[1]);
+								isSaved = true;
+							} else {
+								JOptionPane.showMessageDialog(null, "Image was not saved!");
+							}
+						}
+					} catch (IOException e) {
+						JOptionPane.showMessageDialog(null, "Image could not be saved");
+					}
+				}
+			} else {
+				JOptionPane.showMessageDialog(null, "Please load an image first");
+			}
+
+		}
+
+	}
+
+	/**
+	 * Closes the open file.
+	 * 
+	 * @author Chet Lampron
+	 *
+	 */
+	private class CloseFile implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (image != null) {
+				image = null;
+				centerPanel.repaint();
+			} else {
+				JOptionPane.showMessageDialog(null, "No image to close!");
+			}
+		}
+
+	}
+
+	/**
+	 * Runs the Grayscale algorithm when prompted.
+	 * 
+	 * @author Chet lampron
+	 *
+	 */
 	private class GrayscaleImage implements ActionListener {
 
 		@Override
@@ -194,6 +315,7 @@ public class PipGui extends JFrame {
 
 				image = pixelModifier.modifyPixel(image);
 				centerPanel.repaint();
+				isSaved = false;
 			} else {
 				JOptionPane.showMessageDialog(null, "Please load an image first");
 			}
@@ -202,6 +324,12 @@ public class PipGui extends JFrame {
 
 	}
 
+	/**
+	 * The main method.
+	 * 
+	 * @param args
+	 *            not used.
+	 */
 	public static void main(String[] args) {
 		try {
 			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -210,7 +338,9 @@ public class PipGui extends JFrame {
 					break;
 				}
 			}
-		} catch (Exception e) {
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+				| UnsupportedLookAndFeelException e) 
+		{
 			JOptionPane.showMessageDialog(null, "The Nimbus look and feel is not available");
 		}
 
@@ -232,9 +362,15 @@ public class PipGui extends JFrame {
 	 * @return The current Gui.
 	 */
 	private PipGui getGui() {
-		return this;
+		return currentGui;
 	}
 
+	/**
+	 * Sets gui for in class use.
+	 * 
+	 * @param current
+	 *            The current GUI.
+	 */
 	private void setCurrentGui(PipGui current) {
 		currentGui = current;
 	}
@@ -261,9 +397,15 @@ public class PipGui extends JFrame {
 		}
 	}
 
+	/**
+	 * The center panel that will load the image.
+	 * 
+	 * @author Chet Lampron
+	 *
+	 */
 	private class CenterPainter extends JPanel {
 		/**
-		 * Default Serial Number
+		 * Default Serial Number.
 		 */
 		private static final long serialVersionUID = 1L;
 
