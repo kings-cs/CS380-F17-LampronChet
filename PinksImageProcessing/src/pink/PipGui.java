@@ -18,6 +18,7 @@ import java.awt.image.BufferedImage;
 //import java.io.FileReader;
 import java.io.IOException;
 
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -26,12 +27,16 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import parallel.JoclInitializer;
 
 /**
  * GUI for an image processor.
@@ -67,6 +72,8 @@ public class PipGui extends JFrame {
 	private JMenuItem save;
 	/** The open item. */
 	private JMenuItem open;
+	/** Manages the devices on this computer to allow for parallel processing. */
+	private JoclInitializer deviceManager;
 
 	/**
 	 * Constructor for a PipGui.
@@ -75,6 +82,7 @@ public class PipGui extends JFrame {
 	 *             When file data is lost.
 	 */
 	public PipGui() throws IOException {
+		deviceManager = new JoclInitializer();
 		isSaved = true;
 		fileHandler = new FileHandler();
 
@@ -109,6 +117,16 @@ public class PipGui extends JFrame {
 		JMenuItem close = new JMenuItem("Close");
 		file.add(close);
 		close.addActionListener(new CloseFile());
+		
+		JMenu devices = new JMenu("Devices");
+		ButtonGroup deviceGroup = new ButtonGroup();
+		String[] deviceNames = deviceManager.getDeviceNames();
+		for(int i = 0; i < deviceNames.length; i++) {
+			JRadioButtonMenuItem newButton = new JRadioButtonMenuItem(deviceNames[i]);
+			deviceGroup.add(newButton);
+			devices.add(newButton);
+		}
+		
 
 		backPanel = new JPanel();
 		backPanel.setLayout(new BorderLayout());
