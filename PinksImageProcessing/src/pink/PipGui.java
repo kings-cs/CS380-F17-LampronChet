@@ -17,7 +17,6 @@ import java.awt.image.BufferedImage;
 //import java.io.FileNotFoundException;
 //import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
@@ -342,7 +341,8 @@ public class PipGui extends JFrame {
 				}
 			}
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-				| UnsupportedLookAndFeelException e) {
+				| UnsupportedLookAndFeelException e) 
+		{
 			JOptionPane.showMessageDialog(null, "The Nimbus look and feel is not available");
 		}
 
