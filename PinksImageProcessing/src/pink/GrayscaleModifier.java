@@ -35,11 +35,13 @@ public class GrayscaleModifier extends PixelModifier {
 				int blue = (pixel & PixelModifier.BLUE_MASK) >> PixelModifier.BLUE_OFFSET;
 
 				// Old Gray int gray = Math.min(red, Math.min(green, blue));
-
-				int conversionFactor = 255 / (64 - 1);
-				int averageValue = (red + green + blue) / 3;
-				int gray = (int) ((averageValue / conversionFactor) + 0.5) * conversionFactor;
-
+				/* "Incorrect gray"
+				 * int conversionFactor = 255 / (64 - 1); int averageValue = (red + green +
+				 * blue) / 3; int gray = (int) ((averageValue / conversionFactor) + 0.5) *
+				 * conversionFactor;
+				 */
+				int gray = (int) (red * 0.299 + green * 0.587 + blue * 0.114);
+				
 				int newPixel = (alpha << ALPHA_OFFSET) | (gray << RED_OFFSET) | (gray << BLUE_OFFSET)
 						| (gray << GREEN_OFFSET);
 

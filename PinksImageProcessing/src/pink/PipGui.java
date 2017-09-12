@@ -17,6 +17,7 @@ import java.awt.image.BufferedImage;
 //import java.io.FileNotFoundException;
 //import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
@@ -119,7 +120,6 @@ public class PipGui extends JFrame {
 		scrollImage.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollImage.setPreferredSize(centerPanel.getPreferredSize());
 		backPanel.add(scrollImage, BorderLayout.CENTER);
-		
 
 		leftSide = new MuralPanel();
 		leftSide.setPreferredSize(new Dimension(50, 350));
@@ -170,8 +170,9 @@ public class PipGui extends JFrame {
 					centerPanel.revalidate();
 				} catch (IOException e) {
 					JOptionPane.showMessageDialog(null, "Image could not be processed");
-				} catch(NullPointerException n) {
-					JOptionPane.showMessageDialog(null, "Oops! Looks like you double clicked your folder instead of a file. Try again!");
+				} catch (NullPointerException n) {
+					JOptionPane.showMessageDialog(null,
+							"Oops! Looks like you double clicked your folder instead of a file. Try again!");
 					open.doClick();
 				}
 
@@ -197,20 +198,21 @@ public class PipGui extends JFrame {
 					dispose();
 					System.exit(0);
 				} else {
-					dispose();
-					System.exit(0);
+					this.windowClosed(e);
 				}
 			}
 		}
-		
+
 		@Override
 		public void windowClosed(WindowEvent e) {
 			dispose();
 			System.exit(0);
 		}
 	}
+
 	/**
 	 * Opens the readme file for the user.
+	 * 
 	 * @author Chet Lampron
 	 *
 	 */
@@ -219,20 +221,16 @@ public class PipGui extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			/*
-			try {
-				BufferedReader br = new BufferedReader(new FileReader("Docs/Readme.md"));
-				String line = "";
-				while((line = br.readLine()) != null) {
-					JOptionPane.showMessageDialog(null, line);
-
-				}
-			} catch (HeadlessException | IOException e) {
-				JOptionPane.showMessageDialog(null, "The Readme could not be found :(");
-			}
-			*/
+			 * try { BufferedReader br = new BufferedReader(new
+			 * FileReader("Docs/Readme.md")); String line = ""; while((line = br.readLine())
+			 * != null) { JOptionPane.showMessageDialog(null, line);
+			 * 
+			 * } } catch (HeadlessException | IOException e) {
+			 * JOptionPane.showMessageDialog(null, "The Readme could not be found :("); }
+			 */
 			JOptionPane.showMessageDialog(null, "Coming soon!");
 		}
-		
+
 	}
 
 	/**
@@ -254,7 +252,12 @@ public class PipGui extends JFrame {
 
 				if (val == JFileChooser.APPROVE_OPTION) {
 					String filePath = save.getSelectedFile().getAbsolutePath();
-					String[] parts = filePath.split("\\.");
+					String[] parts = new String[2];
+					if (filePath.contains(".")) {
+						parts = filePath.split("\\.");
+					}else {
+						parts[0] = filePath;
+					}
 					try {
 						if (!save.getSelectedFile().exists()) {
 							fileHandler.saveImage(parts[0], image, parts[1]);
@@ -339,8 +342,7 @@ public class PipGui extends JFrame {
 				}
 			}
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-				| UnsupportedLookAndFeelException e) 
-		{
+				| UnsupportedLookAndFeelException e) {
 			JOptionPane.showMessageDialog(null, "The Nimbus look and feel is not available");
 		}
 

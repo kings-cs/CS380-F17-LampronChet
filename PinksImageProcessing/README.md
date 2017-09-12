@@ -22,4 +22,10 @@ Bugs:
 	Key mnemonic for save only works when the file menu is open.
 	
 	
-	
+Supported Filetypes:
+.png
+.jpg
+.jpeg
+.gif
+
+When saving, if the filetype is not specified in the filename it will default to the type of png.
