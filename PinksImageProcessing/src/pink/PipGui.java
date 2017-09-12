@@ -90,6 +90,9 @@ public class PipGui extends JFrame {
 		JMenuItem grayscale = new JMenuItem("Grayscale");
 		grayscale.addActionListener(new GrayscaleImage());
 		options.add(grayscale);
+		JMenuItem sepia = new JMenuItem("Sepia");
+		sepia.addActionListener(new SepiaImage());
+		options.add(sepia);
 		JMenuItem about = new JMenuItem("About");
 		about.addActionListener(new AboutFile());
 		menuBar.add(file);
@@ -314,6 +317,30 @@ public class PipGui extends JFrame {
 		public void actionPerformed(ActionEvent arg0) {
 			if (image != null) {
 				GrayscaleModifier pixelModifier = new GrayscaleModifier();
+
+				image = pixelModifier.modifyPixel(image);
+				centerPanel.repaint();
+				isSaved = false;
+			} else {
+				JOptionPane.showMessageDialog(null, "Please load an image first");
+			}
+
+		}
+
+	}
+	
+	/**
+	 * Runs the Sepia algorithm when prompted.
+	 * 
+	 * @author Chet lampron
+	 *
+	 */
+	private class SepiaImage implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			if (image != null) {
+				SepiaModifier pixelModifier = new SepiaModifier();
 
 				image = pixelModifier.modifyPixel(image);
 				centerPanel.repaint();
