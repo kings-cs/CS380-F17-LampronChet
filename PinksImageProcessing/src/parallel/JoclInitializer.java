@@ -65,7 +65,13 @@ public class JoclInitializer {
 	 */
 	public String[] getDeviceNames() {
 		cl_device_id[] devices = getDeviceIds();
-		String[] result = new String[devices.length];
+		int resultSize = 0;
+		for(int i = 0; i < devices.length; i++) {
+			long[] size = new long[1];
+			CL.clGetDeviceInfo(devices[i], CL.CL_DEVICE_NAME, 0, null, size);
+			resultSize += (int)size[0];
+		}
+		String[] result = new String[resultSize];
 
 		for (int i = 0; i < devices.length; i++) {
 			long[] size = new long[1];
