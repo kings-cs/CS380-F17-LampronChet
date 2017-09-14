@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferInt;
 import java.awt.image.WritableRaster;
+import java.io.FileNotFoundException;
 
 /**
  * Generic pixel modifier class.
@@ -50,8 +51,9 @@ public class PixelModifier {
 	 * @param image
 	 *            The original image.
 	 * @return The modified image.
+	 * @throws FileNotFoundException not thrown.
 	 */
-	public BufferedImage modifyPixel(BufferedImage image) {
+	public BufferedImage modifyPixel(BufferedImage image) throws FileNotFoundException {
 		/*
 		int width = image.getWidth();
 		int height = image.getHeight();

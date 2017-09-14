@@ -12,11 +12,14 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.io.FileNotFoundException;
 //import java.io.BufferedReader;
 //import java.io.File;
 //import java.io.FileNotFoundException;
 //import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
@@ -35,6 +38,9 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.jocl.CL;
+import org.jocl.cl_device_id;
+
 import parallel.JoclInitializer;
 
 /**
@@ -49,6 +55,9 @@ public class PipGui extends JFrame {
 	 * Default generated ID.
 	 */
 	private static final long serialVersionUID = 1L;
+	/** Maps a device name to it's ID. */
+	private static Map<String, cl_device_id> deviceMap;
+
 	/** The instance of the FileHandler class. */
 	private FileHandler fileHandler;
 	/** The main back panel. */
@@ -73,6 +82,8 @@ public class PipGui extends JFrame {
 	private JMenuItem open;
 	/** Manages the devices on this computer to allow for parallel processing. */
 	private JoclInitializer deviceManager;
+	/** The button group for the devices. */
+	private ButtonGroup deviceGroup;
 
 	/**
 	 * Constructor for a PipGui.
@@ -81,6 +92,8 @@ public class PipGui extends JFrame {
 	 *             When file data is lost.
 	 */
 	public PipGui() throws IOException {
+
+		deviceMap = new HashMap<>();
 		deviceManager = new JoclInitializer();
 		isSaved = true;
 		fileHandler = new FileHandler();
@@ -94,12 +107,19 @@ public class PipGui extends JFrame {
 		this.setJMenuBar(menuBar);
 		JMenu file = new JMenu("File");
 		JMenu options = new JMenu("Options");
+
 		JMenuItem grayscale = new JMenuItem("Grayscale");
 		grayscale.addActionListener(new GrayscaleImage());
 		options.add(grayscale);
+
 		JMenuItem sepia = new JMenuItem("Sepia");
 		sepia.addActionListener(new SepiaImage());
 		options.add(sepia);
+
+		JMenuItem parallelGray = new JMenuItem("Grayscale(Parallel)");
+		parallelGray.addActionListener(new GrayParallel());
+		options.add(parallelGray);
+
 		JMenuItem about = new JMenuItem("About");
 		about.addActionListener(new AboutFile());
 		menuBar.add(file);
@@ -116,16 +136,28 @@ public class PipGui extends JFrame {
 		JMenuItem close = new JMenuItem("Close");
 		file.add(close);
 		close.addActionListener(new CloseFile());
-		
+
 		JMenu devices = new JMenu("Devices");
-		ButtonGroup deviceGroup = new ButtonGroup();
+		deviceGroup = new ButtonGroup();
 		String[] deviceNames = deviceManager.getDeviceNames();
-		for(int i = 0; i < deviceNames.length; i++) {
-			JRadioButtonMenuItem newButton = new JRadioButtonMenuItem(deviceNames[i]);
+		for (int i = 0; i < deviceNames.length; i++) {
+			JRadioButtonMenuItem newButton = new SpecialRadioButton(deviceNames[i]);
+			newButton.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					if (newButton.isSelected()) {
+						System.out.println(newButton.getName());
+						deviceManager.createContext(PipGui.deviceMap.get(newButton.getName()));
+					}
+
+				}
+
+			});
 			deviceGroup.add(newButton);
 			devices.add(newButton);
 		}
-		
+		menuBar.add(devices);
 
 		backPanel = new JPanel();
 		backPanel.setLayout(new BorderLayout());
@@ -156,7 +188,7 @@ public class PipGui extends JFrame {
 		backPanel.add(rightSide, BorderLayout.EAST);
 		rightSide.repaint();
 
-		this.addWindowListener(new ExitListener());
+		addWindowListener(new ExitListener());
 
 	}
 
@@ -274,7 +306,7 @@ public class PipGui extends JFrame {
 					String[] parts = new String[2];
 					if (filePath.contains(".")) {
 						parts = filePath.split("\\.");
-					}else {
+					} else {
 						parts[0] = filePath;
 					}
 					try {
@@ -323,6 +355,37 @@ public class PipGui extends JFrame {
 	}
 
 	/**
+	 * Handles switching between processors.
+	 * 
+	 * @author Chet Lampron
+	 *
+	 */
+	private class GrayParallel implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent a) {
+			if (deviceGroup.getSelection() == null) {
+				JOptionPane.showMessageDialog(null, "Please select a device from the device menu.");
+			} else {
+				if (image != null) {
+					GrayscaleModifierParallel pixelModifier = new GrayscaleModifierParallel(deviceManager);
+
+					try {
+						image = pixelModifier.modifyPixel(image);
+					} catch (FileNotFoundException e) {
+						JOptionPane.showMessageDialog(null, "The kernel could not be found");
+					}
+					centerPanel.repaint();
+					isSaved = false;
+				} else {
+					JOptionPane.showMessageDialog(null, "Please load an image first");
+				}
+			}
+		}
+
+	}
+
+	/**
 	 * Runs the Grayscale algorithm when prompted.
 	 * 
 	 * @author Chet lampron
@@ -345,7 +408,7 @@ public class PipGui extends JFrame {
 		}
 
 	}
-	
+
 	/**
 	 * Runs the Sepia algorithm when prompted.
 	 * 
@@ -377,6 +440,7 @@ public class PipGui extends JFrame {
 	 *            not used.
 	 */
 	public static void main(String[] args) {
+		CL.setExceptionsEnabled(true);
 		try {
 			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
 				if ("Nimbus".equals(info.getName())) {
@@ -462,5 +526,54 @@ public class PipGui extends JFrame {
 				g.drawImage(image, 0, 0, this);
 			}
 		}
+	}
+
+	/**
+	 * Special radio button.
+	 * 
+	 * @author chetlampron
+	 *
+	 */
+	private class SpecialRadioButton extends JRadioButtonMenuItem {
+		/**
+		 * default id.
+		 */
+		private static final long serialVersionUID = 1L;
+		/** The name. */
+		private String name;
+
+		/**
+		 * Overwrite constructor.
+		 * 
+		 * @param aName
+		 *            The name.
+		 */
+		public SpecialRadioButton(String aName) {
+			super(aName);
+			name = aName;
+		}
+
+		/**
+		 * Gets the name.
+		 * 
+		 * @return The name.
+		 */
+		public String getName() {
+			return name;
+		}
+
+		@Override
+		public String toString() {
+			return super.getName();
+		}
+	}
+
+	/**
+	 * Gets the device map.
+	 * 
+	 * @return deviceMap.
+	 */
+	public static Map<String, cl_device_id> getDeviceMap() {
+		return deviceMap;
 	}
 }
