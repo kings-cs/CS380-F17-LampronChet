@@ -1,7 +1,10 @@
 package parallel;
 
+import java.util.HashMap;
+
 import org.jocl.CL;
 import org.jocl.Pointer;
+import org.jocl.Sizeof;
 import org.jocl.cl_command_queue;
 import org.jocl.cl_context;
 import org.jocl.cl_context_properties;
@@ -23,6 +26,9 @@ public class JoclInitializer {
 	private cl_device_id device;
 	/** The created command queue. */
 	private cl_command_queue queue;
+	/** Map of device to its platform. */
+	private HashMap<cl_device_id, cl_platform_id> platformMap;
+	
 
 	/**
 	 * Gets the possible platform IDs on the system.
@@ -47,6 +53,7 @@ public class JoclInitializer {
 	 */
 	public cl_device_id[] getDeviceIds() {
 		cl_platform_id[] platforms = getPlatforms();
+		platformMap = new HashMap<>();
 		int resultSize = 0;
 		for (int i = 0; i < platforms.length; i++) {
 			int[] size = new int[1];
@@ -63,8 +70,10 @@ public class JoclInitializer {
 
 			cl_device_id[] deviceArray = new cl_device_id[numDevices];
 			CL.clGetDeviceIDs(platforms[i], CL.CL_DEVICE_TYPE_ALL, numDevices, deviceArray, null);
+			
 			for (int j = 0; j < deviceArray.length; j++) {
 				if (devicePlaceCounter < devices.length) {
+					platformMap.put(deviceArray[j], platforms[i]);
 					devices[devicePlaceCounter] = deviceArray[j];
 					devicePlaceCounter++;
 				}
@@ -103,9 +112,7 @@ public class JoclInitializer {
 	 * @return The context.
 	 */
 	public cl_context createContext(cl_device_id theDevice) {
-		int platformIndex = 0;
-		cl_platform_id[] platforms = getPlatforms();
-		cl_platform_id platform = platforms[platformIndex];
+		cl_platform_id platform = platformMap.get(theDevice);
 
 		cl_context_properties contextProperties = new cl_context_properties();
 		contextProperties.addProperty(CL.CL_CONTEXT_PLATFORM, platform);
@@ -154,11 +161,10 @@ public class JoclInitializer {
 		long[] size = new long[1];
 		CL.clGetDeviceInfo(theDevice, CL.CL_DEVICE_TYPE, 0, null, size);
 
-		byte[] buffer = new byte[(int) size[0]];
-		CL.clGetDeviceInfo(theDevice, CL.CL_DEVICE_TYPE, buffer.length, Pointer.to(buffer), null);
-		String result = new String(buffer, 0, buffer.length - 1);
+		long[] type = new long[size.length];
+		CL.clGetDeviceInfo(theDevice, CL.CL_DEVICE_TYPE, Sizeof.cl_long, Pointer.to(type), null);
 
-		if (result.equalsIgnoreCase("GPU")) {
+		if (type[0] == CL.CL_DEVICE_TYPE_GPU) {
 			isGpu = true;
 		}
 

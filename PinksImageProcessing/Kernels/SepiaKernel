@@ -1,0 +1,46 @@
+__kernel void sepia_kernel(__global const int *sourceData, __global *resultData){
+
+	int SEPIA_DEPTH = 35;
+	int SEPIA_INTENSITY = 40;
+	
+	int ALPHA_MASK = 0xff000000;
+
+	int ALPHA_OFFSET = 24;
+
+
+	int RED_MASK = 0x00ff0000;
+
+	int RED_OFFSET = 16;
+
+
+	int GREEN_MASK = 0x0000ff00;
+
+	int GREEN_OFFSET = 8;
+
+	int BLUE_MASK = 0x000000ff;
+
+	int BLUE_OFFSET = 0;
+				
+	int index = get_global_id(0);
+	int pixel = sourceData[index];
+
+	int alpha = (pixel & ALPHA_MASK) >> ALPHA_OFFSET;
+	int red = (pixel & RED_MASK) >> RED_OFFSET;
+	int green = (pixel & GREEN_MASK) >> GREEN_OFFSET;
+	int blue = (pixel & BLUE_MASK) >> BLUE_OFFSET;
+	int average = (red + blue + green) / 3;
+				
+	red = average + (SEPIA_DEPTH * 2);
+	red = clamp(red, 0, 255);
+	blue = average - SEPIA_INTENSITY;
+	blue = clamp(blue, 0, 255);
+	green = average + SEPIA_DEPTH;
+	green = clamp(green, 0, 255);
+				
+				
+	int newPixel = (alpha << ALPHA_OFFSET) | (red << RED_OFFSET) | (blue << BLUE_OFFSET) | (green << GREEN_OFFSET);
+
+	resultData[index] = newPixel;
+
+	resultData[index] = newPixel;
+}

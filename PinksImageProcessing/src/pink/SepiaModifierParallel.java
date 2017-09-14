@@ -20,12 +20,13 @@ import org.jocl.cl_program;
 import parallel.JoclInitializer;
 
 /**
- * Creates grayscale in parallel.
+ * Modifies the image to Sepia in parallel.
  * 
- * @author chetlampron
+ * @author Chet Lampron
  *
  */
-public class GrayscaleModifierParallel extends PixelModifier {
+public class SepiaModifierParallel extends PixelModifier {
+	
 	/** The device manager. */
 	private JoclInitializer deviceManager;
 
@@ -35,16 +36,15 @@ public class GrayscaleModifierParallel extends PixelModifier {
 	 * @param aDeviceManager
 	 *            The device manager.
 	 */
-	public GrayscaleModifierParallel(JoclInitializer aDeviceManager) {
+	public SepiaModifierParallel(JoclInitializer aDeviceManager) {
 		deviceManager = aDeviceManager;
 	}
-
 	@Override
 	public BufferedImage modifyPixel(BufferedImage image) throws FileNotFoundException {
-
+		int width = image.getWidth();
+		int height = image.getHeight();
 
 		int[] sourceData = super.unwrapImage(image);
-		
 
 		int[] resultData = new int[sourceData.length];
 
@@ -55,7 +55,7 @@ public class GrayscaleModifierParallel extends PixelModifier {
 				Sizeof.cl_float * sourceData.length, ptrSource, null);
 		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * resultData.length, ptrResult, null);
-		File kernelFile = new File("Kernels/GrayscaleKernel");
+		File kernelFile = new File("Kernels/SepiaKernel");
 		Scanner kernelScan = new Scanner(kernelFile);
 		StringBuffer sourceBuffer = new StringBuffer();
 		while (kernelScan.hasNextLine()) {
@@ -67,7 +67,7 @@ public class GrayscaleModifierParallel extends PixelModifier {
 
 		CL.clBuildProgram(program, 0, null, null, null, null);
 
-		cl_kernel kernel = CL.clCreateKernel(program, "grayscale_kernel", null);
+		cl_kernel kernel = CL.clCreateKernel(program, "sepia_kernel", null);
 
 		CL.clSetKernelArg(kernel, 0, Sizeof.cl_mem, Pointer.to(memSource));
 

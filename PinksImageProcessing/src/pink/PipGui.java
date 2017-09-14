@@ -112,14 +112,19 @@ public class PipGui extends JFrame {
 		grayscale.addActionListener(new GrayscaleImage());
 		options.add(grayscale);
 
-		JMenuItem sepia = new JMenuItem("Sepia");
-		sepia.addActionListener(new SepiaImage());
-		options.add(sepia);
 
 		JMenuItem parallelGray = new JMenuItem("Grayscale(Parallel)");
 		parallelGray.addActionListener(new GrayParallel());
 		options.add(parallelGray);
 
+		JMenuItem sepia = new JMenuItem("Sepia");
+		sepia.addActionListener(new SepiaImage());
+		options.add(sepia);
+		
+		JMenuItem parallelSepia = new JMenuItem("Sepia(Parallel)");
+		parallelSepia.addActionListener(new SepiaParallel());
+		options.add(parallelSepia);
+		
 		JMenuItem about = new JMenuItem("About");
 		about.addActionListener(new AboutFile());
 		menuBar.add(file);
@@ -152,12 +157,13 @@ public class PipGui extends JFrame {
 						deviceManager.createContext(PipGui.deviceMap.get(newButton.getName()));
 					}
 
+					
 				}
 
 			});
 			if(deviceGroup.getSelection() == null) {
 				if(deviceManager.isGpu(PipGui.deviceMap.get(newButton.getName()))) {
-					newButton.setSelected(true);
+					newButton.doClick();
 				}
 			}
 			deviceGroup.add(newButton);
@@ -361,7 +367,7 @@ public class PipGui extends JFrame {
 	}
 
 	/**
-	 * Handles switching between processors.
+	 * Runs the parallel grayscale algorithm.
 	 * 
 	 * @author Chet Lampron
 	 *
@@ -375,6 +381,37 @@ public class PipGui extends JFrame {
 			} else {
 				if (image != null) {
 					GrayscaleModifierParallel pixelModifier = new GrayscaleModifierParallel(deviceManager);
+
+					try {
+						image = pixelModifier.modifyPixel(image);
+					} catch (FileNotFoundException e) {
+						JOptionPane.showMessageDialog(null, "The kernel could not be found");
+					}
+					centerPanel.repaint();
+					isSaved = false;
+				} else {
+					JOptionPane.showMessageDialog(null, "Please load an image first");
+				}
+			}
+		}
+
+	}
+	
+	/**
+	 * Runs the sepia in parallel.
+	 * 
+	 * @author Chet Lampron
+	 *
+	 */
+	private class SepiaParallel implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent a) {
+			if (deviceGroup.getSelection() == null) {
+				JOptionPane.showMessageDialog(null, "Please select a device from the device menu.");
+			} else {
+				if (image != null) {
+					SepiaModifierParallel pixelModifier = new SepiaModifierParallel(deviceManager);
 
 					try {
 						image = pixelModifier.modifyPixel(image);
