@@ -142,6 +142,7 @@ public class PipGui extends JFrame {
 		String[] deviceNames = deviceManager.getDeviceNames();
 		for (int i = 0; i < deviceNames.length; i++) {
 			JRadioButtonMenuItem newButton = new SpecialRadioButton(deviceNames[i]);
+			
 			newButton.addActionListener(new ActionListener() {
 
 				@Override
@@ -154,6 +155,11 @@ public class PipGui extends JFrame {
 				}
 
 			});
+			if(deviceGroup.getSelection() == null) {
+				if(deviceManager.isGpu(PipGui.deviceMap.get(newButton.getName()))) {
+					newButton.setSelected(true);
+				}
+			}
 			deviceGroup.add(newButton);
 			devices.add(newButton);
 		}

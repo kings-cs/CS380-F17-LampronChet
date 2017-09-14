@@ -141,4 +141,27 @@ public class JoclInitializer {
 	public cl_command_queue getQueue() {
 		return queue;
 	}
+
+	/**
+	 * Determines if a device is a GPU.
+	 * 
+	 * @param theDevice
+	 *            The specified device.
+	 * @return isGpu.
+	 */
+	public boolean isGpu(cl_device_id theDevice) {
+		boolean isGpu = false;
+		long[] size = new long[1];
+		CL.clGetDeviceInfo(theDevice, CL.CL_DEVICE_TYPE, 0, null, size);
+
+		byte[] buffer = new byte[(int) size[0]];
+		CL.clGetDeviceInfo(theDevice, CL.CL_DEVICE_TYPE, buffer.length, Pointer.to(buffer), null);
+		String result = new String(buffer, 0, buffer.length - 1);
+
+		if (result.equalsIgnoreCase("GPU")) {
+			isGpu = true;
+		}
+
+		return isGpu;
+	}
 }
