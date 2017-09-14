@@ -14,15 +14,18 @@ VI: Supported File types
 ********************************************************
 
 I. Basic instructions:
-	1. To run the file run the PipGui.java out of the source folder.
-	2. Open a file using the Open menu item.
-	3. Save a file using the Save menu item or Alt-s. After the file menu is open.
-  //When saving the image, if the filetype is not specified in the filename it will default to the type of png.
-	4. Close a file using the Close menu item, but be careful I treat this as my garbage collector, the FILE WILL BE LOST!
+	\n1. To run the file run the PipGui.java out of the source folder.
+	\n2. Open a file using the Open menu item.
+	\n3. Save a file using the Save menu item or Alt-s. After the file menu is open.
+ 	\n //When saving the image, if the filetype is not specified in the filename it will default to the type of png.
+	\n4. Close a file using the Close menu item, but be careful I treat this as my garbage collector, the FILE WILL BE LOST!
 	
 II. Image editing:
 	Implemented items:
 	1. Grayscale image
+	2. Grayscale in parallel
+	3. Sepia
+	4. Sepia in parallel
 	
 Many more to come soon!
 
