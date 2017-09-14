@@ -14,28 +14,27 @@ VI: Supported File types
 ********************************************************
 
 I. Basic instructions:
-	\n1. To run the file run the PipGui.java out of the source folder.
-	\n2. Open a file using the Open menu item.
-	\n3. Save a file using the Save menu item or Alt-s. After the file menu is open.
- 	\n //When saving the image, if the filetype is not specified in the filename it will default to the type of png.
-	\n4. Close a file using the Close menu item, but be careful I treat this as my garbage collector, the FILE WILL BE LOST!
+	<br>1. To run the file run the PipGui.java out of the source folder.
+	<br>2. Open a file using the Open menu item.
+	<br>3. Save a file using the Save menu item or Alt-s. After the file menu is open.
+ 	 <br>//When saving the image, if the filetype is not specified in the filename it will default to the type of png.
+	<br>4. Close a file using the Close menu item, but be careful I treat this as my garbage collector, the FILE WILL BE LOST!
 	
 II. Image editing:
-	Implemented items:
-	1. Grayscale image
-	2. Grayscale in parallel
-	3. Sepia
-	4. Sepia in parallel
-	
-Many more to come soon!
+	<br>Implemented items:
+	<br>1. Grayscale image
+	<br>2. Grayscale in parallel
+	<br>3. Sepia
+	<br>4. Sepia in parallel
+	<br>Many more to come soon!
 
 III. Close the program:
-	1. Please use the x in the top right of your window to close the program properly. 
+	<br>1. Please use the x in the top right of your window to close the program properly. 
 	
 IV. Bugs:
-	About is not implemented yet.
-	.gif will only display the first image in the file.
-	Key mnemonic for save only works when the file menu is open.
+	<br>About is not implemented yet.
+	<br>.gif will only display the first image in the file.
+	<br>Key mnemonic for save only works when the file menu is open.
 	
 V. Runtime chart:
 
@@ -73,7 +72,7 @@ V. Runtime chart:
 </table>
 
 VI. Supported File Types:
-.png
-.jpg
-.jpeg
-.gif
+<br>.png
+<br>.jpg
+<br>.jpeg
+<br>.gif
