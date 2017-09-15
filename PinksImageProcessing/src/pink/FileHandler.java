@@ -48,7 +48,7 @@ public class FileHandler {
 	 */
 	public void saveImage(String filePath, BufferedImage image, String fileType) throws IOException {
 		if (fileType != null) {
-			File outputFile = new File(filePath + "." + fileType);
+			File outputFile = new File(filePath);
 
 			ImageIO.write(image, fileType, outputFile);
 		}else {

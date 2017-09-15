@@ -112,7 +112,6 @@ public class PipGui extends JFrame {
 		grayscale.addActionListener(new GrayscaleImage());
 		options.add(grayscale);
 
-
 		JMenuItem parallelGray = new JMenuItem("Grayscale(Parallel)");
 		parallelGray.addActionListener(new GrayParallel());
 		options.add(parallelGray);
@@ -120,11 +119,11 @@ public class PipGui extends JFrame {
 		JMenuItem sepia = new JMenuItem("Sepia");
 		sepia.addActionListener(new SepiaImage());
 		options.add(sepia);
-		
+
 		JMenuItem parallelSepia = new JMenuItem("Sepia(Parallel)");
 		parallelSepia.addActionListener(new SepiaParallel());
 		options.add(parallelSepia);
-		
+
 		JMenuItem about = new JMenuItem("About");
 		about.addActionListener(new AboutFile());
 		menuBar.add(file);
@@ -147,7 +146,7 @@ public class PipGui extends JFrame {
 		String[] deviceNames = deviceManager.getDeviceNames();
 		for (int i = 0; i < deviceNames.length; i++) {
 			JRadioButtonMenuItem newButton = new SpecialRadioButton(deviceNames[i]);
-			
+
 			newButton.addActionListener(new ActionListener() {
 
 				@Override
@@ -156,12 +155,11 @@ public class PipGui extends JFrame {
 						deviceManager.createContext(PipGui.deviceMap.get(newButton.getName()));
 					}
 
-					
 				}
 
 			});
-			if(deviceGroup.getSelection() == null) {
-				if(deviceManager.isGpu(PipGui.deviceMap.get(newButton.getName()))) {
+			if (deviceGroup.getSelection() == null) {
+				if (deviceManager.isGpu(PipGui.deviceMap.get(newButton.getName()))) {
 					newButton.doClick();
 				}
 			}
@@ -257,6 +255,7 @@ public class PipGui extends JFrame {
 				int ans = JOptionPane.showConfirmDialog(null, "Would you like to save this file?");
 				if (ans == JOptionPane.YES_OPTION) {
 					save.doClick();
+					System.exit(0);
 				} else {
 					dispose();
 					System.exit(0);
@@ -265,11 +264,6 @@ public class PipGui extends JFrame {
 			}
 		}
 
-		@Override
-		public void windowClosed(WindowEvent e) {
-			dispose();
-			System.exit(0);
-		}
 	}
 
 	/**
@@ -314,7 +308,7 @@ public class PipGui extends JFrame {
 
 				if (val == JFileChooser.APPROVE_OPTION) {
 					String filePath = save.getSelectedFile().getAbsolutePath();
-					//String fileName = save.getName(save.getSelectedFile());
+					// String fileName = save.getName(save.getSelectedFile());
 					String[] parts = new String[2];
 					if (filePath.contains(".")) {
 						parts = filePath.split("\\.");
@@ -397,7 +391,7 @@ public class PipGui extends JFrame {
 		}
 
 	}
-	
+
 	/**
 	 * Runs the sepia in parallel.
 	 * 
@@ -493,7 +487,7 @@ public class PipGui extends JFrame {
 				}
 			}
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-				| UnsupportedLookAndFeelException e) 
+				| UnsupportedLookAndFeelException e)
 		{
 			JOptionPane.showMessageDialog(null, "The Nimbus look and feel is not available");
 		}
