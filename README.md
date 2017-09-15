@@ -43,17 +43,20 @@ V. Runtime chart:
     <th> Algorithm </th>
     <th> Time </th>
     <th> Device </th>
+    <th> Operating System </th>
   </tr>
   <tr>
     <td> Grayscale </td>
     <td> 35ms </td>
     <td> Nvidia GTX 745 </td>
+    <td> Ubuntu </td>
   </tr>
   
   <tr>
     <td> Grayscale Parallel </td>
-    <td> 0ms </td>
+    <td> <1ms </td>
     <td> Nvidia GTX 745 </td>
+    <td> Ubuntu </td>
   </tr>
   
   
@@ -61,14 +64,47 @@ V. Runtime chart:
     <td> Sepia </td>
     <td> 39ms </td>
     <td> Nvidia GTX 745 </td>
+    <td> Ubuntu </td>
   </tr>
   
   
   <tr>
-    <td> Grayscale Parallel</td>
-    <td> 0ms </td>
+    <td> Sepia Parallel</td>
+    <td> < 1ms </td>
     <td> Nvidia GTX 745 </td>
+    <td> Ubuntu </td>
   </tr>
+  
+<tr>
+    <td> Grayscale </td>
+    <td> 54ms </td>
+    <td> Nvidia GTX 970 </td>
+    <td> Windows 10 </td>
+  </tr>
+  
+  <tr>
+    <td> Grayscale Parallel </td>
+    <td> 2ms </td>
+    <td> Nvidia GTX 970 </td>
+    <td> Windows 10 </td>
+  </tr>
+  
+  
+  <tr>
+    <td> Sepia </td>
+    <td> 62ms </td>
+    <td> Nvidia GTX 970 </td>
+    <td> Windows 10 </td>
+  </tr>
+  
+  
+  <tr>
+    <td> Sepia Parallel</td>
+    <td> 2ms </td>
+    <td> Nvidia GTX 970 </td>
+    <td> Windows 10 </td>
+  </tr>
+
 </table>
 
 VI. Supported File Types:
