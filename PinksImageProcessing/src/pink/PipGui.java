@@ -257,10 +257,10 @@ public class PipGui extends JFrame {
 				int ans = JOptionPane.showConfirmDialog(null, "Would you like to save this file?");
 				if (ans == JOptionPane.YES_OPTION) {
 					save.doClick();
+				} else {
 					dispose();
 					System.exit(0);
-				} else {
-					this.windowClosed(e);
+					//this.windowClosed(e);
 				}
 			}
 		}
