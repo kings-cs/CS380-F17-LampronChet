@@ -153,7 +153,6 @@ public class PipGui extends JFrame {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					if (newButton.isSelected()) {
-						System.out.println(newButton.getName());
 						deviceManager.createContext(PipGui.deviceMap.get(newButton.getName()));
 					}
 
@@ -315,11 +314,13 @@ public class PipGui extends JFrame {
 
 				if (val == JFileChooser.APPROVE_OPTION) {
 					String filePath = save.getSelectedFile().getAbsolutePath();
+					//String fileName = save.getName(save.getSelectedFile());
 					String[] parts = new String[2];
 					if (filePath.contains(".")) {
 						parts = filePath.split("\\.");
 					} else {
 						parts[0] = filePath;
+						parts[1] = null;
 					}
 					try {
 						if (!save.getSelectedFile().exists()) {

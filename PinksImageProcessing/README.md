@@ -1,3 +1,5 @@
+OLD README FOR SAFE KEEPING, PLEASE REFER TO THE README ON GITHUB.
+
 Hello I'm PIP! It's nice to meet you!
 I will handle all of your image processing needs.
 

@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-import javax.swing.JOptionPane;
+//import javax.swing.JOptionPane;
 
 import org.jocl.CL;
 import org.jocl.Pointer;
@@ -41,8 +41,6 @@ public class SepiaModifierParallel extends PixelModifier {
 	}
 	@Override
 	public BufferedImage modifyPixel(BufferedImage image) throws FileNotFoundException {
-		int width = image.getWidth();
-		int height = image.getHeight();
 
 		int[] sourceData = super.unwrapImage(image);
 
@@ -76,11 +74,11 @@ public class SepiaModifierParallel extends PixelModifier {
 		long[] globalWorkSize = new long[] { resultData.length };
 		long[] localWorkSize = new long[] { 1 };
 		deviceManager.createQueue();
-		long startTime = System.nanoTime();
+		//long startTime = System.nanoTime();
 
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), kernel, 1, null, globalWorkSize, localWorkSize, 0, null,
 				null);
-		JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() - startTime) / 1000000 + "ms");
+		//JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() - startTime) / 1000000 + "ms");
 
 		
 		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0, sourceData.length * Sizeof.cl_float,

@@ -4,7 +4,7 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.awt.image.Raster;
-import javax.swing.JOptionPane;
+//import javax.swing.JOptionPane;
 
 /**
  * Pixel modifier to make the image grayscale.
@@ -16,7 +16,7 @@ public class GrayscaleModifier extends PixelModifier {
 
 	@Override
 	public BufferedImage modifyPixel(BufferedImage image) {
-		long startTime = System.nanoTime();
+		//long startTime = System.nanoTime();
 		int width = image.getWidth();
 		int height = image.getHeight();
 
@@ -54,7 +54,7 @@ public class GrayscaleModifier extends PixelModifier {
 		Raster resultRastor = Raster.createRaster(image.getRaster().getSampleModel(), resultDataBuffer,
 				new Point(0, 0));
 		image.setData(resultRastor);
-		JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() - startTime) / 1000000 + "ms");
+		//JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() - startTime) / 1000000 + "ms");
 		return image;
 	}
 
