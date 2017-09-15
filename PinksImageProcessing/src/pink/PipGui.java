@@ -141,6 +141,29 @@ public class PipGui extends JFrame {
 		file.add(close);
 		close.addActionListener(new CloseFile());
 
+		JMenuItem exit = new JMenuItem("Exit");
+		exit.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (!isSaved) {
+					int ans = JOptionPane.showConfirmDialog(null, "Would you like to save this file?");
+					if (ans == JOptionPane.YES_OPTION) {
+						save.doClick();
+						System.exit(0);
+					} else {
+						dispose();
+						System.exit(0);
+					}
+				} else {
+					dispose();
+					System.exit(0);
+				}
+			}
+
+		});
+		file.add(exit);
+
 		JMenu devices = new JMenu("Devices");
 		deviceGroup = new ButtonGroup();
 		String[] deviceNames = deviceManager.getDeviceNames();
@@ -255,13 +278,17 @@ public class PipGui extends JFrame {
 				int ans = JOptionPane.showConfirmDialog(null, "Would you like to save this file?");
 				if (ans == JOptionPane.YES_OPTION) {
 					save.doClick();
+					dispose();
 					System.exit(0);
 				} else {
 					dispose();
 					System.exit(0);
-					//this.windowClosed(e);
+					// this.windowClosed(e);
 				}
-				
+
+			}else {
+				dispose();
+				System.exit(0);
 			}
 		}
 
@@ -488,7 +515,7 @@ public class PipGui extends JFrame {
 				}
 			}
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-				| UnsupportedLookAndFeelException e)
+				| UnsupportedLookAndFeelException e) 
 		{
 			JOptionPane.showMessageDialog(null, "The Nimbus look and feel is not available");
 		}
