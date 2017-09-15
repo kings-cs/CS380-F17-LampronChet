@@ -1,3 +1,4 @@
+
 # CS380-F17-LampronChet
 
 Hello I'm PIP! It's nice to meet you!
@@ -36,6 +37,7 @@ IV. Bugs:
 	<br>.gif will only display the first image in the file.
 	<br>Key mnemonic for save only works when the file menu is open.
 	<br>Saving without a file type does not make PNG, please specify the file type in the name.
+	<br> The GUI does not always shut down properly although a WindowAdapter is in place.
 	
 V. Runtime chart:
 
