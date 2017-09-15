@@ -261,6 +261,7 @@ public class PipGui extends JFrame {
 					System.exit(0);
 					//this.windowClosed(e);
 				}
+				
 			}
 		}
 
