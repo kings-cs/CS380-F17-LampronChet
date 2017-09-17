@@ -155,6 +155,7 @@ public class PipGui extends JFrame {
 		menuBar.add(about);
 		open = new JMenuItem("Open");
 		open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+		
 		open.addActionListener(new OpenFile());
 		file.add(open);
 
