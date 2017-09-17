@@ -33,11 +33,10 @@ III. Close the program:
 	<br>1. Please use the x in the top right of your window to close the program properly. 
 	
 IV. Bugs:
-	<br>About is not implemented yet.
+	<br>About is implemented, but only displays the raw text currently.
 	<br>.gif will only display the first image in the file.
 	<br>Key mnemonic for save only works when the file menu is open.
 	<br>Saving without a file type does not make PNG, please specify the file type in the name.
-	<br> The GUI does not always shut down properly although a WindowAdapter is in place.
 	
 V. Runtime chart:
 
