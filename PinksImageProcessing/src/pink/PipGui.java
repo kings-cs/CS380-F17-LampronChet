@@ -18,11 +18,13 @@ import java.io.FileNotFoundException;
 //import java.io.FileNotFoundException;
 //import java.io.FileReader;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
+import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -32,6 +34,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -84,6 +87,8 @@ public class PipGui extends JFrame {
 	private JoclInitializer deviceManager;
 	/** The button group for the devices. */
 	private ButtonGroup deviceGroup;
+	/** The about JFrame. */
+	private JFrame webPage;
 
 	/**
 	 * Constructor for a PipGui.
@@ -92,6 +97,23 @@ public class PipGui extends JFrame {
 	 *             When file data is lost.
 	 */
 	public PipGui() throws IOException {
+
+		JEditorPane webPane = new JEditorPane();
+		webPane.setEditable(false);
+		URL webSite = new URL("https://raw.githubusercontent.com/kings-cs/CS380-F17-LampronChet/master/README.md?token=AQf_jwOahs_IziFHcFfMNlv7CJiAh1-2ks5Zx_piwA%3D%3D");
+		webPane.setPage(webSite);
+
+		JScrollPane scrollPane = new JScrollPane(webPane);
+		webPage = new JFrame("About");
+		webPage.setVisible(false);
+		webPage.add(scrollPane);
+
+		webPage.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosed(WindowEvent e) {
+				dispose();
+			}
+		});
 
 		deviceMap = new HashMap<>();
 		deviceManager = new JoclInitializer();
@@ -125,17 +147,21 @@ public class PipGui extends JFrame {
 		options.add(parallelSepia);
 
 		JMenuItem about = new JMenuItem("About");
+		about.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
+		about.setSize(30, options.getHeight());
 		about.addActionListener(new AboutFile());
 		menuBar.add(file);
 		menuBar.add(options);
 		menuBar.add(about);
 		open = new JMenuItem("Open");
+		open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
 		open.addActionListener(new OpenFile());
 		file.add(open);
 
-		save = new JMenuItem("Save", KeyEvent.VK_S);
+		save = new JMenuItem("Save");
 		file.add(save);
 		save.addActionListener(new SaveFile());
+		save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
 
 		JMenuItem close = new JMenuItem("Close");
 		file.add(close);
@@ -286,7 +312,7 @@ public class PipGui extends JFrame {
 					// this.windowClosed(e);
 				}
 
-			}else {
+			} else {
 				dispose();
 				System.exit(0);
 			}
@@ -304,15 +330,10 @@ public class PipGui extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			/*
-			 * try { BufferedReader br = new BufferedReader(new
-			 * FileReader("Docs/Readme.md")); String line = ""; while((line = br.readLine())
-			 * != null) { JOptionPane.showMessageDialog(null, line);
-			 * 
-			 * } } catch (HeadlessException | IOException e) {
-			 * JOptionPane.showMessageDialog(null, "The Readme could not be found :("); }
-			 */
-			JOptionPane.showMessageDialog(null, "Coming soon!");
+			webPage.setSize(new Dimension(500, 500));
+			webPage.setVisible(true);
+			webPage.toFront();
+			// JOptionPane.showMessageDialog(null, "Coming soon!");
 		}
 
 	}
