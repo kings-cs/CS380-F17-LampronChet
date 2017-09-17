@@ -89,6 +89,8 @@ public class PipGui extends JFrame {
 	private ButtonGroup deviceGroup;
 	/** The about JFrame. */
 	private JFrame webPage;
+	/** The about scroll pane. */
+	private JScrollPane aboutPane;
 
 	/**
 	 * Constructor for a PipGui.
@@ -103,10 +105,10 @@ public class PipGui extends JFrame {
 		URL webSite = new URL("https://raw.githubusercontent.com/kings-cs/CS380-F17-LampronChet/master/README.md?token=AQf_jwOahs_IziFHcFfMNlv7CJiAh1-2ks5Zx_piwA%3D%3D");
 		webPane.setPage(webSite);
 
-		JScrollPane scrollPane = new JScrollPane(webPane);
+		aboutPane = new JScrollPane(webPane);
 		webPage = new JFrame("About");
 		webPage.setVisible(false);
-		webPage.add(scrollPane);
+		webPage.add(aboutPane);
 
 		webPage.addWindowListener(new WindowAdapter() {
 			@Override
@@ -655,6 +657,7 @@ public class PipGui extends JFrame {
 			return super.getName();
 		}
 	}
+	
 
 	/**
 	 * Gets the device map.
