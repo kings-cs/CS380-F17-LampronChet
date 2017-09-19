@@ -44,6 +44,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.jocl.CL;
 import org.jocl.cl_device_id;
 
+import Alorithms.GrayscaleModifier;
+import Alorithms.GrayscaleModifierParallel;
+import Alorithms.SepiaModifier;
+import Alorithms.SepiaModifierParallel;
 import parallel.JoclInitializer;
 
 /**

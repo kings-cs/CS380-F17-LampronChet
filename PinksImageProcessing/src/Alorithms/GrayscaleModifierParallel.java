@@ -1,4 +1,4 @@
-package pink;
+package Alorithms;
 
 import java.awt.Point;
 import java.awt.image.BufferedImage;
@@ -18,15 +18,15 @@ import org.jocl.cl_mem;
 import org.jocl.cl_program;
 
 import parallel.JoclInitializer;
+import pink.PixelModifier;
 
 /**
- * Modifies the image to Sepia in parallel.
+ * Creates grayscale in parallel.
  * 
- * @author Chet Lampron
+ * @author chetlampron
  *
  */
-public class SepiaModifierParallel extends PixelModifier {
-	
+public class GrayscaleModifierParallel extends PixelModifier {
 	/** The device manager. */
 	private JoclInitializer deviceManager;
 
@@ -36,13 +36,16 @@ public class SepiaModifierParallel extends PixelModifier {
 	 * @param aDeviceManager
 	 *            The device manager.
 	 */
-	public SepiaModifierParallel(JoclInitializer aDeviceManager) {
+	public GrayscaleModifierParallel(JoclInitializer aDeviceManager) {
 		deviceManager = aDeviceManager;
 	}
+
 	@Override
 	public BufferedImage modifyPixel(BufferedImage image) throws FileNotFoundException {
 
+
 		int[] sourceData = super.unwrapImage(image);
+		
 
 		int[] resultData = new int[sourceData.length];
 
@@ -53,7 +56,7 @@ public class SepiaModifierParallel extends PixelModifier {
 				Sizeof.cl_float * sourceData.length, ptrSource, null);
 		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * resultData.length, ptrResult, null);
-		File kernelFile = new File("Kernels/SepiaKernel");
+		File kernelFile = new File("Kernels/GrayscaleKernel");
 		Scanner kernelScan = new Scanner(kernelFile);
 		StringBuffer sourceBuffer = new StringBuffer();
 		while (kernelScan.hasNextLine()) {
@@ -65,7 +68,7 @@ public class SepiaModifierParallel extends PixelModifier {
 
 		CL.clBuildProgram(program, 0, null, null, null, null);
 
-		cl_kernel kernel = CL.clCreateKernel(program, "sepia_kernel", null);
+		cl_kernel kernel = CL.clCreateKernel(program, "grayscale_kernel", null);
 
 		CL.clSetKernelArg(kernel, 0, Sizeof.cl_mem, Pointer.to(memSource));
 
