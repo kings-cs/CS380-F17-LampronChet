@@ -1,21 +1,15 @@
-package Alorithms;
+package algorithms;
 
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.awt.image.Raster;
-//import javax.swing.JOptionPane;
-
-import pink.PixelModifier;
 
 /**
- * Pixel modifier to make the image grayscale.
- * 
- * @author Chet Lampron
+ * @author Chet
  *
  */
-public class GrayscaleModifier extends PixelModifier {
-
+public class BlurModifier extends PixelModifier {
 	@Override
 	public BufferedImage modifyPixel(BufferedImage image) {
 		//long startTime = System.nanoTime();
@@ -23,6 +17,32 @@ public class GrayscaleModifier extends PixelModifier {
 		int height = image.getHeight();
 
 		int[] sourceData = super.unwrapImage(image);
+		
+		int[] redArray = new int[sourceData.length];
+		int[] blueArray = new int[sourceData.length];
+		int[] greenArray = new int[sourceData.length];
+		int[] alphaArray = new int[sourceData.length];
+		
+		int rCount = 0;
+		int bCount = 0;
+		int gCount = 0;
+		int aCount = 0;
+		System.out.println(sourceData[0]);
+		for(int i = 0; i < sourceData.length; i++) {
+			if(sourceData[i] == 'R') {
+				redArray[aCount] = sourceData[i];
+				rCount++;
+			}else if(sourceData[i] == 'B') {
+				blueArray[aCount] = sourceData[i];
+				bCount++;
+			}else if(sourceData[i] == 'G') {
+				greenArray[aCount] = sourceData[i];
+				gCount++;
+			}else if(sourceData[i] == 'A' ) {
+				alphaArray[aCount] = sourceData[i];
+				aCount++;
+			}
+		}
 
 		int[] resultData = new int[sourceData.length];
 
@@ -36,16 +56,13 @@ public class GrayscaleModifier extends PixelModifier {
 				int green = (pixel & PixelModifier.GREEN_MASK) >> PixelModifier.GREEN_OFFSET;
 				int blue = (pixel & PixelModifier.BLUE_MASK) >> PixelModifier.BLUE_OFFSET;
 
-				// Old Gray int gray = Math.min(red, Math.min(green, blue));
-				/* "Incorrect gray"
-				 * int conversionFactor = 255 / (64 - 1); int averageValue = (red + green +
-				 * blue) / 3; int gray = (int) ((averageValue / conversionFactor) + 0.5) *
-				 * conversionFactor;
-				 */
-				int gray = (int) (red * 0.299 + green * 0.587 + blue * 0.114);
 				
-				int newPixel = (alpha << ALPHA_OFFSET) | (gray << RED_OFFSET) | (gray << BLUE_OFFSET)
-						| (gray << GREEN_OFFSET);
+				
+				
+				
+				
+				int newPixel = (alpha << ALPHA_OFFSET) | (red << RED_OFFSET) | (blue << BLUE_OFFSET)
+						| (green << GREEN_OFFSET);
 
 				resultData[index] = newPixel;
 
@@ -59,5 +76,4 @@ public class GrayscaleModifier extends PixelModifier {
 		//JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() - startTime) / 1000000 + "ms");
 		return image;
 	}
-
 }

@@ -1,27 +1,19 @@
-package Alorithms;
+package algorithms;
 
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.awt.image.Raster;
-
-import pink.PixelModifier;
-
 //import javax.swing.JOptionPane;
 
 /**
- * Modifies the image to sepia.
+ * Pixel modifier to make the image grayscale.
  * 
  * @author Chet Lampron
  *
  */
-public class SepiaModifier extends PixelModifier {
-	/** The sepia depth. */
-	private static final int SEPIA_DEPTH = 35;
-	/** The sepia intensity. */
-	private static final int SEPIA_INTENSITY = 40;
-	
-	
+public class GrayscaleModifier extends PixelModifier {
+
 	@Override
 	public BufferedImage modifyPixel(BufferedImage image) {
 		//long startTime = System.nanoTime();
@@ -42,30 +34,16 @@ public class SepiaModifier extends PixelModifier {
 				int green = (pixel & PixelModifier.GREEN_MASK) >> PixelModifier.GREEN_OFFSET;
 				int blue = (pixel & PixelModifier.BLUE_MASK) >> PixelModifier.BLUE_OFFSET;
 
-				int average = (red + blue + green) / 3;
+				// Old Gray int gray = Math.min(red, Math.min(green, blue));
+				/* "Incorrect gray"
+				 * int conversionFactor = 255 / (64 - 1); int averageValue = (red + green +
+				 * blue) / 3; int gray = (int) ((averageValue / conversionFactor) + 0.5) *
+				 * conversionFactor;
+				 */
+				int gray = (int) (red * 0.299 + green * 0.587 + blue * 0.114);
 				
-				red = average + (SEPIA_DEPTH * 2);
-				if(red > 255) {
-					red = 255;
-				}else if(red < 0) {
-					red = 0;
-				}
-				blue = average - SEPIA_INTENSITY;
-				if(blue > 255) {
-					blue = 255;
-				}else if(blue < 0) {
-					blue = 0;
-				}
-				green = average + SEPIA_DEPTH;
-				if(green > 255) {
-					green = 255;
-				}else if(green < 0) {
-					green = 0;
-				}
-				
-				
-				int newPixel = (alpha << ALPHA_OFFSET) | (red << RED_OFFSET) | (blue << BLUE_OFFSET)
-						| (green << GREEN_OFFSET);
+				int newPixel = (alpha << ALPHA_OFFSET) | (gray << RED_OFFSET) | (gray << BLUE_OFFSET)
+						| (gray << GREEN_OFFSET);
 
 				resultData[index] = newPixel;
 
@@ -79,4 +57,5 @@ public class SepiaModifier extends PixelModifier {
 		//JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() - startTime) / 1000000 + "ms");
 		return image;
 	}
+
 }

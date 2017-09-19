@@ -1,4 +1,4 @@
-package Alorithms;
+package algorithms;
 
 import java.awt.Point;
 import java.awt.image.BufferedImage;
@@ -18,7 +18,6 @@ import org.jocl.cl_mem;
 import org.jocl.cl_program;
 
 import parallel.JoclInitializer;
-import pink.PixelModifier;
 
 /**
  * Modifies the image to Sepia in parallel.

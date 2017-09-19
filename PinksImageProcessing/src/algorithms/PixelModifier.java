@@ -1,4 +1,4 @@
-package pink;
+package algorithms;
 
 
 import java.awt.image.BufferedImage;
