@@ -1,4 +1,4 @@
-package pink;
+package pinkprocessing;
 
 /**
  * Unused for now due to pixelModifier.

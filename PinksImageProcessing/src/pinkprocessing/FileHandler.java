@@ -1,4 +1,4 @@
-package pink;
+package pinkprocessing;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;

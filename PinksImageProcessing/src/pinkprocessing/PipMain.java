@@ -1,7 +1,7 @@
 /**
  * 
  */
-package pink;
+package pinkprocessing;
 
 import java.io.IOException;
 

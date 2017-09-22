@@ -1,4 +1,4 @@
-package pink;
+package pinkprocessing;
 
 import java.awt.BorderLayout;
 //import java.awt.Desktop;
