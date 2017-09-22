@@ -6,6 +6,8 @@ import java.awt.image.DataBufferInt;
 import java.awt.image.Raster;
 
 /**
+ * Blur algorithm in sequential.
+ * 
  * @author Chet
  *
  */
@@ -29,7 +31,7 @@ public class BlurModifier extends PixelModifier {
 			int red = (sourceData[i] & PixelModifier.RED_MASK) >> PixelModifier.RED_OFFSET;
 			int green = (sourceData[i] & PixelModifier.GREEN_MASK) >> PixelModifier.GREEN_OFFSET;
 			int blue = (sourceData[i] & PixelModifier.BLUE_MASK) >> PixelModifier.BLUE_OFFSET;
-			
+
 			redArray[i] = red;
 			blueArray[i] = blue;
 			greenArray[i] = green;
@@ -47,10 +49,9 @@ public class BlurModifier extends PixelModifier {
 				int red = (pixel & PixelModifier.RED_MASK) >> PixelModifier.RED_OFFSET;
 				int green = (pixel & PixelModifier.GREEN_MASK) >> PixelModifier.GREEN_OFFSET;
 				int blue = (pixel & PixelModifier.BLUE_MASK) >> PixelModifier.BLUE_OFFSET;
-				
-				
-				//TODO blur
-				
+
+				// TODO blur
+
 				int newPixel = (alpha << ALPHA_OFFSET) | (red << RED_OFFSET) | (blue << BLUE_OFFSET)
 						| (green << GREEN_OFFSET);
 
