@@ -237,7 +237,7 @@ public class PipGui extends JFrame {
 		leftSide.setPreferredSize(new Dimension(50, 350));
 		// leftSide.setBackground(Color.red);
 		backPanel.add(leftSide, BorderLayout.WEST);
-		String borderFilePath = "Docs/sideMural.jpg";
+		String borderFilePath = "Docs/SpectrumBorder.jpg";
 		sideMural = fileHandler.createImage(borderFilePath);
 		// Graphics borderGraphics = borderImage.getGraphics();
 		// borderGraphics.drawImage(borderImage, 0, 0, leftSide);
@@ -559,7 +559,7 @@ public class PipGui extends JFrame {
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
 			if (sideMural != null) {
-				g.drawImage(sideMural, 0, 0, this);
+				g.drawImage(sideMural, -1170, 0, this);
 			}
 		}
 	}
