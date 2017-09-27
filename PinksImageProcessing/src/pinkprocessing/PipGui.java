@@ -285,8 +285,6 @@ public class PipGui extends JFrame {
 					centerPanel.setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));
 					getGui().setSize(new Dimension(720, 720));
 					isSaved = false;
-					// getGui().setExtendedState(getGui().getExtendedState() |
-					// JFrame.MAXIMIZED_BOTH);
 					centerPanel.repaint();
 					centerPanel.revalidate();
 				} catch (IOException e) {
@@ -321,7 +319,6 @@ public class PipGui extends JFrame {
 				} else {
 					dispose();
 					System.exit(0);
-					// this.windowClosed(e);
 				}
 
 			} else {
@@ -345,7 +342,6 @@ public class PipGui extends JFrame {
 			webPage.setSize(new Dimension(500, 500));
 			webPage.setVisible(true);
 			webPage.toFront();
-			// JOptionPane.showMessageDialog(null, "Coming soon!");
 		}
 
 	}
