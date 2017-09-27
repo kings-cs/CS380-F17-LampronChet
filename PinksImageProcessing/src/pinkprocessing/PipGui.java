@@ -147,6 +147,15 @@ public class PipGui extends JFrame {
 		JMenuItem parallelSepia = new JMenuItem("Sepia(Parallel)");
 		parallelSepia.addActionListener(new SepiaParallel());
 		options.add(parallelSepia);
+		
+		JMenuItem blur = new JMenuItem("Blur");
+		//TODO Action Listener
+		options.add(blur);
+		
+		JMenuItem parallelBlur = new JMenuItem("Blur(Parallel)");
+		//TODO Action Listener
+		options.add(parallelBlur);
+		
 
 		JMenuItem about = new JMenuItem("About");
 		about.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
