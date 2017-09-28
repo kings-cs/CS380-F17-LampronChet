@@ -40,6 +40,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 //import org.jocl.CL;
 import org.jocl.cl_device_id;
 
+import algorithms.BlurModifier;
 import algorithms.GrayscaleModifier;
 import algorithms.GrayscaleModifierParallel;
 import algorithms.SepiaModifier;
@@ -102,8 +103,8 @@ public class PipGui extends JFrame {
 
 		JEditorPane webPane = new JEditorPane();
 		webPane.setEditable(false);
-		URL webSite = new URL("https://raw.githubusercontent.com/kings-cs/CS380-F17-LampronChet/master/README.md?token=AQf_jwOahs_IziFHcFfMNlv7CJiAh1-2ks5Zx_piwA%3D%3D");
-		webPane.setPage(webSite);
+		//URL webSite = new URL("https://raw.githubusercontent.com/kings-cs/CS380-F17-LampronChet/master/README.md?token=AQf_jwOahs_IziFHcFfMNlv7CJiAh1-2ks5Zx_piwA%3D%3D");
+		//webPane.setPage(webSite);
 
 		aboutPane = new JScrollPane(webPane);
 		webPage = new JFrame("About");
@@ -149,7 +150,7 @@ public class PipGui extends JFrame {
 		options.add(parallelSepia);
 		
 		JMenuItem blur = new JMenuItem("Blur");
-		//TODO Action Listener
+		blur.addActionListener(new BlurImage());
 		options.add(blur);
 		
 		JMenuItem parallelBlur = new JMenuItem("Blur(Parallel)");
@@ -516,6 +517,30 @@ public class PipGui extends JFrame {
 		public void actionPerformed(ActionEvent arg0) {
 			if (image != null) {
 				SepiaModifier pixelModifier = new SepiaModifier();
+
+				image = pixelModifier.modifyPixel(image);
+				centerPanel.repaint();
+				isSaved = false;
+			} else {
+				JOptionPane.showMessageDialog(null, "Please load an image first");
+			}
+
+		}
+
+	}
+	
+	/**
+	 * Runs the Blur algorithm when prompted.
+	 * 
+	 * @author Chet lampron
+	 *
+	 */
+	private class BlurImage implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			if (image != null) {
+				BlurModifier pixelModifier = new BlurModifier();
 
 				image = pixelModifier.modifyPixel(image);
 				centerPanel.repaint();
