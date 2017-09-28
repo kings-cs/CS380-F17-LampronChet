@@ -1,0 +1,35 @@
+__kernel void separateChannels(__global const int *sourceData, __global int *redArray, __global int *blueArray, __global int *greenArray, __global *alphaArray){
+	int ALPHA_MASK = 0xff000000;
+
+	int ALPHA_OFFSET = 24;
+
+
+	int RED_MASK = 0x00ff0000;
+
+	int RED_OFFSET = 16;
+
+
+	int GREEN_MASK = 0x0000ff00;
+
+	int GREEN_OFFSET = 8;
+
+	int BLUE_MASK = 0x000000ff;
+
+	int BLUE_OFFSET = 0;
+	int index = get_global_id(0);
+	int alpha = (sourceData[index] & PixelModifier.ALPHA_MASK) >> PixelModifier.ALPHA_OFFSET;
+	int red = (sourceData[index] & PixelModifier.RED_MASK) >> PixelModifier.RED_OFFSET;
+	int green = (sourceData[index] & PixelModifier.GREEN_MASK) >> PixelModifier.GREEN_OFFSET;
+	int blue = (sourceData[index] & PixelModifier.BLUE_MASK) >> PixelModifier.BLUE_OFFSET;
+
+	redArray[index] = red;
+	blueArray[index] = blue;
+	greenArray[index] = green;
+	alphaArray[index] = alpha;
+}
+
+__kernel void blurChannels(__global int *redArray, __global int *blueArray, __global int *greenArray, __global int *redModifiedArray, __global int *blueModifiedArray, __global int *greenModifiedArray, __global int *stencil){
+}
+
+__kernel void combineChannels(){
+}
