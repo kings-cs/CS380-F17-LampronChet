@@ -1,6 +1,7 @@
 package pinkprocessing;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 //import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -132,6 +133,8 @@ public class PipGui extends JFrame {
 		JMenuBar menuBar = new JMenuBar();
 		this.setJMenuBar(menuBar);
 		JMenu file = new JMenu("File");
+		file.setBackground(Color.DARK_GRAY);
+		file.setForeground(new Color(171, 14, 165));
 		JMenu options = new JMenu("Options");
 
 		JMenuItem grayscale = new JMenuItem("Grayscale");
