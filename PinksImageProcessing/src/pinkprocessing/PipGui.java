@@ -41,6 +41,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.jocl.cl_device_id;
 
 import algorithms.BlurModifier;
+import algorithms.BlurModifierParallel;
 import algorithms.GrayscaleModifier;
 import algorithms.GrayscaleModifierParallel;
 import algorithms.SepiaModifier;
@@ -154,7 +155,7 @@ public class PipGui extends JFrame {
 		options.add(blur);
 		
 		JMenuItem parallelBlur = new JMenuItem("Blur(Parallel)");
-		//TODO Action Listener
+		parallelBlur.addActionListener(new BlurParallel());
 		options.add(parallelBlur);
 		
 
@@ -465,6 +466,36 @@ public class PipGui extends JFrame {
 			} else {
 				if (image != null) {
 					SepiaModifierParallel pixelModifier = new SepiaModifierParallel(deviceManager);
+
+					try {
+						image = pixelModifier.modifyPixel(image);
+					} catch (FileNotFoundException e) {
+						JOptionPane.showMessageDialog(null, "The kernel could not be found");
+					}
+					centerPanel.repaint();
+					isSaved = false;
+				} else {
+					JOptionPane.showMessageDialog(null, "Please load an image first");
+				}
+			}
+		}
+
+	}
+	/**
+	 * Runs the blur in parallel.
+	 * 
+	 * @author Chet Lampron
+	 *
+	 */
+	private class BlurParallel implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent a) {
+			if (deviceGroup.getSelection() == null) {
+				JOptionPane.showMessageDialog(null, "Please select a device from the device menu.");
+			} else {
+				if (image != null) {
+					BlurModifierParallel pixelModifier = new BlurModifierParallel(deviceManager);
 
 					try {
 						image = pixelModifier.modifyPixel(image);

@@ -1,4 +1,4 @@
-__kernel void separateChannels(__global const int *sourceData, __global int *redArray, __global int *blueArray, __global int *greenArray, __global *alphaArray){
+__kernel void separateChannels(__global const int *sourceData, __global int *redArray, __global int *blueArray, __global int *greenArray, __global int *alphaArray){
 	int ALPHA_MASK = 0xff000000;
 
 	int ALPHA_OFFSET = 24;
@@ -16,11 +16,12 @@ __kernel void separateChannels(__global const int *sourceData, __global int *red
 	int BLUE_MASK = 0x000000ff;
 
 	int BLUE_OFFSET = 0;
+	
 	int index = get_global_id(0);
-	int alpha = (sourceData[index] & PixelModifier.ALPHA_MASK) >> PixelModifier.ALPHA_OFFSET;
-	int red = (sourceData[index] & PixelModifier.RED_MASK) >> PixelModifier.RED_OFFSET;
-	int green = (sourceData[index] & PixelModifier.GREEN_MASK) >> PixelModifier.GREEN_OFFSET;
-	int blue = (sourceData[index] & PixelModifier.BLUE_MASK) >> PixelModifier.BLUE_OFFSET;
+	int alpha = (sourceData[index] & ALPHA_MASK) >> ALPHA_OFFSET;
+	int red = (sourceData[index] & RED_MASK) >> RED_OFFSET;
+	int green = (sourceData[index] & GREEN_MASK) >> GREEN_OFFSET;
+	int blue = (sourceData[index] & BLUE_MASK) >> BLUE_OFFSET;
 
 	redArray[index] = red;
 	blueArray[index] = blue;
@@ -28,8 +29,73 @@ __kernel void separateChannels(__global const int *sourceData, __global int *red
 	alphaArray[index] = alpha;
 }
 
-__kernel void blurChannels(__global int *redArray, __global int *blueArray, __global int *greenArray, __global int *redModifiedArray, __global int *blueModifiedArray, __global int *greenModifiedArray, __global int *stencil){
+__kernel void blurChannels(__global int *redArray, __global int *blueArray, __global int *greenArray, __global int *modifiedRedArray, __global int *modifiedBlueArray, __global int *modifiedGreenArray, __global float *stencil, __global int *dimensions){
+				int index = get_global_id(0);
+				int width = dimensions[0];
+				int height = dimensions[1];
+				
+				int row = index / width;
+				
+				int col = index % width;
+
+				int count = 0;
+				float redModify = 0;
+				float greenModify = 0;
+				float blueModify = 0;
+				for (int stenRow = row - 2; stenRow <= row + 2; stenRow++) {
+					for (int stenCol = col - 2; stenCol <= col + 2; stenCol++) {
+						int newRow = stenRow;
+						int newCol = stenCol;
+						
+						if(newRow < 0) {
+							newRow = 0;
+						}else if(newRow >= height) {
+							newRow = height - 1;
+						}
+						if(newCol < 0) {
+							newCol = 0;
+						}else if(newCol >= width) {
+							newCol = width - 1;
+						}
+						
+						int anIndex = newRow * width + newCol;
+						
+						redModify += redArray[anIndex] * stencil[count];
+						greenModify += greenArray[anIndex] * stencil[count];
+						blueModify += blueArray[anIndex] * stencil[count];
+						count++;
+						}
+				}
+				modifiedRedArray[index] = (int) redModify;
+				modifiedGreenArray[index] = (int) greenModify;
+				modifiedBlueArray[index] = (int) blueModify;
 }
 
-__kernel void combineChannels(){
+__kernel void combineChannels(__global int *alphaArray, __global int *modifiedRedArray, __global int *modifiedBlueArray, __global int *modifiedGreenArray, __global int *resultData){
+int ALPHA_MASK = 0xff000000;
+
+	int ALPHA_OFFSET = 24;
+
+
+	int RED_MASK = 0x00ff0000;
+
+	int RED_OFFSET = 16;
+
+
+	int GREEN_MASK = 0x0000ff00;
+
+	int GREEN_OFFSET = 8;
+
+	int BLUE_MASK = 0x000000ff;
+
+	int BLUE_OFFSET = 0;
+			int i = get_global_id(0);
+			int newRed = modifiedRedArray[i];
+			int newGreen = modifiedGreenArray[i];
+			int newBlue = modifiedBlueArray[i];
+			int alpha = alphaArray[i];
+			int newPixel = (alpha << ALPHA_OFFSET) | (newRed << RED_OFFSET) | (newBlue << BLUE_OFFSET)
+					| (newGreen << GREEN_OFFSET);
+
+			resultData[i] = newPixel;
 }

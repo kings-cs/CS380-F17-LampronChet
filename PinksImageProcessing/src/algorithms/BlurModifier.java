@@ -5,6 +5,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.awt.image.Raster;
 
+import javax.swing.JOptionPane;
+
 /**
  * Blur algorithm in sequential.
  * 
@@ -13,14 +15,16 @@ import java.awt.image.Raster;
  */
 public class BlurModifier extends PixelModifier {
 	/** The field for the stencil. */
-	private final double[] stencil = { 0.0232468, 0.0338240, 0.0383276, 0.0338240, 0.0232468, 0.0338240, 0.0492136,
-			0.0492136, 0.0557663, 0.0492136, 0.0338240, 0.0383276, 0.0557663, 0.0631915, 0.0557663, 0.0383276,
-			0.0338240, 0.0492136, 0.0557663, 0.0492136, 0.0338240, 0.0232468, 0.0338240, 0.0383276, 0.0338240,
-			0.0232468 };
+	private final double[] stencil = { 0.0232468, 0.0338240, 0.0383276, 0.0338240, 0.0232468,
+			0.0338240, 0.0492136, 0.0557663, 0.0492136, 0.0338240,
+			0.0383276, 0.0557663, 0.0631915, 0.0557663, 0.0383276, 
+			0.0338240, 0.0492136, 0.0557663, 0.0492136, 0.0338240, 
+			0.0232468, 0.0338240, 0.0383276, 0.0338240, 0.0232468 };
 
 	@Override
 	public BufferedImage modifyPixel(BufferedImage image) {
-		// long startTime = System.nanoTime();
+		
+		
 		int width = image.getWidth();
 		int height = image.getHeight();
 
@@ -33,6 +37,7 @@ public class BlurModifier extends PixelModifier {
 		int[] modifiedRedArray = new int[redArray.length];
 		int[] modifiedGreenArray = new int[greenArray.length];
 		int[] modifiedBlueArray = new int[blueArray.length];
+		long startTime = System.nanoTime();
 
 		for (int row = 0; row < height; row++) {
 			for (int col = 0; col < width; col++) {
@@ -55,9 +60,9 @@ public class BlurModifier extends PixelModifier {
 				int index = row * width + col;
 
 				int count = 0;
-				int redModify = 0;
-				int greenModify = 0;
-				int blueModify = 0;
+				double redModify = 0;
+				double greenModify = 0;
+				double blueModify = 0;
 				for (int stenRow = row - 2; stenRow <= row + 2; stenRow++) {
 					for (int stenCol = col - 2; stenCol <= col + 2; stenCol++) {
 					/*	
@@ -173,9 +178,9 @@ public class BlurModifier extends PixelModifier {
 
 					}
 				}
-				modifiedRedArray[index] = redModify;
-				modifiedGreenArray[index] = greenModify;
-				modifiedBlueArray[index] = blueModify;
+				modifiedRedArray[index] = (int) redModify;
+				modifiedGreenArray[index] = (int) greenModify;
+				modifiedBlueArray[index] = (int) blueModify;
 
 			}
 		}
@@ -190,12 +195,12 @@ public class BlurModifier extends PixelModifier {
 
 			resultData[i] = newPixel;
 		}
+		JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() -
+				 startTime) / 1000000 + "ms");
 		DataBufferInt resultDataBuffer = new DataBufferInt(resultData, resultData.length);
 		Raster resultRastor = Raster.createRaster(image.getRaster().getSampleModel(), resultDataBuffer,
 				new Point(0, 0));
 		image.setData(resultRastor);
-		// JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() -
-		// startTime) / 1000000 + "ms");
 		return image;
 	}
 }

@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
+import javax.swing.JOptionPane;
+
 import org.jocl.CL;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
@@ -25,10 +27,10 @@ import parallel.JoclInitializer;
  */
 public class BlurModifierParallel extends PixelModifier {
 	/** The field for the stencil. */
-	private final double[] stencil = { 0.0232468, 0.0338240, 0.0383276, 0.0338240, 0.0232468, 0.0338240, 0.0492136,
-			0.0492136, 0.0557663, 0.0492136, 0.0338240, 0.0383276, 0.0557663, 0.0631915, 0.0557663, 0.0383276,
-			0.0338240, 0.0492136, 0.0557663, 0.0492136, 0.0338240, 0.0232468, 0.0338240, 0.0383276, 0.0338240,
-			0.0232468 };
+	private final float[] stencil = { 0.0232468f, 0.0338240f, 0.0383276f, 0.0338240f, 0.0232468f, 0.0338240f,
+			0.0492136f, 0.0557663f, 0.0492136f, 0.0338240f, 0.0383276f, 0.0557663f, 0.0631915f, 0.0557663f, 0.0383276f,
+			0.0338240f, 0.0492136f, 0.0557663f, 0.0492136f, 0.0338240f, 0.0232468f, 0.0338240f, 0.0383276f, 0.0338240f,
+			0.0232468f };
 	/** The device manager. */
 	private JoclInitializer deviceManager;
 
@@ -52,7 +54,7 @@ public class BlurModifierParallel extends PixelModifier {
 		int[] sourceData = super.unwrapImage(image);
 
 		int[] resultData = new int[sourceData.length];
-		
+
 		int[] redArray = new int[sourceData.length];
 		int[] blueArray = new int[sourceData.length];
 		int[] greenArray = new int[sourceData.length];
@@ -85,16 +87,20 @@ public class BlurModifierParallel extends PixelModifier {
 				Sizeof.cl_float * greenArray.length, ptrGreen, null);
 		cl_mem memAlpha = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * alphaArray.length, ptrAlpha, null);
-		cl_mem memModifiedRed = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
-				Sizeof.cl_float * modifiedRedArray.length, ptrModifiedRed, null);
-		cl_mem memModifiedGreen = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
-				Sizeof.cl_float * modifiedGreenArray.length, ptrModifiedGreen, null);
-		cl_mem memModifiedBlue = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
-				Sizeof.cl_float * modifiedBlueArray.length, ptrModifiedBlue, null);
-		cl_mem memStencil = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
-				Sizeof.cl_float * stencil.length, ptrStencil, null);
-		cl_mem memDimensions = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
-				Sizeof.cl_float * dimensions.length, ptrDimensions, null);
+		cl_mem memModifiedRed = CL.clCreateBuffer(deviceManager.getContext(),
+				CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * modifiedRedArray.length,
+				ptrModifiedRed, null);
+		cl_mem memModifiedGreen = CL.clCreateBuffer(deviceManager.getContext(),
+				CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * modifiedGreenArray.length,
+				ptrModifiedGreen, null);
+		cl_mem memModifiedBlue = CL.clCreateBuffer(deviceManager.getContext(),
+				CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * modifiedBlueArray.length,
+				ptrModifiedBlue, null);
+		cl_mem memStencil = CL.clCreateBuffer(deviceManager.getContext(),
+				CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * stencil.length, ptrStencil, null);
+		cl_mem memDimensions = CL.clCreateBuffer(deviceManager.getContext(),
+				CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * dimensions.length, ptrDimensions,
+				null);
 		File kernelFile = new File("Kernels/BlurKernel");
 		Scanner kernelScan = new Scanner(kernelFile);
 		StringBuffer sourceBuffer = new StringBuffer();
@@ -110,7 +116,7 @@ public class BlurModifierParallel extends PixelModifier {
 		long[] globalWorkSize = new long[] { resultData.length };
 		long[] localWorkSize = new long[] { 1 };
 		deviceManager.createQueue();
-		//Set up and run the separate channels kernel.
+		// Set up and run the separate channels kernel.
 		cl_kernel separateKernel = CL.clCreateKernel(program, "separateChannels", null);
 
 		CL.clSetKernelArg(separateKernel, 0, Sizeof.cl_mem, Pointer.to(memSource));
@@ -118,21 +124,22 @@ public class BlurModifierParallel extends PixelModifier {
 		CL.clSetKernelArg(separateKernel, 2, Sizeof.cl_mem, Pointer.to(memBlue));
 		CL.clSetKernelArg(separateKernel, 3, Sizeof.cl_mem, Pointer.to(memGreen));
 		CL.clSetKernelArg(separateKernel, 4, Sizeof.cl_mem, Pointer.to(memAlpha));
-		
-		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), separateKernel, 1, null, globalWorkSize, localWorkSize, 0, null,
-				null);
+		long startTime = System.nanoTime();
+		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), separateKernel, 1, null, globalWorkSize, localWorkSize, 0,
+				null, null);
+		long afterOne = System.nanoTime() - startTime;
 		// JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() -
 		// startTime) / 1000000 + "ms");
 
-		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memRed, CL.CL_TRUE, 0, sourceData.length * Sizeof.cl_float,
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memRed, CL.CL_TRUE, 0, redArray.length * Sizeof.cl_float,
 				ptrRed, 0, null, null);
-		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memBlue, CL.CL_TRUE, 0, sourceData.length * Sizeof.cl_float,
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memBlue, CL.CL_TRUE, 0, blueArray.length * Sizeof.cl_float,
 				ptrBlue, 0, null, null);
-		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memGreen, CL.CL_TRUE, 0, sourceData.length * Sizeof.cl_float,
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memGreen, CL.CL_TRUE, 0, greenArray.length * Sizeof.cl_float,
 				ptrGreen, 0, null, null);
-		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memAlpha, CL.CL_TRUE, 0, sourceData.length * Sizeof.cl_float,
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memAlpha, CL.CL_TRUE, 0, alphaArray.length * Sizeof.cl_float,
 				ptrAlpha, 0, null, null);
-		
+
 		/* Set up and run the blur kernel */
 		cl_kernel blurKernel = CL.clCreateKernel(program, "blurChannels", null);
 
@@ -144,42 +151,53 @@ public class BlurModifierParallel extends PixelModifier {
 		CL.clSetKernelArg(blurKernel, 5, Sizeof.cl_mem, Pointer.to(memModifiedGreen));
 		CL.clSetKernelArg(blurKernel, 6, Sizeof.cl_mem, Pointer.to(memStencil));
 		CL.clSetKernelArg(blurKernel, 7, Sizeof.cl_mem, Pointer.to(memDimensions));
-		
+		startTime = System.nanoTime();
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), blurKernel, 1, null, globalWorkSize, localWorkSize, 0, null,
 				null);
+		long afterTwo = System.nanoTime() - startTime;
+
 		// JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() -
 		// startTime) / 1000000 + "ms");
 
-		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memModifiedRed, CL.CL_TRUE, 0, sourceData.length * Sizeof.cl_float,
-				ptrModifiedRed, 0, null, null);
-		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memModifiedBlue, CL.CL_TRUE, 0, sourceData.length * Sizeof.cl_float,
-				ptrModifiedBlue, 0, null, null);
-		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memModifiedGreen, CL.CL_TRUE, 0, sourceData.length * Sizeof.cl_float,
-				ptrModifiedGreen, 0, null, null);
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memModifiedRed, CL.CL_TRUE, 0,
+				sourceData.length * Sizeof.cl_float, ptrModifiedRed, 0, null, null);
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memModifiedBlue, CL.CL_TRUE, 0,
+				sourceData.length * Sizeof.cl_float, ptrModifiedBlue, 0, null, null);
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memModifiedGreen, CL.CL_TRUE, 0,
+				sourceData.length * Sizeof.cl_float, ptrModifiedGreen, 0, null, null);
 
 		/* Set up and run recombine kernel. */
-		cl_kernel recombineKernel = CL.clCreateKernel(program, "recombineChannels", null);
+		cl_kernel recombineKernel = CL.clCreateKernel(program, "combineChannels", null);
 
-	
 		CL.clSetKernelArg(recombineKernel, 0, Sizeof.cl_mem, Pointer.to(memAlpha));
 		CL.clSetKernelArg(recombineKernel, 1, Sizeof.cl_mem, Pointer.to(memModifiedRed));
 		CL.clSetKernelArg(recombineKernel, 2, Sizeof.cl_mem, Pointer.to(memModifiedBlue));
 		CL.clSetKernelArg(recombineKernel, 3, Sizeof.cl_mem, Pointer.to(memModifiedGreen));
 		CL.clSetKernelArg(recombineKernel, 4, Sizeof.cl_mem, Pointer.to(memResult));
+		startTime = System.nanoTime();
+		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), recombineKernel, 1, null, globalWorkSize, localWorkSize, 0,
+				null, null);
+		long afterThree = System.nanoTime() - startTime;
 
-		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), recombineKernel, 1, null, globalWorkSize, localWorkSize, 0, null,
-				null);
-		// JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() -
-		// startTime) / 1000000 + "ms");
+		JOptionPane.showMessageDialog(null, "Total Time: " + (afterOne + afterTwo + afterThree) / 1000000 + "ms");
 
 		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0, sourceData.length * Sizeof.cl_float,
 				ptrResult, 0, null, null);
-		
 
 		CL.clReleaseKernel(separateKernel);
+		CL.clReleaseKernel(blurKernel);
+		CL.clReleaseKernel(recombineKernel);
 		CL.clReleaseProgram(program);
 		CL.clReleaseMemObject(memSource);
 		CL.clReleaseMemObject(memResult);
+		CL.clReleaseMemObject(memRed);
+		CL.clReleaseMemObject(memBlue);
+		CL.clReleaseMemObject(memGreen);
+		CL.clReleaseMemObject(memAlpha);
+		CL.clReleaseMemObject(memModifiedRed);
+		CL.clReleaseMemObject(memModifiedBlue);
+		CL.clReleaseMemObject(memModifiedGreen);
+		CL.clReleaseMemObject(memDimensions);
 
 		DataBufferInt resultDataBuffer = new DataBufferInt(resultData, resultData.length);
 		Raster resultRastor = Raster.createRaster(image.getRaster().getSampleModel(), resultDataBuffer,
