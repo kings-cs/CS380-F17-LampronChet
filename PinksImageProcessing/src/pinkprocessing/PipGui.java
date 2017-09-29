@@ -133,8 +133,8 @@ public class PipGui extends JFrame {
 		JMenuBar menuBar = new JMenuBar();
 		this.setJMenuBar(menuBar);
 		JMenu file = new JMenu("File");
-		file.setBackground(Color.DARK_GRAY);
-		file.setForeground(new Color(171, 14, 165));
+		//file.setBackground(Color.DARK_GRAY);
+		//file.setForeground(new Color(171, 14, 165));
 		JMenu options = new JMenu("Options");
 
 		JMenuItem grayscale = new JMenuItem("Grayscale");
