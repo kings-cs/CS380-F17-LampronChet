@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-import javax.swing.JOptionPane;
+//import javax.swing.JOptionPane;
 
 import org.jocl.CL;
 import org.jocl.Pointer;
@@ -124,10 +124,10 @@ public class BlurModifierParallel extends PixelModifier {
 		CL.clSetKernelArg(separateKernel, 2, Sizeof.cl_mem, Pointer.to(memBlue));
 		CL.clSetKernelArg(separateKernel, 3, Sizeof.cl_mem, Pointer.to(memGreen));
 		CL.clSetKernelArg(separateKernel, 4, Sizeof.cl_mem, Pointer.to(memAlpha));
-		long startTime = System.nanoTime();
+		// long startTime = System.nanoTime();
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), separateKernel, 1, null, globalWorkSize, localWorkSize, 0,
 				null, null);
-		long afterOne = System.nanoTime() - startTime;
+		// long afterOne = System.nanoTime() - startTime;
 		// JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() -
 		// startTime) / 1000000 + "ms");
 
@@ -151,10 +151,10 @@ public class BlurModifierParallel extends PixelModifier {
 		CL.clSetKernelArg(blurKernel, 5, Sizeof.cl_mem, Pointer.to(memModifiedGreen));
 		CL.clSetKernelArg(blurKernel, 6, Sizeof.cl_mem, Pointer.to(memStencil));
 		CL.clSetKernelArg(blurKernel, 7, Sizeof.cl_mem, Pointer.to(memDimensions));
-		startTime = System.nanoTime();
+		// startTime = System.nanoTime();
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), blurKernel, 1, null, globalWorkSize, localWorkSize, 0, null,
 				null);
-		long afterTwo = System.nanoTime() - startTime;
+		// long afterTwo = System.nanoTime() - startTime;
 
 		// JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() -
 		// startTime) / 1000000 + "ms");
@@ -174,12 +174,13 @@ public class BlurModifierParallel extends PixelModifier {
 		CL.clSetKernelArg(recombineKernel, 2, Sizeof.cl_mem, Pointer.to(memModifiedBlue));
 		CL.clSetKernelArg(recombineKernel, 3, Sizeof.cl_mem, Pointer.to(memModifiedGreen));
 		CL.clSetKernelArg(recombineKernel, 4, Sizeof.cl_mem, Pointer.to(memResult));
-		startTime = System.nanoTime();
+		// startTime = System.nanoTime();
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), recombineKernel, 1, null, globalWorkSize, localWorkSize, 0,
 				null, null);
-		long afterThree = System.nanoTime() - startTime;
+		// long afterThree = System.nanoTime() - startTime;
 
-		JOptionPane.showMessageDialog(null, "Total Time: " + (afterOne + afterTwo + afterThree) / 1000000 + "ms");
+		// JOptionPane.showMessageDialog(null, "Total Time: " + (afterOne + afterTwo +
+		// afterThree) / 1000000 + "ms");
 
 		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0, sourceData.length * Sizeof.cl_float,
 				ptrResult, 0, null, null);

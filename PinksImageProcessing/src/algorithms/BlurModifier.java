@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.awt.image.Raster;
 
-import javax.swing.JOptionPane;
+//import javax.swing.JOptionPane;
 
 /**
  * Blur algorithm in sequential.
@@ -37,7 +37,7 @@ public class BlurModifier extends PixelModifier {
 		int[] modifiedRedArray = new int[redArray.length];
 		int[] modifiedGreenArray = new int[greenArray.length];
 		int[] modifiedBlueArray = new int[blueArray.length];
-		long startTime = System.nanoTime();
+		//long startTime = System.nanoTime();
 
 		for (int row = 0; row < height; row++) {
 			for (int col = 0; col < width; col++) {
@@ -195,8 +195,8 @@ public class BlurModifier extends PixelModifier {
 
 			resultData[i] = newPixel;
 		}
-		JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() -
-				 startTime) / 1000000 + "ms");
+		//JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() -
+		//		 startTime) / 1000000 + "ms");
 		DataBufferInt resultDataBuffer = new DataBufferInt(resultData, resultData.length);
 		Raster resultRastor = Raster.createRaster(image.getRaster().getSampleModel(), resultDataBuffer,
 				new Point(0, 0));

@@ -18,7 +18,7 @@ import java.io.FileNotFoundException;
 //import java.io.FileNotFoundException;
 //import java.io.FileReader;
 import java.io.IOException;
-import java.net.URL;
+//import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -341,9 +341,10 @@ public class PipGui extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			webPage.setSize(new Dimension(500, 500));
-			webPage.setVisible(true);
-			webPage.toFront();
+			//webPage.setSize(new Dimension(500, 500));
+			//webPage.setVisible(true);
+			//webPage.toFront();
+			JOptionPane.showMessageDialog(null, "Down for Maintenance!");
 		}
 
 	}
