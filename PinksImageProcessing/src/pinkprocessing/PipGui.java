@@ -1,7 +1,7 @@
 package pinkprocessing;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
+//import java.awt.Color;
 //import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -19,7 +19,7 @@ import java.io.FileNotFoundException;
 //import java.io.FileNotFoundException;
 //import java.io.FileReader;
 import java.io.IOException;
-//import java.net.URL;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -105,8 +105,8 @@ public class PipGui extends JFrame {
 
 		JEditorPane webPane = new JEditorPane();
 		webPane.setEditable(false);
-		//URL webSite = new URL("https://raw.githubusercontent.com/kings-cs/CS380-F17-LampronChet/master/README.md?token=AQf_jwOahs_IziFHcFfMNlv7CJiAh1-2ks5Zx_piwA%3D%3D");
-		//webPane.setPage(webSite);
+		URL webSite = new URL("https://raw.githubusercontent.com/kings-cs/CS380-F17-LampronChet/master/README.md?token=AQf_j4IAz45KV6IPBOtIZSkNLgqyLfknks5Z3R_KwA%3D%3D");
+		webPane.setPage(webSite);
 
 		aboutPane = new JScrollPane(webPane);
 		webPage = new JFrame("About");
@@ -344,10 +344,10 @@ public class PipGui extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			//webPage.setSize(new Dimension(500, 500));
-			//webPage.setVisible(true);
-			//webPage.toFront();
-			JOptionPane.showMessageDialog(null, "Down for Maintenance!");
+			webPage.setSize(new Dimension(500, 500));
+			webPage.setVisible(true);
+			webPage.toFront();
+			//JOptionPane.showMessageDialog(null, "Down for Maintenance!");
 		}
 
 	}
