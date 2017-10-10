@@ -1,3 +1,4 @@
+
 package pinkprocessing;
 
 import java.awt.BorderLayout;
@@ -45,8 +46,12 @@ import algorithms.BlurModifier;
 import algorithms.BlurModifierParallel;
 import algorithms.GrayscaleModifier;
 import algorithms.GrayscaleModifierParallel;
+import algorithms.HorizontalFlip;
+import algorithms.RotateLeft;
+import algorithms.RotateRight;
 import algorithms.SepiaModifier;
 import algorithms.SepiaModifierParallel;
+import algorithms.VerticalFlip;
 import parallel.JoclInitializer;
 
 /**
@@ -136,6 +141,23 @@ public class PipGui extends JFrame {
 		//file.setBackground(Color.DARK_GRAY);
 		//file.setForeground(new Color(171, 14, 165));
 		JMenu options = new JMenu("Options");
+		JMenu transform = new JMenu("Transform");
+		
+		JMenuItem horizontalFlip = new JMenuItem("Horizontal flip");
+		transform.add(horizontalFlip);
+		horizontalFlip.addActionListener(new HorizontalFlipListener());
+		
+		JMenuItem verticalFlip = new JMenuItem("Vertical flip");
+		transform.add(verticalFlip);
+		verticalFlip.addActionListener(new VerticalFlipListener());
+		
+		JMenuItem rotateLeft = new JMenuItem("Rotate left");
+		transform.add(rotateLeft);
+		rotateLeft.addActionListener(new RotateLeftListener());
+		
+		JMenuItem rotateRight = new JMenuItem("Rotate right");
+		transform.add(rotateRight);
+		rotateRight.addActionListener(new RotateRightListener());
 
 		JMenuItem grayscale = new JMenuItem("Grayscale");
 		grayscale.addActionListener(new GrayscaleImage());
@@ -168,6 +190,7 @@ public class PipGui extends JFrame {
 		about.addActionListener(new AboutFile());
 		menuBar.add(file);
 		menuBar.add(options);
+		menuBar.add(transform);
 		menuBar.add(about);
 		open = new JMenuItem("Open");
 		open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
@@ -500,6 +523,130 @@ public class PipGui extends JFrame {
 			} else {
 				if (image != null) {
 					BlurModifierParallel pixelModifier = new BlurModifierParallel(deviceManager);
+
+					try {
+						image = pixelModifier.modifyPixel(image);
+					} catch (FileNotFoundException e) {
+						JOptionPane.showMessageDialog(null, "The kernel could not be found");
+					}
+					centerPanel.repaint();
+					isSaved = false;
+				} else {
+					JOptionPane.showMessageDialog(null, "Please load an image first");
+				}
+			}
+		}
+
+	}
+	
+	/**
+	 * Runs the parallel horizontal flip algorithm.
+	 * 
+	 * @author Chet Lampron
+	 *
+	 */
+	private class HorizontalFlipListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent a) {
+			if (deviceGroup.getSelection() == null) {
+				JOptionPane.showMessageDialog(null, "Please select a device from the device menu.");
+			} else {
+				if (image != null) {
+					HorizontalFlip pixelModifier = new HorizontalFlip(deviceManager);
+
+					try {
+						image = pixelModifier.modifyPixel(image);
+					} catch (FileNotFoundException e) {
+						JOptionPane.showMessageDialog(null, "The kernel could not be found");
+					}
+					centerPanel.repaint();
+					isSaved = false;
+				} else {
+					JOptionPane.showMessageDialog(null, "Please load an image first");
+				}
+			}
+		}
+
+	}
+	
+	/**
+	 * Runs the parallel vertical flip algorithm.
+	 * 
+	 * @author Chet Lampron
+	 *
+	 */
+	private class VerticalFlipListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent a) {
+			if (deviceGroup.getSelection() == null) {
+				JOptionPane.showMessageDialog(null, "Please select a device from the device menu.");
+			} else {
+				if (image != null) {
+					VerticalFlip pixelModifier = new VerticalFlip(deviceManager);
+
+					try {
+						image = pixelModifier.modifyPixel(image);
+					} catch (FileNotFoundException e) {
+						JOptionPane.showMessageDialog(null, "The kernel could not be found");
+					}
+					centerPanel.repaint();
+					isSaved = false;
+				} else {
+					JOptionPane.showMessageDialog(null, "Please load an image first");
+				}
+			}
+		}
+
+	}
+	
+	/**
+	 * Runs the parallel rotate left algorithm.
+	 * 
+	 * @author Chet Lampron
+	 *
+	 */
+	private class RotateLeftListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent a) {
+			if (deviceGroup.getSelection() == null) {
+				JOptionPane.showMessageDialog(null, "Please select a device from the device menu.");
+			} else {
+				if (image != null) {
+					RotateLeft pixelModifier = new RotateLeft(deviceManager);
+
+					try {
+						image = pixelModifier.modifyPixel(image);
+					} catch (FileNotFoundException e) {
+						JOptionPane.showMessageDialog(null, "The kernel could not be found");
+					}
+					centerPanel.repaint();
+					isSaved = false;
+				} else {
+					JOptionPane.showMessageDialog(null, "Please load an image first");
+				}
+			}
+		}
+
+	}
+	
+	/**
+	 * Runs the parallel rotate right algorithm.
+	 * 
+	 * @author Chet Lampron
+	 *
+	 */
+	private class RotateRightListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent a) {
+			if (deviceGroup.getSelection() == null) {
+				JOptionPane.showMessageDialog(null, "Please select a device from the device menu.");
+			} else {
+				if (image != null) {
+					RotateRight pixelModifier = new RotateRight(deviceManager);
 
 					try {
 						image = pixelModifier.modifyPixel(image);

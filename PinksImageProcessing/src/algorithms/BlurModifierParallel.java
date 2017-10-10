@@ -199,6 +199,7 @@ public class BlurModifierParallel extends PixelModifier {
 		CL.clReleaseMemObject(memModifiedBlue);
 		CL.clReleaseMemObject(memModifiedGreen);
 		CL.clReleaseMemObject(memDimensions);
+		CL.clReleaseMemObject(memStencil);
 
 		DataBufferInt resultDataBuffer = new DataBufferInt(resultData, resultData.length);
 		Raster resultRastor = Raster.createRaster(image.getRaster().getSampleModel(), resultDataBuffer,

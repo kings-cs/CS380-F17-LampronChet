@@ -1,0 +1,17 @@
+__kernel void verticalFlip(__global const int *sourceData, __global int *resultData, __global const int *dimensions){
+int index = get_global_id(0);
+				int width = dimensions[0];
+				int height = dimensions[1];
+				
+				int row = index / width;
+				
+				int col = index % width;
+				
+				int newRow = height - row - 1;
+				
+				int newCol = col;
+				
+				int newIndex = newRow * width + newCol;
+				
+				resultData[newIndex] = sourceData[index];
+}
