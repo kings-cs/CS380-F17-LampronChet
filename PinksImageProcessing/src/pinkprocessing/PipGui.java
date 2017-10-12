@@ -367,10 +367,10 @@ public class PipGui extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			webPage.setSize(new Dimension(500, 500));
-			webPage.setVisible(true);
-			webPage.toFront();
-			//JOptionPane.showMessageDialog(null, "Down for Maintenance!");
+			//webPage.setSize(new Dimension(500, 500));
+			//webPage.setVisible(true);
+			//webPage.toFront();
+			JOptionPane.showMessageDialog(null, "Down for Maintenance!");
 		}
 
 	}
