@@ -7,9 +7,9 @@ int index = get_global_id(0);
 				
 				int col = index % width;
 				
-				int newRow = height - row - 1;
+				int newRow = col;
 				
-				int newCol = row;
+				int newCol = height - row - 1;
 				
 				int newIndex = newRow * height + newCol;
 				

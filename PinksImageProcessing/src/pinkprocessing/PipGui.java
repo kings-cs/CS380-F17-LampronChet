@@ -110,8 +110,8 @@ public class PipGui extends JFrame {
 
 		JEditorPane webPane = new JEditorPane();
 		webPane.setEditable(false);
-		URL webSite = new URL("https://raw.githubusercontent.com/kings-cs/CS380-F17-LampronChet/master/README.md?token=AQf_j4IAz45KV6IPBOtIZSkNLgqyLfknks5Z3R_KwA%3D%3D");
-		webPane.setPage(webSite);
+		//URL webSite = new URL("https://raw.githubusercontent.com/kings-cs/CS380-F17-LampronChet/master/README.md?token=AQf_j4IAz45KV6IPBOtIZSkNLgqyLfknks5Z3R_KwA%3D%3D");
+		//webPane.setPage(webSite);
 
 		aboutPane = new JScrollPane(webPane);
 		webPage = new JFrame("About");
