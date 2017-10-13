@@ -101,8 +101,9 @@ public class RotateLeft extends PixelModifier {
 		DataBufferInt resultDataBuffer = new DataBufferInt(resultData, resultData.length);
 		Raster resultRastor = Raster.createRaster(image.getRaster().getSampleModel(), resultDataBuffer,
 				new Point(0, 0));
-		image.setData(resultRastor);
+		BufferedImage returnImage = new BufferedImage(height, width, BufferedImage.TYPE_INT_ARGB);
+		returnImage.setData(resultRastor);
 		kernelScan.close();
-		return image;
+		return returnImage;
 	}
 }
