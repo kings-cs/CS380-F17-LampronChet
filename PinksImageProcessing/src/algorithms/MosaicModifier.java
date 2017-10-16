@@ -3,9 +3,14 @@
  */
 package algorithms;
 
+import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
+import java.awt.image.Raster;
 import java.io.FileNotFoundException;
 import java.util.Random;
+
+import javax.swing.JOptionPane;
 
 import pinkprocessing.TileDimensions;
 
@@ -32,21 +37,28 @@ public class MosaicModifier extends PixelModifier {
 	/**
 	 * Generates the random pixels to be tile points in the mosaic.
 	 * 
+	 * @param numOfPoints
+	 *            The number of points to generate.
+	 * 
+	 * @param data
+	 *            The image data.
 	 * @return The tile points.
 	 */
-	public TileDimensions[] getTilePoints(int width, int height, int[] data) {
-		int[] randomValues = new int[data.length];
+	public int[] getTilePoints(int numOfPoints, int[] data) {
+		int[] randomValues = new int[numOfPoints];
 		Random rand = new Random();
-		
-		for(int i = 0; i < tiles; i++) {
-			
+
+		for (int i = 0; i < randomValues.length; i++) {
+			randomValues[i] = data[rand.nextInt(data.length - 1)];
 		}
-		
-		return null;
+
+		return randomValues;
 	}
 
 	@Override
 	public BufferedImage modifyPixel(BufferedImage image) throws FileNotFoundException {
+		long startTime = System.nanoTime();
+
 		int width = image.getWidth();
 		int height = image.getHeight();
 		int[] dimensions = new int[2];
@@ -55,7 +67,45 @@ public class MosaicModifier extends PixelModifier {
 		int[] sourceData = super.unwrapImage(image);
 
 		int[] resultData = new int[sourceData.length];
-		
-		return null;
+
+		int[] tilePoints = getTilePoints(tiles, sourceData);
+
+		for (int row = 0; row < height; row++) {
+			for (int col = 0; col < width; col++) {
+				int index = row * width + col;
+				float finalTile = 0;
+				float finalDistance = Float.MAX_VALUE;
+				for (int i = 0; i < tilePoints.length; i++) {
+					float firstIndex = index;
+					float centerIndex = i;
+					float distance = (float) Math.hypot(firstIndex, centerIndex);
+					if (distance < finalDistance) {
+						finalTile = centerIndex;
+						finalDistance = distance;
+					}
+				}
+				int centerPixel = Float.floatToIntBits(finalTile);
+				int centerAlpha = (centerPixel & PixelModifier.ALPHA_MASK) >> PixelModifier.ALPHA_OFFSET;
+				int centerRed = (centerPixel & PixelModifier.RED_MASK) >> PixelModifier.RED_OFFSET;
+				int centerGreen = (centerPixel & PixelModifier.GREEN_MASK) >> PixelModifier.GREEN_OFFSET;
+				int centerBlue = (centerPixel & PixelModifier.BLUE_MASK) >> PixelModifier.BLUE_OFFSET;
+
+				int alpha = centerAlpha;
+				int red = centerRed;
+				int green = centerGreen;
+				int blue = centerBlue;
+
+				int newPixel = (alpha << ALPHA_OFFSET) | (red << RED_OFFSET) | (green << BLUE_OFFSET)
+						| (blue << GREEN_OFFSET);
+				
+				resultData[index] = newPixel;
+			}
+		}
+		DataBufferInt resultDataBuffer = new DataBufferInt(resultData, resultData.length);
+		Raster resultRastor = Raster.createRaster(image.getRaster().getSampleModel(), resultDataBuffer,
+				new Point(0, 0));
+		image.setData(resultRastor);
+		JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() - startTime) / 1000000 + "ms");
+		return image;
 	}
 }

@@ -47,6 +47,7 @@ import algorithms.BlurModifierParallel;
 import algorithms.GrayscaleModifier;
 import algorithms.GrayscaleModifierParallel;
 import algorithms.HorizontalFlip;
+import algorithms.MosaicModifier;
 import algorithms.RotateLeft;
 import algorithms.RotateRight;
 import algorithms.SepiaModifier;
@@ -110,8 +111,9 @@ public class PipGui extends JFrame {
 
 		JEditorPane webPane = new JEditorPane();
 		webPane.setEditable(false);
-		//URL webSite = new URL("https://raw.githubusercontent.com/kings-cs/CS380-F17-LampronChet/master/README.md?token=AQf_j4IAz45KV6IPBOtIZSkNLgqyLfknks5Z3R_KwA%3D%3D");
-		//webPane.setPage(webSite);
+		// URL webSite = new
+		// URL("https://raw.githubusercontent.com/kings-cs/CS380-F17-LampronChet/master/README.md?token=AQf_j4IAz45KV6IPBOtIZSkNLgqyLfknks5Z3R_KwA%3D%3D");
+		// webPane.setPage(webSite);
 
 		aboutPane = new JScrollPane(webPane);
 		webPage = new JFrame("About");
@@ -138,23 +140,23 @@ public class PipGui extends JFrame {
 		JMenuBar menuBar = new JMenuBar();
 		this.setJMenuBar(menuBar);
 		JMenu file = new JMenu("File");
-		//file.setBackground(Color.DARK_GRAY);
-		//file.setForeground(new Color(171, 14, 165));
+		// file.setBackground(Color.DARK_GRAY);
+		// file.setForeground(new Color(171, 14, 165));
 		JMenu options = new JMenu("Options");
 		JMenu transform = new JMenu("Transform");
-		
+
 		JMenuItem horizontalFlip = new JMenuItem("Horizontal flip");
 		transform.add(horizontalFlip);
 		horizontalFlip.addActionListener(new HorizontalFlipListener());
-		
+
 		JMenuItem verticalFlip = new JMenuItem("Vertical flip");
 		transform.add(verticalFlip);
 		verticalFlip.addActionListener(new VerticalFlipListener());
-		
+
 		JMenuItem rotateLeft = new JMenuItem("Rotate left");
 		transform.add(rotateLeft);
 		rotateLeft.addActionListener(new RotateLeftListener());
-		
+
 		JMenuItem rotateRight = new JMenuItem("Rotate right");
 		transform.add(rotateRight);
 		rotateRight.addActionListener(new RotateRightListener());
@@ -174,15 +176,18 @@ public class PipGui extends JFrame {
 		JMenuItem parallelSepia = new JMenuItem("Sepia(Parallel)");
 		parallelSepia.addActionListener(new SepiaParallel());
 		options.add(parallelSepia);
-		
+
 		JMenuItem blur = new JMenuItem("Blur");
 		blur.addActionListener(new BlurImage());
 		options.add(blur);
-		
+
 		JMenuItem parallelBlur = new JMenuItem("Blur(Parallel)");
 		parallelBlur.addActionListener(new BlurParallel());
 		options.add(parallelBlur);
-		
+
+		JMenuItem mosaic = new JMenuItem("Mosaic tiles");
+		mosaic.addActionListener(new MosaicImage());
+		options.add(mosaic);
 
 		JMenuItem about = new JMenuItem("About");
 		about.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
@@ -194,7 +199,7 @@ public class PipGui extends JFrame {
 		menuBar.add(about);
 		open = new JMenuItem("Open");
 		open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
-		
+
 		open.addActionListener(new OpenFile());
 		file.add(open);
 
@@ -217,7 +222,7 @@ public class PipGui extends JFrame {
 					if (ans == JOptionPane.YES_OPTION) {
 						save.doClick();
 						System.exit(0);
-					} else {
+					} else if (ans == JOptionPane.NO_OPTION) {
 						dispose();
 						System.exit(0);
 					}
@@ -344,10 +349,12 @@ public class PipGui extends JFrame {
 					save.doClick();
 					dispose();
 					System.exit(0);
-				} else {
+				} else if (ans == JOptionPane.NO_OPTION) {
 					dispose();
 					System.exit(0);
-				}
+				}//else {
+				//	getGui().setVisible(true);
+				//}
 
 			} else {
 				dispose();
@@ -367,9 +374,9 @@ public class PipGui extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			//webPage.setSize(new Dimension(500, 500));
-			//webPage.setVisible(true);
-			//webPage.toFront();
+			// webPage.setSize(new Dimension(500, 500));
+			// webPage.setVisible(true);
+			// webPage.toFront();
 			JOptionPane.showMessageDialog(null, "Down for Maintenance!");
 		}
 
@@ -508,6 +515,7 @@ public class PipGui extends JFrame {
 		}
 
 	}
+
 	/**
 	 * Runs the blur in parallel.
 	 * 
@@ -538,7 +546,7 @@ public class PipGui extends JFrame {
 		}
 
 	}
-	
+
 	/**
 	 * Runs the parallel horizontal flip algorithm.
 	 * 
@@ -569,7 +577,7 @@ public class PipGui extends JFrame {
 		}
 
 	}
-	
+
 	/**
 	 * Runs the parallel vertical flip algorithm.
 	 * 
@@ -600,7 +608,7 @@ public class PipGui extends JFrame {
 		}
 
 	}
-	
+
 	/**
 	 * Runs the parallel rotate left algorithm.
 	 * 
@@ -631,7 +639,7 @@ public class PipGui extends JFrame {
 		}
 
 	}
-	
+
 	/**
 	 * Runs the parallel rotate right algorithm.
 	 * 
@@ -710,7 +718,7 @@ public class PipGui extends JFrame {
 		}
 
 	}
-	
+
 	/**
 	 * Runs the Blur algorithm when prompted.
 	 * 
@@ -725,6 +733,36 @@ public class PipGui extends JFrame {
 				BlurModifier pixelModifier = new BlurModifier();
 
 				image = pixelModifier.modifyPixel(image);
+				centerPanel.repaint();
+				isSaved = false;
+			} else {
+				JOptionPane.showMessageDialog(null, "Please load an image first");
+			}
+
+		}
+
+	}
+
+	/**
+	 * Runs the Blur algorithm when prompted.
+	 * 
+	 * @author Chet lampron
+	 *
+	 */
+	private class MosaicImage implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			if (image != null) {
+				int tiles = Integer
+						.parseInt(JOptionPane.showInputDialog("How many tiles would you like in this mosaic: "));
+				MosaicModifier pixelModifier = new MosaicModifier(tiles);
+
+				try {
+					image = pixelModifier.modifyPixel(image);
+				} catch (FileNotFoundException e) {
+					JOptionPane.showMessageDialog(null, "The image could not be processed");
+				}
 				centerPanel.repaint();
 				isSaved = false;
 			} else {
@@ -836,7 +874,6 @@ public class PipGui extends JFrame {
 			return super.getName();
 		}
 	}
-	
 
 	/**
 	 * Gets the device map.
