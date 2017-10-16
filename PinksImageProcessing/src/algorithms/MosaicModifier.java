@@ -87,13 +87,9 @@ public class MosaicModifier extends PixelModifier {
 				int centerGreen = (centerPixel & PixelModifier.GREEN_MASK) >> PixelModifier.GREEN_OFFSET;
 				int centerBlue = (centerPixel & PixelModifier.BLUE_MASK) >> PixelModifier.BLUE_OFFSET;
 
-				int alpha = centerAlpha;
-				int red = centerRed;
-				int green = centerGreen;
-				int blue = centerBlue;
 
-				int newPixel = (alpha << ALPHA_OFFSET) | (red << RED_OFFSET) | (green << BLUE_OFFSET)
-						| (blue << GREEN_OFFSET);
+				int newPixel = (centerAlpha << ALPHA_OFFSET) | (centerRed << RED_OFFSET) | (centerGreen << BLUE_OFFSET)
+						| (centerBlue << GREEN_OFFSET);
 				
 				resultData[index] = newPixel;
 			}
