@@ -12,7 +12,6 @@ import java.util.Random;
 
 import javax.swing.JOptionPane;
 
-import pinkprocessing.TileDimensions;
 
 /**
  * Class to make picture mosaic in sequential.
