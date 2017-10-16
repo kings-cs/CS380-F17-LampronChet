@@ -48,21 +48,19 @@ public class MosaicModifier extends PixelModifier {
 		Random rand = new Random();
 
 		for (int i = 0; i < randomValues.length; i++) {
-			randomValues[i] = data[rand.nextInt(data.length - 1)];
+			randomValues[i] = rand.nextInt(data.length - 1);
 		}
 
 		return randomValues;
 	}
 
+	
 	@Override
 	public BufferedImage modifyPixel(BufferedImage image) throws FileNotFoundException {
 		long startTime = System.nanoTime();
 
 		int width = image.getWidth();
 		int height = image.getHeight();
-		int[] dimensions = new int[2];
-		dimensions[0] = width;
-		dimensions[1] = height;
 		int[] sourceData = super.unwrapImage(image);
 
 		int[] resultData = new int[sourceData.length];
@@ -75,15 +73,15 @@ public class MosaicModifier extends PixelModifier {
 				float finalTile = 0;
 				float finalDistance = Float.MAX_VALUE;
 				for (int i = 0; i < tilePoints.length; i++) {
-					float firstIndex = index;
 					float centerIndex = i;
-					float distance = (float) Math.hypot(firstIndex, centerIndex);
+					float distance = (float) Math.hypot(index, centerIndex);
 					if (distance < finalDistance) {
 						finalTile = centerIndex;
 						finalDistance = distance;
 					}
 				}
-				int centerPixel = Float.floatToIntBits(finalTile);
+				int centerTile = Float.floatToIntBits(finalTile);
+				int centerPixel = sourceData[centerTile];
 				int centerAlpha = (centerPixel & PixelModifier.ALPHA_MASK) >> PixelModifier.ALPHA_OFFSET;
 				int centerRed = (centerPixel & PixelModifier.RED_MASK) >> PixelModifier.RED_OFFSET;
 				int centerGreen = (centerPixel & PixelModifier.GREEN_MASK) >> PixelModifier.GREEN_OFFSET;
