@@ -23,7 +23,9 @@ import org.jocl.cl_program;
 import parallel.JoclInitializer;
 
 /**
- * @author chetlampron
+ * Class that vertically flips the image.
+ * 
+ * @author Chet Lampron
  *
  */
 public class VerticalFlip extends PixelModifier {
@@ -76,13 +78,13 @@ public class VerticalFlip extends PixelModifier {
 
 		long[] globalWorkSize = new long[] { resultData.length };
 		long[] localWorkSize = new long[] { 1 };
-		
+
 		cl_kernel horizontalKernel = CL.clCreateKernel(program, "verticalFlip", null);
 
 		CL.clSetKernelArg(horizontalKernel, 0, Sizeof.cl_mem, Pointer.to(memSource));
 		CL.clSetKernelArg(horizontalKernel, 1, Sizeof.cl_mem, Pointer.to(memResult));
 		CL.clSetKernelArg(horizontalKernel, 2, Sizeof.cl_mem, Pointer.to(memDimensions));
-		
+
 		deviceManager.createQueue();
 		long startTime = System.nanoTime();
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), horizontalKernel, 1, null, globalWorkSize, localWorkSize, 0,
@@ -92,7 +94,7 @@ public class VerticalFlip extends PixelModifier {
 
 		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0, resultData.length * Sizeof.cl_float,
 				ptrResult, 0, null, null);
-		
+
 		CL.clReleaseKernel(horizontalKernel);
 		CL.clReleaseProgram(program);
 		CL.clReleaseMemObject(memSource);

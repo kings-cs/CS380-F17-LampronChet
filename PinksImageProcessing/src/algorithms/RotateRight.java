@@ -19,6 +19,12 @@ import org.jocl.cl_program;
 
 import parallel.JoclInitializer;
 
+/**
+ * Class containing the method that rotates the image to the right.
+ * 
+ * @author Chet Lampron
+ *
+ */
 public class RotateRight extends PixelModifier {
 	/** The device manager. */
 	private JoclInitializer deviceManager;
@@ -97,7 +103,7 @@ public class RotateRight extends PixelModifier {
 				new Point(0, 0));
 		BufferedImage returnImage = new BufferedImage(height, width, BufferedImage.TYPE_INT_ARGB);
 		returnImage.setData(resultRastor);
-		
+
 		kernelScan.close();
 		return returnImage;
 	}
