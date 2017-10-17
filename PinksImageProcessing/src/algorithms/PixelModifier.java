@@ -1,14 +1,16 @@
 package algorithms;
 
-
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferInt;
 import java.awt.image.WritableRaster;
 import java.io.FileNotFoundException;
 
+import parallel.JoclInitializer;
+
 /**
  * Generic pixel modifier class.
+ * 
  * @author Chet Lampron
  *
  */
@@ -32,9 +34,12 @@ public class PixelModifier {
 	protected static final int BLUE_MASK = 0x000000ff;
 	/** The blue offset. */
 	protected static final int BLUE_OFFSET = 0;
+
 	/**
 	 * Unwraps the image from abstractions.
-	 * @param image The image to work on.
+	 * 
+	 * @param image
+	 *            The image to work on.
 	 * @return The source data of the image.
 	 */
 	public int[] unwrapImage(BufferedImage image) {
@@ -51,39 +56,60 @@ public class PixelModifier {
 	 * @param image
 	 *            The original image.
 	 * @return The modified image.
-	 * @throws FileNotFoundException not thrown.
+	 * @throws FileNotFoundException
+	 *             not thrown.
 	 */
 	public BufferedImage modifyPixel(BufferedImage image) throws FileNotFoundException {
 		/*
-		int width = image.getWidth();
-		int height = image.getHeight();
-		int[] sourceData = unwrapImage(image);
-		int[] resultData = new int[sourceData.length];
-		
-		for (int row = 0; row < height; row++) {
-			for (int col = 0; col < width; col++) {
-				int index = row * width + col;
-				int pixel = sourceData[index];
+		 * int width = image.getWidth(); int height = image.getHeight(); int[]
+		 * sourceData = unwrapImage(image); int[] resultData = new
+		 * int[sourceData.length];
+		 * 
+		 * for (int row = 0; row < height; row++) { for (int col = 0; col < width;
+		 * col++) { int index = row * width + col; int pixel = sourceData[index];
+		 * 
+		 * int red = (pixel & RED_MASK) >> RED_OFFSET; int green = (pixel & GREEN_MASK)
+		 * >> GREEN_OFFSET; int blue = (pixel & BLUE_MASK) >> BLUE_OFFSET;
+		 * 
+		 * //modify pixel based on algorithm. int resultColor = pixel;
+		 * 
+		 * resultData[index] = resultColor;
+		 * 
+		 * } }
+		 * 
+		 * DataBufferInt resultDataBuffer = new DataBufferInt(resultData,
+		 * resultData.length); Raster resultRastor =
+		 * Raster.createRaster(image.getRaster().getSampleModel(), resultDataBuffer, new
+		 * Point(0, 0));
+		 * 
+		 * image.setData(resultRastor);
+		 */
+		// TODO by sublass
 
-				int red = (pixel & RED_MASK) >> RED_OFFSET;
-				int green = (pixel & GREEN_MASK) >> GREEN_OFFSET;
-				int blue = (pixel & BLUE_MASK) >> BLUE_OFFSET;
-				
-				//modify pixel based on algorithm.
-				int resultColor = pixel;
-				
-				resultData[index] = resultColor;
-					
+		return image;
+	}
+
+	/**
+	 * Gets the proper work size.
+	 * 
+	 * @param data
+	 *            The data array.
+	 * @param deviceManager
+	 *            The proper device manager.
+	 * @return The proper work size;
+	 */
+	public int getWorkSize(JoclInitializer deviceManager, int[] data) {
+		int maxItemsPerGroup = deviceManager.getMaxWorkGroupSize();
+		boolean isDivisible = false;
+
+		while (!isDivisible) {
+			int numOfItems = data.length & maxItemsPerGroup;
+			if (numOfItems == 0) {
+				isDivisible = true;
+			} else {
+				maxItemsPerGroup--;
 			}
 		}
-		
-		DataBufferInt resultDataBuffer = new DataBufferInt(resultData, resultData.length);
-		Raster resultRastor = Raster.createRaster(image.getRaster().getSampleModel(), resultDataBuffer, new Point(0, 0));
-		
-		image.setData(resultRastor);
-		*/
-		//TODO by sublass
-		
-		return image;
+		return maxItemsPerGroup;
 	}
 }

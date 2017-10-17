@@ -4,12 +4,15 @@
 package algorithms;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 import org.jocl.CL;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 import org.jocl.cl_mem;
+import org.jocl.cl_program;
 
 import parallel.JoclInitializer;
 
@@ -60,6 +63,23 @@ public class MosaicModifierParallel extends MosaicModifier {
 		cl_mem memDimensions = CL.clCreateBuffer(deviceManager.getContext(),
 				CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * dimensions.length, ptrDimensions,
 				null);
+		
+		File kernelFile = new File("Kernels/MosaicKernel");
+		Scanner kernelScan = new Scanner(kernelFile);
+		StringBuffer sourceBuffer = new StringBuffer();
+		while (kernelScan.hasNextLine()) {
+			sourceBuffer.append(kernelScan.nextLine());
+			sourceBuffer.append("\n");
+		}
+		cl_program program = CL.clCreateProgramWithSource(deviceManager.getContext(), 1,
+				new String[] { sourceBuffer.toString() }, null, null);
+
+		CL.clBuildProgram(program, 0, null, null, null, null);
+
+		long[] globalWorkSize = new long[] { resultData.length };
+		long[] localWorkSize = new long[] { super.getWorkSize(deviceManager, sourceData) };
+		deviceManager.createQueue();
+		
 		return null;
 	}
 }
