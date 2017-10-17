@@ -12,7 +12,6 @@ import java.util.Random;
 
 import javax.swing.JOptionPane;
 
-
 /**
  * Class to make picture mosaic in sequential.
  * 
@@ -54,7 +53,6 @@ public class MosaicModifier extends PixelModifier {
 		return randomValues;
 	}
 
-	
 	@Override
 	public BufferedImage modifyPixel(BufferedImage image) throws FileNotFoundException {
 		long startTime = System.nanoTime();
@@ -70,27 +68,26 @@ public class MosaicModifier extends PixelModifier {
 		for (int row = 0; row < height; row++) {
 			for (int col = 0; col < width; col++) {
 				int index = row * width + col;
-				float finalTile = 0;
-				float finalDistance = Float.MAX_VALUE;
+				int finalTile = 0;
+				int finalDistance = Integer.MAX_VALUE;
 				for (int i = 0; i < tilePoints.length; i++) {
-					float centerIndex = i;
-					float distance = (float) Math.hypot(index, centerIndex);
+					int centerIndex = tilePoints[i];
+					int distance = (int) Math.hypot(index, centerIndex);
 					if (distance < finalDistance) {
 						finalTile = centerIndex;
 						finalDistance = distance;
 					}
 				}
-				int centerTile = Float.floatToIntBits(finalTile);
+				int centerTile = finalTile;
 				int centerPixel = sourceData[centerTile];
 				int centerAlpha = (centerPixel & PixelModifier.ALPHA_MASK) >> PixelModifier.ALPHA_OFFSET;
 				int centerRed = (centerPixel & PixelModifier.RED_MASK) >> PixelModifier.RED_OFFSET;
 				int centerGreen = (centerPixel & PixelModifier.GREEN_MASK) >> PixelModifier.GREEN_OFFSET;
 				int centerBlue = (centerPixel & PixelModifier.BLUE_MASK) >> PixelModifier.BLUE_OFFSET;
 
-
 				int newPixel = (centerAlpha << ALPHA_OFFSET) | (centerRed << RED_OFFSET) | (centerGreen << BLUE_OFFSET)
 						| (centerBlue << GREEN_OFFSET);
-				
+
 				resultData[index] = newPixel;
 			}
 		}
