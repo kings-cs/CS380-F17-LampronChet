@@ -1,9 +1,6 @@
 package algorithms;
 
-import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
-import java.awt.image.Raster;
 
 //import javax.swing.JOptionPane;
 
@@ -15,16 +12,13 @@ import java.awt.image.Raster;
  */
 public class BlurModifier extends PixelModifier {
 	/** The field for the stencil. */
-	private final double[] stencil = { 0.0232468, 0.0338240, 0.0383276, 0.0338240, 0.0232468,
-			0.0338240, 0.0492136, 0.0557663, 0.0492136, 0.0338240,
-			0.0383276, 0.0557663, 0.0631915, 0.0557663, 0.0383276, 
-			0.0338240, 0.0492136, 0.0557663, 0.0492136, 0.0338240, 
-			0.0232468, 0.0338240, 0.0383276, 0.0338240, 0.0232468 };
+	private final double[] stencil = { 0.0232468, 0.0338240, 0.0383276, 0.0338240, 0.0232468, 0.0338240, 0.0492136,
+			0.0557663, 0.0492136, 0.0338240, 0.0383276, 0.0557663, 0.0631915, 0.0557663, 0.0383276, 0.0338240,
+			0.0492136, 0.0557663, 0.0492136, 0.0338240, 0.0232468, 0.0338240, 0.0383276, 0.0338240, 0.0232468 };
 
 	@Override
 	public BufferedImage modifyPixel(BufferedImage image) {
-		
-		
+
 		int width = image.getWidth();
 		int height = image.getHeight();
 
@@ -37,7 +31,7 @@ public class BlurModifier extends PixelModifier {
 		int[] modifiedRedArray = new int[redArray.length];
 		int[] modifiedGreenArray = new int[greenArray.length];
 		int[] modifiedBlueArray = new int[blueArray.length];
-		//long startTime = System.nanoTime();
+		// long startTime = System.nanoTime();
 
 		for (int row = 0; row < height; row++) {
 			for (int col = 0; col < width; col++) {
@@ -65,116 +59,27 @@ public class BlurModifier extends PixelModifier {
 				double blueModify = 0;
 				for (int stenRow = row - 2; stenRow <= row + 2; stenRow++) {
 					for (int stenCol = col - 2; stenCol <= col + 2; stenCol++) {
-					/*	
-						if (stenRow >= 0 && stenRow < height && stenCol >= 0 && stenCol < width) {
-							int anIndex = stenRow * width + stenCol;
-							redModify += (int) redArray[anIndex] * stencil[count];
-							greenModify += (int) greenArray[anIndex] * stencil[count];
-							blueModify += (int) blueArray[anIndex] * stencil[count];
-							count++;
-						} else if (stenRow < 0 && stenCol < 0) {
-							int newRow = 0;
-							int newCol = 0;
-							int anIndex = newRow * width + newCol;
-							redModify += (int) redArray[anIndex] * stencil[count];
-							greenModify += (int) greenArray[anIndex] * stencil[count];
-							blueModify += (int) blueArray[anIndex] * stencil[count];
-							count++;
-						} else if (stenRow < 0 && stenCol >= 0) {
-							int newRow = 0;
-							int newCol = stenCol;
-							int anIndex = newRow * width + newCol;
-							redModify += (int) redArray[anIndex] * stencil[count];
-							greenModify += (int) greenArray[anIndex] * stencil[count];
-							blueModify += (int) blueArray[anIndex] * stencil[count];
-							count++;
-						} else if (stenRow >= 0 && stenCol < 0) {
-							int newRow = stenRow;
-							int newCol = 0;
-							int anIndex = newRow * width + newCol;
-							redModify += (int) redArray[anIndex] * stencil[count];
-							greenModify += (int) greenArray[anIndex] * stencil[count];
-							blueModify += (int) blueArray[anIndex] * stencil[count];
-							count++;
-						} else if (stenRow < 0 && stenCol >= width) {
-							int newRow = 0;
-							int newCol = width - 1;
-							int anIndex = newRow * width + newCol;
-							redModify += (int) redArray[anIndex] * stencil[count];
-							greenModify += (int) greenArray[anIndex] * stencil[count];
-							blueModify += (int) blueArray[anIndex] * stencil[count];
-							count++;
-						} else if (stenRow >= 0 && stenCol >= width) {
-							int newRow = stenRow;
-							int newCol = width - 1;
-							int anIndex = newRow * width + newCol;
-							redModify += (int) redArray[anIndex] * stencil[count];
-							greenModify += (int) greenArray[anIndex] * stencil[count];
-							blueModify += (int) blueArray[anIndex] * stencil[count];
-							count++;
-						} else if (stenRow < 0 && stenCol < width) {
-							int newRow = 0;
-							int newCol = stenCol;
-							int anIndex = newRow * width + newCol;
-							redModify += (int) redArray[anIndex] * stencil[count];
-							greenModify += (int) greenArray[anIndex] * stencil[count];
-							blueModify += (int) blueArray[anIndex] * stencil[count];
-							count++;
-						} else if (stenRow >= height && stenCol >= width) {
-							int newRow = height - 1;
-							int newCol = width - 1;
-							int anIndex = newRow * width + newCol;
-							redModify += (int) redArray[anIndex] * stencil[count];
-							greenModify += (int) greenArray[anIndex] * stencil[count];
-							blueModify += (int) blueArray[anIndex] * stencil[count];
-							count++;
-						} else if (stenRow < height && stenCol >= width) {
-							int newRow = stenRow;
-							int newCol = width - 1;
-							int anIndex = newRow * width + newCol;
-							redModify += (int) redArray[anIndex] * stencil[count];
-							greenModify += (int) greenArray[anIndex] * stencil[count];
-							blueModify += (int) blueArray[anIndex] * stencil[count];
-							count++;
-						} else if (stenRow >= height && stenCol < width) {
-							int newRow = height - 1;
-							int newCol = stenCol;
-							int anIndex = newRow * width + newCol;
-							redModify += (int) redArray[anIndex] * stencil[count];
-							greenModify += (int) greenArray[anIndex] * stencil[count];
-							blueModify += (int) blueArray[anIndex] * stencil[count];
-							count++;
-						} else if (stenRow >= height && stenCol < 0) {
-							int newRow = height - 1;
-							int newCol = 0;
-							int anIndex = newRow * width + newCol;
-							redModify += (int) redArray[anIndex] * stencil[count];
-							greenModify += (int) greenArray[anIndex] * stencil[count];
-							blueModify += (int) blueArray[anIndex] * stencil[count];
-							count++;
-						}*/
-						
+
 						int newRow = stenRow;
 						int newCol = stenCol;
-						
-						if(newRow < 0) {
+
+						if (newRow < 0) {
 							newRow = 0;
-						}else if(newRow >= height) {
+						} else if (newRow >= height) {
 							newRow = height - 1;
 						}
-						if(newCol < 0) {
+						if (newCol < 0) {
 							newCol = 0;
-						}else if(newCol >= width) {
+						} else if (newCol >= width) {
 							newCol = width - 1;
 						}
-						
+
 						int anIndex = newRow * width + newCol;
-						
+
 						redModify += redArray[anIndex] * stencil[count];
 						greenModify += greenArray[anIndex] * stencil[count];
 						blueModify += blueArray[anIndex] * stencil[count];
 						count++;
-						//System.out.println("row: " + row + " col: " + col + " count: " + count);
 
 					}
 				}
@@ -195,12 +100,9 @@ public class BlurModifier extends PixelModifier {
 
 			resultData[i] = newPixel;
 		}
-		//JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() -
-		//		 startTime) / 1000000 + "ms");
-		DataBufferInt resultDataBuffer = new DataBufferInt(resultData, resultData.length);
-		Raster resultRastor = Raster.createRaster(image.getRaster().getSampleModel(), resultDataBuffer,
-				new Point(0, 0));
-		image.setData(resultRastor);
+		// JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() -
+		// startTime) / 1000000 + "ms");
+		packageImage(resultData, image);
 		return image;
 	}
 }

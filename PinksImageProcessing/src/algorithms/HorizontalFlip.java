@@ -1,9 +1,6 @@
 package algorithms;
 
-import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
-import java.awt.image.Raster;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -75,13 +72,13 @@ public class HorizontalFlip extends PixelModifier {
 
 		long[] globalWorkSize = new long[] { resultData.length };
 		long[] localWorkSize = new long[] { 1 };
-		
+
 		cl_kernel horizontalKernel = CL.clCreateKernel(program, "horizontalFlip", null);
 
 		CL.clSetKernelArg(horizontalKernel, 0, Sizeof.cl_mem, Pointer.to(memSource));
 		CL.clSetKernelArg(horizontalKernel, 1, Sizeof.cl_mem, Pointer.to(memResult));
 		CL.clSetKernelArg(horizontalKernel, 2, Sizeof.cl_mem, Pointer.to(memDimensions));
-		
+
 		deviceManager.createQueue();
 		long startTime = System.nanoTime();
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), horizontalKernel, 1, null, globalWorkSize, localWorkSize, 0,
@@ -91,17 +88,14 @@ public class HorizontalFlip extends PixelModifier {
 
 		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0, resultData.length * Sizeof.cl_float,
 				ptrResult, 0, null, null);
-		
+
 		CL.clReleaseKernel(horizontalKernel);
 		CL.clReleaseProgram(program);
 		CL.clReleaseMemObject(memSource);
 		CL.clReleaseMemObject(memResult);
 		CL.clReleaseMemObject(memDimensions);
 
-		DataBufferInt resultDataBuffer = new DataBufferInt(resultData, resultData.length);
-		Raster resultRastor = Raster.createRaster(image.getRaster().getSampleModel(), resultDataBuffer,
-				new Point(0, 0));
-		image.setData(resultRastor);
+		packageImage(resultData, image);
 		kernelScan.close();
 		return image;
 	}

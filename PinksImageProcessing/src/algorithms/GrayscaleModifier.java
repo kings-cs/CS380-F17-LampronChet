@@ -1,9 +1,7 @@
 package algorithms;
 
-import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
-import java.awt.image.Raster;
+
 //import javax.swing.JOptionPane;
 
 /**
@@ -16,7 +14,7 @@ public class GrayscaleModifier extends PixelModifier {
 
 	@Override
 	public BufferedImage modifyPixel(BufferedImage image) {
-		//long startTime = System.nanoTime();
+		// long startTime = System.nanoTime();
 		int width = image.getWidth();
 		int height = image.getHeight();
 
@@ -35,13 +33,13 @@ public class GrayscaleModifier extends PixelModifier {
 				int blue = (pixel & PixelModifier.BLUE_MASK) >> PixelModifier.BLUE_OFFSET;
 
 				// Old Gray int gray = Math.min(red, Math.min(green, blue));
-				/* "Incorrect gray"
-				 * int conversionFactor = 255 / (64 - 1); int averageValue = (red + green +
-				 * blue) / 3; int gray = (int) ((averageValue / conversionFactor) + 0.5) *
-				 * conversionFactor;
+				/*
+				 * "Incorrect gray" int conversionFactor = 255 / (64 - 1); int averageValue =
+				 * (red + green + blue) / 3; int gray = (int) ((averageValue / conversionFactor)
+				 * + 0.5) * conversionFactor;
 				 */
 				int gray = (int) (red * 0.299 + green * 0.587 + blue * 0.114);
-				
+
 				int newPixel = (alpha << ALPHA_OFFSET) | (gray << RED_OFFSET) | (gray << BLUE_OFFSET)
 						| (gray << GREEN_OFFSET);
 
@@ -50,11 +48,9 @@ public class GrayscaleModifier extends PixelModifier {
 			}
 		}
 
-		DataBufferInt resultDataBuffer = new DataBufferInt(resultData, resultData.length);
-		Raster resultRastor = Raster.createRaster(image.getRaster().getSampleModel(), resultDataBuffer,
-				new Point(0, 0));
-		image.setData(resultRastor);
-		//JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() - startTime) / 1000000 + "ms");
+		packageImage(resultData, image);
+		// JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() -
+		// startTime) / 1000000 + "ms");
 		return image;
 	}
 

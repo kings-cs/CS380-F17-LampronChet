@@ -11,7 +11,7 @@ __kernel void mosaic(__global const int *sourceData, __global int *resultData, _
 
 					int rowDistance = (centerRow - row);
 					int colDistance = (centerCol - col);
-					double distance = Math.sqrt((rowDistance * rowDistance) + (colDistance * colDistance));
+					double distance = sqrt((rowDistance * rowDistance) + (colDistance * colDistance));
 					if (distance < finalDistance) {
 						finalTile = tilePoints[i];
 						finalDistance = distance;

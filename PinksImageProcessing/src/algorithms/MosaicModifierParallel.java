@@ -4,6 +4,7 @@
 package algorithms;
 
 import java.awt.image.BufferedImage;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -11,6 +12,7 @@ import java.util.Scanner;
 import org.jocl.CL;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
+import org.jocl.cl_kernel;
 import org.jocl.cl_mem;
 import org.jocl.cl_program;
 
@@ -82,9 +84,29 @@ public class MosaicModifierParallel extends MosaicModifier {
 		long[] globalWorkSize = new long[] { resultData.length };
 		long[] localWorkSize = new long[] { super.getWorkSize(deviceManager, sourceData) };
 		deviceManager.createQueue();
-		
-		
 
+		cl_kernel mosaicKernel = CL.clCreateKernel(program, "mosaic", null);
+
+		CL.clSetKernelArg(mosaicKernel, 0, Sizeof.cl_mem, Pointer.to(memSource));
+		CL.clSetKernelArg(mosaicKernel, 1, Sizeof.cl_mem, Pointer.to(memResult));
+		CL.clSetKernelArg(mosaicKernel, 2, Sizeof.cl_mem, Pointer.to(memDimensions));
+		CL.clSetKernelArg(mosaicKernel, 3, Sizeof.cl_mem, Pointer.to(memTiles));
+
+		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), mosaicKernel, 1, null, globalWorkSize, localWorkSize, 0,
+				null, null);
+
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0, resultData.length * Sizeof.cl_float,
+				ptrResult, 0, null, null);
+
+		CL.clReleaseKernel(mosaicKernel);
+		CL.clReleaseProgram(program);
+		CL.clReleaseMemObject(memSource);
+		CL.clReleaseMemObject(memResult);
+		CL.clReleaseMemObject(memDimensions);
+		CL.clReleaseMemObject(memTiles);
+
+		kernelScan.close();
+		packageImage(resultData, image);
 		return null;
 	}
 }

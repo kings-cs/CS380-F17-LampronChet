@@ -1,9 +1,6 @@
 package algorithms;
 
-import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
-import java.awt.image.Raster;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -26,7 +23,7 @@ import parallel.JoclInitializer;
  *
  */
 public class SepiaModifierParallel extends PixelModifier {
-	
+
 	/** The device manager. */
 	private JoclInitializer deviceManager;
 
@@ -39,6 +36,7 @@ public class SepiaModifierParallel extends PixelModifier {
 	public SepiaModifierParallel(JoclInitializer aDeviceManager) {
 		deviceManager = aDeviceManager;
 	}
+
 	@Override
 	public BufferedImage modifyPixel(BufferedImage image) throws FileNotFoundException {
 
@@ -74,13 +72,13 @@ public class SepiaModifierParallel extends PixelModifier {
 		long[] globalWorkSize = new long[] { resultData.length };
 		long[] localWorkSize = new long[] { 1 };
 		deviceManager.createQueue();
-		//long startTime = System.nanoTime();
+		// long startTime = System.nanoTime();
 
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), kernel, 1, null, globalWorkSize, localWorkSize, 0, null,
 				null);
-		//JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() - startTime) / 1000000 + "ms");
+		// JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() -
+		// startTime) / 1000000 + "ms");
 
-		
 		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0, sourceData.length * Sizeof.cl_float,
 				ptrResult, 0, null, null);
 
@@ -89,10 +87,7 @@ public class SepiaModifierParallel extends PixelModifier {
 		CL.clReleaseMemObject(memSource);
 		CL.clReleaseMemObject(memResult);
 
-		DataBufferInt resultDataBuffer = new DataBufferInt(resultData, resultData.length);
-		Raster resultRastor = Raster.createRaster(image.getRaster().getSampleModel(), resultDataBuffer,
-				new Point(0, 0));
-		image.setData(resultRastor);
+		packageImage(resultData, image);
 		kernelScan.close();
 		return image;
 	}

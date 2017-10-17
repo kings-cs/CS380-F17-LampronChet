@@ -3,10 +3,8 @@
  */
 package algorithms;
 
-import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
-import java.awt.image.Raster;
+
 import java.io.FileNotFoundException;
 import java.util.Random;
 
@@ -89,15 +87,14 @@ public class MosaicModifier extends PixelModifier {
 				resultData[index] = centerPixel;
 			}
 		}
-		DataBufferInt resultDataBuffer = new DataBufferInt(resultData, resultData.length);
-		Raster resultRastor = Raster.createRaster(image.getRaster().getSampleModel(), resultDataBuffer,
-				new Point(0, 0));
-		image.setData(resultRastor);
+		packageImage(resultData, image);
 		JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() - startTime) / 1000000 + "ms");
 		return image;
 	}
 
 	/**
+	 * Gets the tiles.
+	 * 
 	 * @return the tiles
 	 */
 	public int getTiles() {
@@ -105,7 +102,10 @@ public class MosaicModifier extends PixelModifier {
 	}
 
 	/**
-	 * @param tiles the tiles to set
+	 * Sets the tiles.
+	 * 
+	 * @param tiles
+	 *            the tiles to set
 	 */
 	public void setTiles(int tiles) {
 		this.tiles = tiles;

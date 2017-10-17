@@ -1,9 +1,5 @@
 package algorithms;
-
-import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
-import java.awt.image.Raster;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -99,10 +95,7 @@ public class RotateRight extends PixelModifier {
 		CL.clReleaseMemObject(memDimensions);
 		
 		BufferedImage returnImage = new BufferedImage(height, width, BufferedImage.TYPE_INT_ARGB);
-		DataBufferInt resultDataBuffer = new DataBufferInt(resultData, resultData.length);
-		Raster resultRastor = Raster.createRaster(returnImage.getRaster().getSampleModel(), resultDataBuffer,
-				new Point(0, 0));
-		returnImage.setData(resultRastor);
+		packageImage(resultData, returnImage);
 
 		kernelScan.close();
 		return returnImage;

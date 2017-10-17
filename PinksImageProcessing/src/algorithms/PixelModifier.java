@@ -1,8 +1,10 @@
 package algorithms;
 
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferInt;
+import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.FileNotFoundException;
 
@@ -111,5 +113,16 @@ public class PixelModifier {
 			}
 		}
 		return maxItemsPerGroup;
+	}
+	/**
+	 * Repackages the image.
+	 * @param resultData The result data of the image.
+	 * @param image The image.
+	 */
+	public void packageImage(int[] resultData, BufferedImage image) {
+		DataBufferInt resultDataBuffer = new DataBufferInt(resultData, resultData.length);
+		Raster resultRastor = Raster.createRaster(image.getRaster().getSampleModel(), resultDataBuffer,
+				new Point(0, 0));
+		image.setData(resultRastor);
 	}
 }
