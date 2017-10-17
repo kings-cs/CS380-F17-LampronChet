@@ -109,9 +109,12 @@ public class BlurModifierParallel extends PixelModifier {
 				new String[] { sourceBuffer.toString() }, null, null);
 
 		CL.clBuildProgram(program, 0, null, null, null, null);
+		
+		int workSize = super.getWorkSize(deviceManager, sourceData);
+		System.out.println(workSize);
 
-		long[] globalWorkSize = new long[] { resultData.length };
-		long[] localWorkSize = new long[] { super.getWorkSize(deviceManager, sourceData) };
+		long[] globalWorkSize = new long[] { sourceData.length };
+		long[] localWorkSize = new long[] { workSize };
 		deviceManager.createQueue();
 		// Set up and run the separate channels kernel.
 		cl_kernel separateKernel = CL.clCreateKernel(program, "separateChannels", null);
