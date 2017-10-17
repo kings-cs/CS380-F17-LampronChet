@@ -1,8 +1,6 @@
 __kernel void mosaic(__global const int *sourceData, __global int *resultData, __global const int *dimensions, __global const int *tilePoints){
-				/*int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);*/
-				
-				
-				int index = get_local_id(0);
+int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
+
 				int width = dimensions[0];
 				
 				int row = index / width;
