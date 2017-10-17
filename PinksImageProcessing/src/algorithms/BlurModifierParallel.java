@@ -114,7 +114,7 @@ public class BlurModifierParallel extends PixelModifier {
 		CL.clBuildProgram(program, 0, null, null, null, null);
 
 		long[] globalWorkSize = new long[] { resultData.length };
-		long[] localWorkSize = new long[] { 1 };
+		long[] localWorkSize = new long[] { getWorkSize(sourceData) };
 		deviceManager.createQueue();
 		// Set up and run the separate channels kernel.
 		cl_kernel separateKernel = CL.clCreateKernel(program, "separateChannels", null);
@@ -207,5 +207,27 @@ public class BlurModifierParallel extends PixelModifier {
 		image.setData(resultRastor);
 		kernelScan.close();
 		return image;
+	}
+
+	/**
+	 * Gets the proper work size.
+	 * 
+	 * @param data
+	 *            The data array.
+	 * @return The proper work size;
+	 */
+	public int getWorkSize(int[] data) {
+		int maxItemsPerGroup = deviceManager.getMaxWorkGroupSize();
+		boolean isDivisible = false;
+
+		while (!isDivisible) {
+			int numOfItems = data.length & maxItemsPerGroup;
+			if (numOfItems == 0) {
+				isDivisible = true;
+			} else {
+				maxItemsPerGroup--;
+			}
+		}
+		return maxItemsPerGroup;
 	}
 }

@@ -30,7 +30,7 @@ __kernel void separateChannels(__global const int *sourceData, __global int *red
 }
 
 __kernel void blurChannels(__global int *redArray, __global int *blueArray, __global int *greenArray, __global int *modifiedRedArray, __global int *modifiedBlueArray, __global int *modifiedGreenArray, __global float *stencil, __global int *dimensions){
-				int index = get_global_id(0);
+				int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
 				int width = dimensions[0];
 				int height = dimensions[1];
 				

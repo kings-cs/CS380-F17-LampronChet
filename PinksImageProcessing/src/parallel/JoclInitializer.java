@@ -28,7 +28,6 @@ public class JoclInitializer {
 	private cl_command_queue queue;
 	/** Map of device to its platform. */
 	private HashMap<cl_device_id, cl_platform_id> platformMap;
-	
 
 	/**
 	 * Gets the possible platform IDs on the system.
@@ -70,7 +69,7 @@ public class JoclInitializer {
 
 			cl_device_id[] deviceArray = new cl_device_id[numDevices];
 			CL.clGetDeviceIDs(platforms[i], CL.CL_DEVICE_TYPE_ALL, numDevices, deviceArray, null);
-			
+
 			for (int j = 0; j < deviceArray.length; j++) {
 				if (devicePlaceCounter < devices.length) {
 					platformMap.put(deviceArray[j], platforms[i]);
@@ -169,5 +168,23 @@ public class JoclInitializer {
 		}
 
 		return isGpu;
+	}
+
+	/**
+	 * Gets the maximum number of work groups for the selected device.
+	 * 
+	 * @return The max group size.
+	 */
+	public int getMaxWorkGroupSize() {
+		int maxNumOfGroups = -1;
+
+		long[] size = new long[1];
+		CL.clGetDeviceInfo(device, CL.CL_DEVICE_MAX_WORK_GROUP_SIZE, 0, null, size);
+		int[] buffer = new int[(int) size[0]];
+		
+		CL.clGetDeviceInfo(device, CL.CL_DEVICE_MAX_WORK_GROUP_SIZE, buffer.length, Pointer.to(buffer), null);
+		maxNumOfGroups = buffer[0];
+		
+		return maxNumOfGroups;
 	}
 }
