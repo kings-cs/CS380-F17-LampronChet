@@ -69,26 +69,24 @@ public class MosaicModifier extends PixelModifier {
 			for (int col = 0; col < width; col++) {
 				int index = row * width + col;
 				int finalTile = 0;
-				int finalDistance = Integer.MAX_VALUE;
+				double finalDistance = Double.MAX_VALUE;
+				int centerRow = 0;
+				int centerCol = 0;
 				for (int i = 0; i < tilePoints.length; i++) {
-					int centerIndex = tilePoints[i];
-					int distance = (int) Math.hypot(index, centerIndex);
+					centerRow = tilePoints[i] / width;
+					centerCol = tilePoints[i] % width;
+
+					int rowDistance = (centerRow - row);
+					int colDistance = (centerCol - col);
+					double distance = Math.sqrt(rowDistance ^ 2 + (colDistance ^ 2));
 					if (distance < finalDistance) {
-						finalTile = centerIndex;
+						finalTile = tilePoints[i];
 						finalDistance = distance;
 					}
 				}
-				int centerTile = finalTile;
-				int centerPixel = sourceData[centerTile];
-				int centerAlpha = (centerPixel & PixelModifier.ALPHA_MASK) >> PixelModifier.ALPHA_OFFSET;
-				int centerRed = (centerPixel & PixelModifier.RED_MASK) >> PixelModifier.RED_OFFSET;
-				int centerGreen = (centerPixel & PixelModifier.GREEN_MASK) >> PixelModifier.GREEN_OFFSET;
-				int centerBlue = (centerPixel & PixelModifier.BLUE_MASK) >> PixelModifier.BLUE_OFFSET;
+				int centerPixel = sourceData[finalTile];
 
-				int newPixel = (centerAlpha << ALPHA_OFFSET) | (centerRed << RED_OFFSET) | (centerGreen << BLUE_OFFSET)
-						| (centerBlue << GREEN_OFFSET);
-
-				resultData[index] = newPixel;
+				resultData[index] = centerPixel;
 			}
 		}
 		DataBufferInt resultDataBuffer = new DataBufferInt(resultData, resultData.length);
