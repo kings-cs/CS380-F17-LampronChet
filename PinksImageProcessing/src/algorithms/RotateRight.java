@@ -97,11 +97,11 @@ public class RotateRight extends PixelModifier {
 		CL.clReleaseMemObject(memSource);
 		CL.clReleaseMemObject(memResult);
 		CL.clReleaseMemObject(memDimensions);
-
-		DataBufferInt resultDataBuffer = new DataBufferInt(resultData, resultData.length);
-		Raster resultRastor = Raster.createRaster(image.getRaster().getSampleModel(), resultDataBuffer,
-				new Point(0, 0));
+		
 		BufferedImage returnImage = new BufferedImage(height, width, BufferedImage.TYPE_INT_ARGB);
+		DataBufferInt resultDataBuffer = new DataBufferInt(resultData, resultData.length);
+		Raster resultRastor = Raster.createRaster(returnImage.getRaster().getSampleModel(), resultDataBuffer,
+				new Point(0, 0));
 		returnImage.setData(resultRastor);
 
 		kernelScan.close();
