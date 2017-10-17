@@ -48,6 +48,7 @@ import algorithms.GrayscaleModifier;
 import algorithms.GrayscaleModifierParallel;
 import algorithms.HorizontalFlip;
 import algorithms.MosaicModifier;
+import algorithms.MosaicModifierParallel;
 import algorithms.RotateLeft;
 import algorithms.RotateRight;
 import algorithms.SepiaModifier;
@@ -188,6 +189,10 @@ public class PipGui extends JFrame {
 		JMenuItem mosaic = new JMenuItem("Mosaic tiles");
 		mosaic.addActionListener(new MosaicImage());
 		options.add(mosaic);
+		
+		JMenuItem mosaicParallel = new JMenuItem("Mosaic tiles(Parallel)");
+		mosaicParallel.addActionListener(new MosaicParallel());
+		options.add(mosaicParallel);
 
 		JMenuItem about = new JMenuItem("About");
 		about.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
@@ -757,6 +762,36 @@ public class PipGui extends JFrame {
 				int tiles = Integer
 						.parseInt(JOptionPane.showInputDialog("How many tiles would you like in this mosaic: "));
 				MosaicModifier pixelModifier = new MosaicModifier(tiles);
+
+				try {
+					image = pixelModifier.modifyPixel(image);
+				} catch (FileNotFoundException e) {
+					JOptionPane.showMessageDialog(null, "The image could not be processed");
+				}
+				centerPanel.repaint();
+				isSaved = false;
+			} else {
+				JOptionPane.showMessageDialog(null, "Please load an image first");
+			}
+
+		}
+
+	}
+	
+	/**
+	 * Runs the Blur algorithm when prompted.
+	 * 
+	 * @author Chet lampron
+	 *
+	 */
+	private class MosaicParallel implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			if (image != null) {
+				int tiles = Integer
+						.parseInt(JOptionPane.showInputDialog("How many tiles would you like in this mosaic: "));
+				MosaicModifierParallel pixelModifier = new MosaicModifierParallel(tiles, deviceManager);
 
 				try {
 					image = pixelModifier.modifyPixel(image);

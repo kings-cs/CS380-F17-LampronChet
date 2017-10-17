@@ -46,19 +46,20 @@ public class MosaicModifierParallel extends MosaicModifier {
 	public BufferedImage modifyPixel(BufferedImage image) throws FileNotFoundException {
 		int width = image.getWidth();
 		int height = image.getHeight();
-		int[] dimensions = new int[2];
-		dimensions[0] = width;
-		dimensions[1] = height;
 		int[] sourceData = super.unwrapImage(image);
 
 		int[] resultData = new int[sourceData.length];
 		int[] tilePoints = getTilePoints(super.getTiles(), sourceData);
+		int[] dimensions = new int[3];
+
+		dimensions[0] = width;
+		dimensions[1] = height;
+		dimensions[2] = tilePoints.length;
 
 		Pointer ptrSource = Pointer.to(sourceData);
 		Pointer ptrResult = Pointer.to(resultData);
 		Pointer ptrDimensions = Pointer.to(dimensions);
 		Pointer ptrTiles = Pointer.to(tilePoints);
-
 		cl_mem memSource = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * sourceData.length, ptrSource, null);
 		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_WRITE_ONLY | CL.CL_MEM_COPY_HOST_PTR,
@@ -82,7 +83,9 @@ public class MosaicModifierParallel extends MosaicModifier {
 		CL.clBuildProgram(program, 0, null, null, null, null);
 
 		long[] globalWorkSize = new long[] { resultData.length };
-		long[] localWorkSize = new long[] { super.getWorkSize(deviceManager, sourceData) };
+		// long[] localWorkSize = new long[] { super.getWorkSize(deviceManager,
+		// sourceData) };
+		long[] localWorkSize = new long[] { 1 };
 		deviceManager.createQueue();
 
 		cl_kernel mosaicKernel = CL.clCreateKernel(program, "mosaic", null);
@@ -107,6 +110,6 @@ public class MosaicModifierParallel extends MosaicModifier {
 
 		kernelScan.close();
 		packageImage(resultData, image);
-		return null;
+		return image;
 	}
 }
