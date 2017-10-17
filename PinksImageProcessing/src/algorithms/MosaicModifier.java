@@ -78,7 +78,7 @@ public class MosaicModifier extends PixelModifier {
 
 					int rowDistance = (centerRow - row);
 					int colDistance = (centerCol - col);
-					double distance = Math.sqrt((rowDistance ^ 2) + (colDistance ^ 2));
+					double distance = Math.sqrt((rowDistance * rowDistance) + (colDistance * colDistance));
 					if (distance < finalDistance) {
 						finalTile = tilePoints[i];
 						finalDistance = distance;

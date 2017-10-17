@@ -55,6 +55,7 @@ public class MosaicModifierParallel extends MosaicModifier {
 		Pointer ptrSource = Pointer.to(sourceData);
 		Pointer ptrResult = Pointer.to(resultData);
 		Pointer ptrDimensions = Pointer.to(dimensions);
+		Pointer ptrTiles = Pointer.to(tilePoints);
 
 		cl_mem memSource = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * sourceData.length, ptrSource, null);
@@ -63,7 +64,9 @@ public class MosaicModifierParallel extends MosaicModifier {
 		cl_mem memDimensions = CL.clCreateBuffer(deviceManager.getContext(),
 				CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * dimensions.length, ptrDimensions,
 				null);
-		
+		cl_mem memTiles = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY,
+				Sizeof.cl_float * tilePoints.length, ptrTiles, null);
+
 		File kernelFile = new File("Kernels/MosaicKernel");
 		Scanner kernelScan = new Scanner(kernelFile);
 		StringBuffer sourceBuffer = new StringBuffer();
@@ -80,6 +83,8 @@ public class MosaicModifierParallel extends MosaicModifier {
 		long[] localWorkSize = new long[] { super.getWorkSize(deviceManager, sourceData) };
 		deviceManager.createQueue();
 		
+		
+
 		return null;
 	}
 }
