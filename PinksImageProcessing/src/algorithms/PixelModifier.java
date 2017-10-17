@@ -16,7 +16,7 @@ import parallel.JoclInitializer;
  * @author Chet Lampron
  *
  */
-public class PixelModifier {
+public abstract class PixelModifier {
 	/** The alpha mask. */
 	protected static final int ALPHA_MASK = 0xff000000;
 	/** The alpha offset. */
@@ -36,6 +36,17 @@ public class PixelModifier {
 	protected static final int BLUE_MASK = 0x000000ff;
 	/** The blue offset. */
 	protected static final int BLUE_OFFSET = 0;
+	
+	/**
+	 * Modifies each pixel to change the image.
+	 * 
+	 * @param image
+	 *            The original image.
+	 * @return The modified image.
+	 * @throws FileNotFoundException
+	 *             not thrown.
+	 */
+	public abstract BufferedImage modifyPixel(BufferedImage image) throws FileNotFoundException;
 
 	/**
 	 * Unwraps the image from abstractions.
@@ -52,44 +63,6 @@ public class PixelModifier {
 		return sourceData;
 	}
 
-	/**
-	 * Modifies each pixel to change the image.
-	 * 
-	 * @param image
-	 *            The original image.
-	 * @return The modified image.
-	 * @throws FileNotFoundException
-	 *             not thrown.
-	 */
-	public BufferedImage modifyPixel(BufferedImage image) throws FileNotFoundException {
-		/*
-		 * int width = image.getWidth(); int height = image.getHeight(); int[]
-		 * sourceData = unwrapImage(image); int[] resultData = new
-		 * int[sourceData.length];
-		 * 
-		 * for (int row = 0; row < height; row++) { for (int col = 0; col < width;
-		 * col++) { int index = row * width + col; int pixel = sourceData[index];
-		 * 
-		 * int red = (pixel & RED_MASK) >> RED_OFFSET; int green = (pixel & GREEN_MASK)
-		 * >> GREEN_OFFSET; int blue = (pixel & BLUE_MASK) >> BLUE_OFFSET;
-		 * 
-		 * //modify pixel based on algorithm. int resultColor = pixel;
-		 * 
-		 * resultData[index] = resultColor;
-		 * 
-		 * } }
-		 * 
-		 * DataBufferInt resultDataBuffer = new DataBufferInt(resultData,
-		 * resultData.length); Raster resultRastor =
-		 * Raster.createRaster(image.getRaster().getSampleModel(), resultDataBuffer, new
-		 * Point(0, 0));
-		 * 
-		 * image.setData(resultRastor);
-		 */
-		// TODO by sublass
-
-		return image;
-	}
 
 	/**
 	 * Gets the proper work size.
