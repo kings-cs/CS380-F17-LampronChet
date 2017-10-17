@@ -17,7 +17,7 @@ __kernel void separateChannels(__global const int *sourceData, __global int *red
 
 	int BLUE_OFFSET = 0;
 	
-	int index = get_global_id(0);
+	int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
 	int alpha = (sourceData[index] & ALPHA_MASK) >> ALPHA_OFFSET;
 	int red = (sourceData[index] & RED_MASK) >> RED_OFFSET;
 	int green = (sourceData[index] & GREEN_MASK) >> GREEN_OFFSET;
@@ -89,7 +89,7 @@ int ALPHA_MASK = 0xff000000;
 	int BLUE_MASK = 0x000000ff;
 
 	int BLUE_OFFSET = 0;
-			int i = get_global_id(0);
+			int i = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
 			int newRed = modifiedRedArray[i];
 			int newGreen = modifiedGreenArray[i];
 			int newBlue = modifiedBlueArray[i];
