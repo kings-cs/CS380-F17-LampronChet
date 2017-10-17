@@ -29,7 +29,7 @@ public class MosaicModifier extends PixelModifier {
 	 *            The number of tile points to generate.
 	 */
 	public MosaicModifier(int numOfTiles) {
-		tiles = numOfTiles;
+		setTiles(numOfTiles);
 	}
 
 	/**
@@ -63,7 +63,7 @@ public class MosaicModifier extends PixelModifier {
 
 		int[] resultData = new int[sourceData.length];
 
-		int[] tilePoints = getTilePoints(tiles, sourceData);
+		int[] tilePoints = getTilePoints(getTiles(), sourceData);
 
 		for (int row = 0; row < height; row++) {
 			for (int col = 0; col < width; col++) {
@@ -95,5 +95,19 @@ public class MosaicModifier extends PixelModifier {
 		image.setData(resultRastor);
 		JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() - startTime) / 1000000 + "ms");
 		return image;
+	}
+
+	/**
+	 * @return the tiles
+	 */
+	public int getTiles() {
+		return tiles;
+	}
+
+	/**
+	 * @param tiles the tiles to set
+	 */
+	public void setTiles(int tiles) {
+		this.tiles = tiles;
 	}
 }
