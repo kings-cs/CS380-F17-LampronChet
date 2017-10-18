@@ -78,7 +78,7 @@ public abstract class PixelModifier {
 		boolean isDivisible = false;
 
 		while (!isDivisible) {
-			int numOfItems = data.length & maxItemsPerGroup;
+			int numOfItems = data.length % maxItemsPerGroup;
 			if (numOfItems == 0) {
 				isDivisible = true;
 			} else {

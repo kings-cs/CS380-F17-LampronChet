@@ -53,7 +53,7 @@ public class MosaicModifier extends PixelModifier {
 
 	@Override
 	public BufferedImage modifyPixel(BufferedImage image) throws FileNotFoundException {
-		long startTime = System.nanoTime();
+		double startTime = System.nanoTime();
 
 		int width = image.getWidth();
 		int height = image.getHeight();
@@ -88,7 +88,7 @@ public class MosaicModifier extends PixelModifier {
 			}
 		}
 		packageImage(resultData, image);
-		JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() - startTime) / 1000000 + "ms");
+		JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() - startTime) / 1000000.0 + "ms");
 		return image;
 	}
 

@@ -1,5 +1,6 @@
 __kernel void rotateLeft(__global const int *sourceData, __global int *resultData, __global const int *dimensions){
-int index = get_global_id(0);
+				int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
+
 				int width = dimensions[0];
 				int height = dimensions[1];
 				

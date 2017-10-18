@@ -1,5 +1,5 @@
 __kernel void mosaic(__global const int *sourceData, __global int *resultData, __global const int *dimensions, __global const int *tilePoints){
-int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
+				int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
 
 				int width = dimensions[0];
 				
@@ -9,16 +9,16 @@ int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
 				
 				int tilePointsLength = dimensions[2];
 				int finalTile = 0;
-				float finalDistance = MAXFLOAT;
-				float centerRow = 0;
-				float centerCol = 0;
+				double finalDistance = MAXFLOAT;
+				double centerRow = 0;
+				double centerCol = 0;
 				for (int i = 0; i < tilePointsLength; i++) {
 					centerRow = tilePoints[i] / width;
 					centerCol = tilePoints[i] % width;
 
-					float rowDistance = (centerRow - row);
-					float colDistance = (centerCol - col);
-					float distance = sqrt((rowDistance *rowDistance) + (colDistance * colDistance));
+					double rowDistance = (centerRow - row);
+					double colDistance = (centerCol - col);
+					double distance = hypot(rowDistance, colDistance);
 					if (distance < finalDistance) {
 						finalTile = tilePoints[i];
 						finalDistance = distance;

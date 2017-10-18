@@ -70,8 +70,11 @@ public class RotateLeft extends PixelModifier {
 
 		CL.clBuildProgram(program, 0, null, null, null, null);
 
-		long[] globalWorkSize = new long[] { resultData.length };
-		long[] localWorkSize = new long[] { 1 };
+		int workSize = super.getWorkSize(deviceManager, sourceData);
+		System.out.println(workSize);
+
+		long[] globalWorkSize = new long[] { sourceData.length };
+		long[] localWorkSize = new long[] { workSize };
 
 		cl_kernel rotateLeftKernel = CL.clCreateKernel(program, "rotateLeft", null);
 
@@ -80,7 +83,7 @@ public class RotateLeft extends PixelModifier {
 		CL.clSetKernelArg(rotateLeftKernel, 2, Sizeof.cl_mem, Pointer.to(memDimensions));
 
 		deviceManager.createQueue();
-		long startTime = System.nanoTime();
+		double startTime = System.nanoTime();
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), rotateLeftKernel, 1, null, globalWorkSize, localWorkSize, 0,
 				null, null);
 		double totalTime = (System.nanoTime() - startTime) / 1000000.0;

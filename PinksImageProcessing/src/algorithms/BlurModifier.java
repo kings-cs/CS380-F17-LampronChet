@@ -2,6 +2,8 @@ package algorithms;
 
 import java.awt.image.BufferedImage;
 
+import javax.swing.JOptionPane;
+
 //import javax.swing.JOptionPane;
 
 /**
@@ -48,7 +50,7 @@ public class BlurModifier extends PixelModifier {
 			}
 		}
 		int[] resultData = new int[sourceData.length];
-
+		double startTime = System.nanoTime();
 		for (int row = 0; row < height; row++) {
 			for (int col = 0; col < width; col++) {
 				int index = row * width + col;
@@ -100,8 +102,8 @@ public class BlurModifier extends PixelModifier {
 
 			resultData[i] = newPixel;
 		}
-		// JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() -
-		// startTime) / 1000000 + "ms");
+		JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() - startTime) / 1000000.0 + "ms");
+
 		packageImage(resultData, image);
 		return image;
 	}

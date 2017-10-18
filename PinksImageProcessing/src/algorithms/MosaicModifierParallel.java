@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
+import javax.swing.JOptionPane;
+
 import org.jocl.CL;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
@@ -60,6 +62,7 @@ public class MosaicModifierParallel extends MosaicModifier {
 		Pointer ptrResult = Pointer.to(resultData);
 		Pointer ptrDimensions = Pointer.to(dimensions);
 		Pointer ptrTiles = Pointer.to(tilePoints);
+		
 		cl_mem memSource = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * sourceData.length, ptrSource, null);
 		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_WRITE_ONLY | CL.CL_MEM_COPY_HOST_PTR,
@@ -94,9 +97,10 @@ public class MosaicModifierParallel extends MosaicModifier {
 		CL.clSetKernelArg(mosaicKernel, 1, Sizeof.cl_mem, Pointer.to(memResult));
 		CL.clSetKernelArg(mosaicKernel, 2, Sizeof.cl_mem, Pointer.to(memDimensions));
 		CL.clSetKernelArg(mosaicKernel, 3, Sizeof.cl_mem, Pointer.to(memTiles));
-
+		double startTime = System.nanoTime();
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), mosaicKernel, 1, null, globalWorkSize, localWorkSize, 0,
 				null, null);
+		JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() - startTime) / 1000000.0 + "ms");
 
 		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0, resultData.length * Sizeof.cl_float,
 				ptrResult, 0, null, null);

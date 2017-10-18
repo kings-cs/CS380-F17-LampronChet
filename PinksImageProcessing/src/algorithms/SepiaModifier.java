@@ -2,6 +2,8 @@ package algorithms;
 
 import java.awt.image.BufferedImage;
 
+import javax.swing.JOptionPane;
+
 //import javax.swing.JOptionPane;
 
 /**
@@ -18,7 +20,7 @@ public class SepiaModifier extends PixelModifier {
 
 	@Override
 	public BufferedImage modifyPixel(BufferedImage image) {
-		// long startTime = System.nanoTime();
+		double startTime = System.nanoTime();
 		int width = image.getWidth();
 		int height = image.getHeight();
 
@@ -66,8 +68,8 @@ public class SepiaModifier extends PixelModifier {
 		}
 
 		packageImage(resultData, image);
-		// JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() -
-		// startTime) / 1000000 + "ms");
+		JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() - startTime) / 1000000.0 + "ms");
+
 		return image;
 	}
 }

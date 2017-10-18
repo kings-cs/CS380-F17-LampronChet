@@ -69,8 +69,11 @@ public class RotateRight extends PixelModifier {
 
 		CL.clBuildProgram(program, 0, null, null, null, null);
 
-		long[] globalWorkSize = new long[] { resultData.length };
-		long[] localWorkSize = new long[] { 1 };
+		int workSize = super.getWorkSize(deviceManager, sourceData);
+		System.out.println(workSize);
+
+		long[] globalWorkSize = new long[] { sourceData.length };
+		long[] localWorkSize = new long[] { workSize };
 
 		cl_kernel rotateRightKernel = CL.clCreateKernel(program, "rotateRight", null);
 
