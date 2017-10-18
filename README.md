@@ -45,6 +45,7 @@ IV. Bugs:
 	<br>About is implemented, but only displays the raw text currently. Raw text link must be updated semi frequently.
 	<br>.gif will only display the first image in the file.
 	<br>Saving without a file type does not make PNG, please specify the file type in the name.
+	<br>Hitting cancel on mosaic defaults to 1024, will add cancel option in next update.
 	
 V. Runtime chart:
 
