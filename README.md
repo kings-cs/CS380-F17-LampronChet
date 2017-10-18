@@ -64,7 +64,7 @@ V. Runtime chart:
   
   <tr>
     <td> Grayscale Parallel </td>
-    <td> <1ms </td>
+    <td> 2.79ms </td>
     <td> Nvidia GTX 745 </td>
     <td> Ubuntu </td>
   </tr>
@@ -80,7 +80,7 @@ V. Runtime chart:
   
   <tr>
     <td> Sepia Parallel</td>
-    <td> < 1ms </td>
+    <td> 2.82ms </td>
     <td> Nvidia GTX 745 </td>
     <td> Ubuntu </td>
   </tr>
