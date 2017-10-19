@@ -1,5 +1,5 @@
 
-package pinkprocessing;
+package gui;
 
 import java.awt.BorderLayout;
 //import java.awt.Color;
@@ -55,6 +55,7 @@ import algorithms.SepiaModifier;
 import algorithms.SepiaModifierParallel;
 import algorithms.VerticalFlip;
 import parallel.JoclInitializer;
+import pinkprocessing.FileHandler;
 
 /**
  * GUI for an image processor.
@@ -189,7 +190,7 @@ public class PipGui extends JFrame {
 		JMenuItem mosaic = new JMenuItem("Mosaic tiles");
 		mosaic.addActionListener(new MosaicImage());
 		options.add(mosaic);
-		
+
 		JMenuItem mosaicParallel = new JMenuItem("Mosaic tiles(Parallel)");
 		mosaicParallel.addActionListener(new MosaicParallel());
 		options.add(mosaicParallel);
@@ -357,9 +358,9 @@ public class PipGui extends JFrame {
 				} else if (ans == JOptionPane.NO_OPTION) {
 					dispose();
 					System.exit(0);
-				}//else {
-				//	getGui().setVisible(true);
-				//}
+				} // else {
+					// getGui().setVisible(true);
+					// }
 
 			} else {
 				dispose();
@@ -759,17 +760,21 @@ public class PipGui extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			if (image != null) {
-				int tiles = Integer
-						.parseInt(JOptionPane.showInputDialog("How many tiles would you like in this mosaic: "));
-				MosaicModifier pixelModifier = new MosaicModifier(tiles);
+				CancelOptionPanel cancelOption = new CancelOptionPanel();
+				int result = JOptionPane.showConfirmDialog(null, cancelOption,
+						"Please enter a minute value, and seconds if desired: ", JOptionPane.OK_CANCEL_OPTION);
+				if (result == JOptionPane.OK_OPTION) {
+					try {
+						int tiles = Integer.parseInt(cancelOption.getTiles().getText());
+						MosaicModifierParallel pixelModifier = new MosaicModifierParallel(tiles, deviceManager);
 
-				try {
-					image = pixelModifier.modifyPixel(image);
-				} catch (FileNotFoundException e) {
-					JOptionPane.showMessageDialog(null, "The image could not be processed");
+						image = pixelModifier.modifyPixel(image);
+					} catch (FileNotFoundException e) {
+						JOptionPane.showMessageDialog(null, "The image could not be processed");
+					}
+					centerPanel.repaint();
+					isSaved = false;
 				}
-				centerPanel.repaint();
-				isSaved = false;
 			} else {
 				JOptionPane.showMessageDialog(null, "Please load an image first");
 			}
@@ -777,7 +782,7 @@ public class PipGui extends JFrame {
 		}
 
 	}
-	
+
 	/**
 	 * Runs the Blur algorithm when prompted.
 	 * 
@@ -823,7 +828,7 @@ public class PipGui extends JFrame {
 	 * @param current
 	 *            The current GUI.
 	 */
-	void setCurrentGui(PipGui current) {
+	public void setCurrentGui(PipGui current) {
 		currentGui = current;
 	}
 

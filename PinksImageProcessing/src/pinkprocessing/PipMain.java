@@ -12,6 +12,8 @@ import javax.swing.UIManager.LookAndFeelInfo;
 
 import org.jocl.CL;
 
+import gui.PipGui;
+
 /**
  * Contains the main method.
  * 

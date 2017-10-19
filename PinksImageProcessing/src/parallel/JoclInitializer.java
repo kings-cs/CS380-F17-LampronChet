@@ -11,7 +11,7 @@ import org.jocl.cl_context_properties;
 import org.jocl.cl_device_id;
 import org.jocl.cl_platform_id;
 
-import pinkprocessing.PipGui;
+import gui.PipGui;
 
 /**
  * Builds all required items for parallel programming.
