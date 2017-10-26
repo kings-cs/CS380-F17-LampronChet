@@ -1,0 +1,17 @@
+__kernel void hillis_steele(__global const int *data, __global *result, __local float *from, __local float *to){
+	int i = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
+	
+	from[i] = data[i];
+	to[i] = data[i];
+	int local_number = get_local_id(0);
+	for(int distance = 1; distance < get_local_size(0); pow(distance, 2){
+		if(local_number > distance - 1){
+			to[local_number] = from[local_number] + from[local_number - distance];
+		}else{
+			to[local_number] = from[local_number];
+		}
+		
+	}
+	
+	
+}
