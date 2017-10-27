@@ -3,8 +3,8 @@ __kernel void hillis_steele(__global const int *data, __global *result, __local 
 	
 	from[i] = data[i];
 	to[i] = data[i];
-	int local_number = get_local_id(0);
-	for(int distance = 1; distance < get_local_size(0); pow(distance, 2){
+	for(int distance = 1; distance < get_local_size(0); distance * 2){
+		int local_number = get_local_id(0);
 		if(local_number > distance - 1){
 			to[local_number] = from[local_number] + from[local_number - distance];
 		}else{

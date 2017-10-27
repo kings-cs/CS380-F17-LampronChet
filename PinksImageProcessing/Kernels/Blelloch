@@ -1,3 +1,31 @@
-__kernel void blelloch(__global const int *data, __global *result){
-
+__kernel void blelloch(__global const int *data, __global *result, __local float * local_data, __global int *size){
+		int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
+	
+		local_data[index] = data[index];
+		int distance = 1;
+		int size = size[0];
+		
+		for(int space = (get_local_size(0) / 2); space > 1; space / 2){
+			int local_number = get_local_id(0);
+			if(local_number < space){
+				int i = (distance * 2 * (local_number + 1) - 1;
+				int j = (distance * 2 * (local_number + 2)) - 1;
+				local_data[j] += local_data[i];
+			}
+			distance = distance * 2;
+		}
+		local_data[size - 1] = 0;
+		for(int space = 1: space < get_local_size(0){
+			distance = distance / 2;
+			int local_number = get_local_id(0);
+			if(local_number < space){
+				int i = (distance * 2 * (local_number + 1) - 1;
+				int j = (distance * 2 * (local_number + 2)) - 1;
+				float temp = local_data[j];
+				local_data[j] += local_data[i];
+				local_data[i] = temp;
+			}
+		}
+		result[index] = local_data[index];
+		
 }
