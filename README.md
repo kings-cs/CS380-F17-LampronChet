@@ -19,7 +19,7 @@ I. Basic instructions:
 	<br>	2. Open a file using the Open menu item or ctrl-o.
 	<br>	3. Save a file using the Save menu item or ctrl-s.
  	<br>	//When saving the image, if the filetype is not specified in the filename it will default to the type of png. THIS FEATURE DOES NOT WORK YET PLEASE SEE BUGS.
-	<br> 	4. Open the raw README.md by clicking about or ctrl-a.
+	<br> 	4. Open the raw README.md by clicking about or ctrl-a. Temporarily disabled.
 	<br>	5. Close a file using the Close menu item, but be careful I treat this as my garbage collector, the FILE WILL BE LOST!
 	
 II. Image editing:
@@ -30,6 +30,12 @@ II. Image editing:
 	<br>4. Sepia in parallel
 	<br>5. Blur
 	<br>6. Blur in parallel
+	<br>7. Rotate left in parallel
+	<br>8. Rotate right in parallel
+	<br>9. Vertical flip in parallel
+	<br>10. Horizontal flip in parallel
+	<br>11. Mosaic
+	<br>12. Mosaic in parallel
 	<br>Many more to come soon!
 
 III. Close the program:
@@ -39,6 +45,7 @@ IV. Bugs:
 	<br>About is implemented, but only displays the raw text currently. Raw text link must be updated semi frequently.
 	<br>.gif will only display the first image in the file.
 	<br>Saving without a file type does not make PNG, please specify the file type in the name.
+	<br>Hitting cancel on mosaic defaults to 1024, will add cancel option in next update.
 	
 V. Runtime chart:
 
@@ -58,7 +65,7 @@ V. Runtime chart:
   
   <tr>
     <td> Grayscale Parallel </td>
-    <td> <1ms </td>
+    <td> 2.79ms </td>
     <td> Nvidia GTX 745 </td>
     <td> Ubuntu </td>
   </tr>
@@ -74,7 +81,7 @@ V. Runtime chart:
   
   <tr>
     <td> Sepia Parallel</td>
-    <td> < 1ms </td>
+    <td> 2.82ms </td>
     <td> Nvidia GTX 745 </td>
     <td> Ubuntu </td>
   </tr>
@@ -90,6 +97,48 @@ V. Runtime chart:
   <tr>
     <td> Blur Parallel</td>
     <td> 5ms </td>
+    <td> Nvidia GTX 745 </td>
+    <td> Ubuntu </td>
+  </tr>
+  
+  <tr>
+    <td> Rotate left</td>
+    <td> 2.27ms </td>
+    <td> Nvidia GTX 745 </td>
+    <td> Ubuntu </td>
+  </tr>
+  
+  <tr>
+    <td> Rotate right</td>
+    <td> 0.82ms </td>
+    <td> Nvidia GTX 745 </td>
+    <td> Ubuntu </td>
+  </tr>
+  
+  <tr>
+    <td> Vertical flip</td>
+    <td> 0.81ms </td>
+    <td> Nvidia GTX 745 </td>
+    <td> Ubuntu </td>
+  </tr>
+  
+  <tr>
+    <td> Horizontal flip</td>
+    <td> 2.34ms </td>
+    <td> Nvidia GTX 745 </td>
+    <td> Ubuntu </td>
+  </tr>
+  
+  <tr>
+    <td> Mosaic</td>
+    <td> 1382.61ms </td>
+    <td> Nvidia GTX 745 </td>
+    <td> Ubuntu </td>
+  </tr>
+  
+  <tr>
+    <td> Mosaic Parallel</td>
+    <td> 4.27ms </td>
     <td> Nvidia GTX 745 </td>
     <td> Ubuntu </td>
   </tr>
