@@ -794,20 +794,19 @@ public class PiPGui extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			if (image != null) {
-				int tiles = Integer
-						.parseInt(JOptionPane.showInputDialog("How many tiles would you like in this mosaic: "));
-				MosaicModifierParallel pixelModifier = new MosaicModifierParallel(tiles, deviceManager);
+
 				CancelOptionPanel cancelOption = new CancelOptionPanel();
 				int result = JOptionPane.showConfirmDialog(null, cancelOption, "Please enter a number of tiles: ",
 						JOptionPane.OK_CANCEL_OPTION);
 				if (result == JOptionPane.OK_OPTION) {
 					try {
+						MosaicModifierParallel pixelModifier = new MosaicModifierParallel(result, deviceManager);
 						image = pixelModifier.modifyPixel(image);
+						centerPanel.repaint();
+						isSaved = false;
 					} catch (FileNotFoundException e) {
 						JOptionPane.showMessageDialog(null, "The image could not be processed");
 					}
-					centerPanel.repaint();
-					isSaved = false;
 				}
 			} else {
 				JOptionPane.showMessageDialog(null, "Please load an image first");
