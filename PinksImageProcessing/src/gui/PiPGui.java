@@ -761,8 +761,8 @@ public class PiPGui extends JFrame {
 		public void actionPerformed(ActionEvent arg0) {
 			if (image != null) {
 				CancelOptionPanel cancelOption = new CancelOptionPanel();
-				int result = JOptionPane.showConfirmDialog(null, cancelOption,
-						"Please enter a number of tiles: ", JOptionPane.OK_CANCEL_OPTION);
+				int result = JOptionPane.showConfirmDialog(null, cancelOption, "Please enter a number of tiles: ",
+						JOptionPane.OK_CANCEL_OPTION);
 				if (result == JOptionPane.OK_OPTION) {
 					try {
 						int tiles = Integer.parseInt(cancelOption.getTiles().getText());
@@ -797,14 +797,18 @@ public class PiPGui extends JFrame {
 				int tiles = Integer
 						.parseInt(JOptionPane.showInputDialog("How many tiles would you like in this mosaic: "));
 				MosaicModifierParallel pixelModifier = new MosaicModifierParallel(tiles, deviceManager);
-
-				try {
-					image = pixelModifier.modifyPixel(image);
-				} catch (FileNotFoundException e) {
-					JOptionPane.showMessageDialog(null, "The image could not be processed");
+				CancelOptionPanel cancelOption = new CancelOptionPanel();
+				int result = JOptionPane.showConfirmDialog(null, cancelOption, "Please enter a number of tiles: ",
+						JOptionPane.OK_CANCEL_OPTION);
+				if (result == JOptionPane.OK_OPTION) {
+					try {
+						image = pixelModifier.modifyPixel(image);
+					} catch (FileNotFoundException e) {
+						JOptionPane.showMessageDialog(null, "The image could not be processed");
+					}
+					centerPanel.repaint();
+					isSaved = false;
 				}
-				centerPanel.repaint();
-				isSaved = false;
 			} else {
 				JOptionPane.showMessageDialog(null, "Please load an image first");
 			}

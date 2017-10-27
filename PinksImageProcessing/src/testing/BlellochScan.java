@@ -86,7 +86,6 @@ public class BlellochScan extends PixelModifier {
 		CL.clSetKernelArg(hillisSteeleKernel, 1, Sizeof.cl_mem, Pointer.to(memResult));
 		CL.clSetKernelArg(hillisSteeleKernel, 2, Sizeof.cl_mem, Pointer.to(memLocalData));
 		CL.clSetKernelArg(hillisSteeleKernel, 3, Sizeof.cl_mem, Pointer.to(memSize));
-
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), hillisSteeleKernel, 1, null, globalWorkSize, localWorkSize,
 				0, null, null);
 

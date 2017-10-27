@@ -7,7 +7,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.FileNotFoundException;
 
+import org.jocl.CL;
 import org.jocl.cl_device_id;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -26,7 +28,9 @@ public class ScanTest {
 	/**
 	 * Initializes the device manager and creates a context for a GPU.
 	 */
-	public ScanTest() {
+	@Before
+	public void scanTest() {
+		CL.setExceptionsEnabled(true);
 		deviceManager = new JoclInitializer();
 		cl_device_id[] devices = deviceManager.getDeviceIds();
 		int i = 0;
