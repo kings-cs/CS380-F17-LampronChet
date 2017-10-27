@@ -63,7 +63,7 @@ import pinkprocessing.FileHandler;
  * @author Chet Lampron
  *
  */
-public class PipGui extends JFrame {
+public class PiPGui extends JFrame {
 
 	/**
 	 * Default generated ID.
@@ -81,7 +81,7 @@ public class PipGui extends JFrame {
 	/** The current image. */
 	private BufferedImage image;
 	/** The current Gui. */
-	private PipGui currentGui;
+	private PiPGui currentGui;
 	/** The temporary side walls. */
 	private BufferedImage sideMural;
 	/** The side panels. */
@@ -109,7 +109,7 @@ public class PipGui extends JFrame {
 	 * @throws IOException
 	 *             When file data is lost.
 	 */
-	public PipGui() throws IOException {
+	public PiPGui() throws IOException {
 
 		JEditorPane webPane = new JEditorPane();
 		webPane.setEditable(false);
@@ -252,14 +252,14 @@ public class PipGui extends JFrame {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					if (newButton.isSelected()) {
-						deviceManager.createContext(PipGui.deviceMap.get(newButton.getName()));
+						deviceManager.createContext(PiPGui.deviceMap.get(newButton.getName()));
 					}
 
 				}
 
 			});
 			if (deviceGroup.getSelection() == null) {
-				if (deviceManager.isGpu(PipGui.deviceMap.get(newButton.getName()))) {
+				if (deviceManager.isGpu(PiPGui.deviceMap.get(newButton.getName()))) {
 					newButton.doClick();
 				}
 			}
@@ -762,11 +762,11 @@ public class PipGui extends JFrame {
 			if (image != null) {
 				CancelOptionPanel cancelOption = new CancelOptionPanel();
 				int result = JOptionPane.showConfirmDialog(null, cancelOption,
-						"Please enter a minute value, and seconds if desired: ", JOptionPane.OK_CANCEL_OPTION);
+						"Please enter a number of tiles: ", JOptionPane.OK_CANCEL_OPTION);
 				if (result == JOptionPane.OK_OPTION) {
 					try {
 						int tiles = Integer.parseInt(cancelOption.getTiles().getText());
-						MosaicModifierParallel pixelModifier = new MosaicModifierParallel(tiles, deviceManager);
+						MosaicModifier pixelModifier = new MosaicModifier(tiles);
 
 						image = pixelModifier.modifyPixel(image);
 					} catch (FileNotFoundException e) {
@@ -818,7 +818,7 @@ public class PipGui extends JFrame {
 	 * 
 	 * @return The current Gui.
 	 */
-	private PipGui getGui() {
+	private PiPGui getGui() {
 		return currentGui;
 	}
 
@@ -828,7 +828,7 @@ public class PipGui extends JFrame {
 	 * @param current
 	 *            The current GUI.
 	 */
-	public void setCurrentGui(PipGui current) {
+	public void setCurrentGui(PiPGui current) {
 		currentGui = current;
 	}
 

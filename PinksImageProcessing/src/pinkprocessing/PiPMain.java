@@ -12,7 +12,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 
 import org.jocl.CL;
 
-import gui.PipGui;
+import gui.PiPGui;
 
 /**
  * Contains the main method.
@@ -20,7 +20,7 @@ import gui.PipGui;
  * @author Chet
  *
  */
-public class PipMain {
+public class PiPMain {
 	/**
 	 * The main method.
 	 * 
@@ -42,9 +42,9 @@ public class PipMain {
 			JOptionPane.showMessageDialog(null, "The Nimbus look and feel is not available");
 		}
 
-		PipGui display = null;
+		PiPGui display = null;
 		try {
-			display = new PipGui();
+			display = new PiPGui();
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, "Borders could not be found");
 			System.exit(1);

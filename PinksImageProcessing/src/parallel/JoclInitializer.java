@@ -11,7 +11,7 @@ import org.jocl.cl_context_properties;
 import org.jocl.cl_device_id;
 import org.jocl.cl_platform_id;
 
-import gui.PipGui;
+import gui.PiPGui;
 
 /**
  * Builds all required items for parallel programming.
@@ -98,7 +98,7 @@ public class JoclInitializer {
 			byte[] buffer = new byte[(int) size[0]];
 			CL.clGetDeviceInfo(devices[i], CL.CL_DEVICE_NAME, buffer.length, Pointer.to(buffer), null);
 			result[i] = new String(buffer, 0, buffer.length - 1);
-			PipGui.getDeviceMap().put(result[i], devices[i]);
+			PiPGui.getDeviceMap().put(result[i], devices[i]);
 		}
 		return result;
 	}
