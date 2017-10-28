@@ -70,7 +70,6 @@ public class GrayscaleEqualization {
 		long[] globalWorkSize = new long[] { sourceData.length };
 		long[] localWorkSize = new long[] { workSize };
 		deviceManager.createQueue();
-		// Set up and run the separate channels kernel.
 		cl_kernel calculateKernel = CL.clCreateKernel(program, "calculate_histogram", null);
 
 		CL.clSetKernelArg(calculateKernel, 0, Sizeof.cl_mem, ptrSource);
@@ -79,14 +78,14 @@ public class GrayscaleEqualization {
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), calculateKernel, 1, null, globalWorkSize, localWorkSize, 0,
 				null, null);
 		calculatedRuntime += System.nanoTime() - startTime;
-		
-		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memFreq, CL.CL_TRUE, 0, frequency.length * Sizeof.cl_float,
+
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memFreq, CL.CL_TRUE, 0, frequency.length * Sizeof.cl_int,
 				ptrFreq, 0, null, null);
-		
+
 		CL.clReleaseKernel(calculateKernel);
+		CL.clReleaseProgram(program);
 		CL.clReleaseMemObject(memFreq);
 		CL.clReleaseMemObject(memSource);
-		CL.clReleaseProgram(program);
 
 		kernelScan.close();
 		return frequency;
