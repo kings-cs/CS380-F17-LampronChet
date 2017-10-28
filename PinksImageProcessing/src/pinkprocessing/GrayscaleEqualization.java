@@ -72,8 +72,8 @@ public class GrayscaleEqualization {
 		deviceManager.createQueue();
 		cl_kernel calculateKernel = CL.clCreateKernel(program, "calculate_histogram", null);
 
-		CL.clSetKernelArg(calculateKernel, 0, Sizeof.cl_mem, ptrSource);
-		CL.clSetKernelArg(calculateKernel, 1, Sizeof.cl_mem, ptrFreq);
+		CL.clSetKernelArg(calculateKernel, 0, Sizeof.cl_mem, Pointer.to(memSource));
+		CL.clSetKernelArg(calculateKernel, 1, Sizeof.cl_mem, Pointer.to(memFreq));
 		double startTime = System.nanoTime();
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), calculateKernel, 1, null, globalWorkSize, localWorkSize, 0,
 				null, null);
@@ -99,8 +99,12 @@ public class GrayscaleEqualization {
 	 * @return The distributed cumulative frequency.
 	 */
 	public int[] distributeCumulativeFrequency(int[] histogramResult) {
-		// TODO Auto-generated method stub
-		return null;
+		int[] freqResult = new int[histogramResult.length];
+
+		for (int i = 1; i <= freqResult.length - 1; i++) {
+			freqResult[i] += histogramResult[i - 1];
+		}
+		return freqResult;
 	}
 
 	/**
@@ -108,9 +112,12 @@ public class GrayscaleEqualization {
 	 * 
 	 * @param cumulativeFrequencyResult
 	 *            The distributed cumulative frequency.
+	 * 
+	 * @param numOfPixels
+	 *            The number of pixels.
 	 * @return The ideal histogram.
 	 */
-	public int[] calculateIdealizedHistogram(int[] cumulativeFrequencyResult) {
+	public int[] calculateIdealizedHistogram(int[] cumulativeFrequencyResult, int numOfPixels) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -132,11 +139,17 @@ public class GrayscaleEqualization {
 	 * 
 	 * @param mapDesign
 	 *            The map design.
+	 * @param data
+	 *            The original data.
 	 * @return The map.
 	 */
-	public int[] getMap(int[] mapDesign) {
-		// TODO Auto-generated method stub
-		return null;
+	public int[] getMap(int[] mapDesign, int[] data) {
+		int[] map = new int[data.length];
+		
+		for(int i = 0; i < map.length; i++) {
+			map[i] = mapDesign[data[i]];
+		}
+		return map;
 	}
 
 	/**

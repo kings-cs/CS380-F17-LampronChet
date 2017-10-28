@@ -48,7 +48,7 @@ public class GrayscaleEqualizationTest {
 	 *             Not thrown.
 	 */
 	@Test
-	public void testCalculateHeuristic() throws FileNotFoundException {
+	public void testCalculateHistogram() throws FileNotFoundException {
 		int[] data = new int[] { 4, 4, 4, 4, 4, 3, 4, 5, 4, 3, 3, 5, 5, 5, 3, 3, 4, 5, 4, 3, 4, 4, 4, 4, 4 };
 		GrayscaleEqualization equalizer = new GrayscaleEqualization();
 		int[] calculatedHistogram = equalizer.calculateHistogram(deviceManager, data, getWorkSize(deviceManager, data));
@@ -58,6 +58,121 @@ public class GrayscaleEqualizationTest {
 		assertEquals("Should return 5", 5, calculatedHistogram[5]);
 
 	}
+	
+	/**
+	 * Test for distributeCumulativeFrequency.
+	 * 
+	 * @throws FileNotFoundException
+	 *             Not thrown.
+	 */
+	@Test
+	public void testCumulativeFrequency() throws FileNotFoundException {
+		int[] data = new int[] { 0, 0, 0, 6, 14, 5, 0, 0};
+		GrayscaleEqualization equalizer = new GrayscaleEqualization();
+		int[] distributedFreq = equalizer.distributeCumulativeFrequency(data);//(deviceManager, data, getWorkSize(deviceManager, data));
+
+		assertEquals("Should return 6", 6, distributedFreq[3]);
+		assertEquals("Should return 20", 20, distributedFreq[4]);
+		assertEquals("Should return 25", 25, distributedFreq[5]);
+		assertEquals("Should return 25", 25, distributedFreq[6]);
+		assertEquals("Should return 25", 25, distributedFreq[7]);
+
+	}
+	
+	/**
+	 * Test for calculatedIdealizedHistogram.
+	 * 
+	 * @throws FileNotFoundException
+	 *             Not thrown.
+	 */
+	@Test
+	public void testIdealizedHistogram() throws FileNotFoundException {
+		int[] data = new int[] { 0, 0, 0, 6, 20, 25, 25, 25};
+		GrayscaleEqualization equalizer = new GrayscaleEqualization();
+		int[] calculatedIdealizedHistogram = equalizer.calculateIdealizedHistogram(data, 25);//(deviceManager, data, getWorkSize(deviceManager, data));
+
+		assertEquals("Should return 3", 3, calculatedIdealizedHistogram[0]);
+		assertEquals("Should return 3", 3, calculatedIdealizedHistogram[1]);
+		assertEquals("Should return 3", 3, calculatedIdealizedHistogram[2]);
+		assertEquals("Should return 4", 4, calculatedIdealizedHistogram[3]);
+		assertEquals("Should return 3", 3, calculatedIdealizedHistogram[4]);
+		assertEquals("Should return 3", 3, calculatedIdealizedHistogram[5]);
+		assertEquals("Should return 3", 3, calculatedIdealizedHistogram[6]);
+		assertEquals("Should return 3", 3, calculatedIdealizedHistogram[7]);
+
+	}
+	
+	/**
+	 * Test for designMap.
+	 * 
+	 * @throws FileNotFoundException
+	 *             Not thrown.
+	 */
+	@Test
+	public void testDesignMap() throws FileNotFoundException {
+		int[] data = new int[] { 3, 6, 9, 13, 16, 19, 22, 25};
+		GrayscaleEqualization equalizer = new GrayscaleEqualization();
+		int[] mapDesign = equalizer.designMap(data);//(deviceManager, data, getWorkSize(deviceManager, data));
+
+		assertEquals("Should return 0", 0, mapDesign[0]);
+		assertEquals("Should return 0", 0, mapDesign[1]);
+		assertEquals("Should return 0", 0, mapDesign[2]);
+		assertEquals("Should return 1", 1, mapDesign[3]);
+		assertEquals("Should return 5", 5, mapDesign[4]);
+		assertEquals("Should return 7", 7, mapDesign[5]);
+		assertEquals("Should return 7", 7, mapDesign[6]);
+		assertEquals("Should return 7", 7, mapDesign[7]);
+
+	}
+	
+	/**
+	 * Test for getMap.
+	 * 
+	 * @throws FileNotFoundException
+	 *             Not thrown.
+	 */
+	@Test
+	public void testGetMap() throws FileNotFoundException {
+		int[] mapDesign = new int[] { 0, 0, 0, 1, 5, 7, 7, 7};
+		int[] data = new int[] { 5, 5, 5, 5, 5, 
+								 1, 5, 7, 5, 1, 
+								 1, 7, 7, 7, 1, 
+								 1, 5, 7, 5, 1, 
+								 5, 5, 5, 5, 5 };
+		GrayscaleEqualization equalizer = new GrayscaleEqualization();
+		int[] map = equalizer.getMap(mapDesign, data);//(deviceManager, data, getWorkSize(deviceManager, data));
+
+			
+		assertEquals("Should return 5", 5, map[0]);
+		assertEquals("Should return 5", 5, map[1]);
+		assertEquals("Should return 5", 5, map[2]);
+		assertEquals("Should return 5", 5, map[3]);
+		assertEquals("Should return 5", 5, map[4]);
+		assertEquals("Should return 1", 1, map[5]);
+		assertEquals("Should return 5", 5, map[6]);
+		assertEquals("Should return 7", 7, map[7]);
+		assertEquals("Should return 5", 5, map[8]);
+		assertEquals("Should return 1", 1, map[9]);
+		assertEquals("Should return 1", 1, map[10]);
+		assertEquals("Should return 7", 7, map[11]);
+		assertEquals("Should return 7", 7, map[12]);
+		assertEquals("Should return 7", 7, map[13]);
+		assertEquals("Should return 1", 1, map[14]);
+		assertEquals("Should return 1", 1, map[15]);
+		assertEquals("Should return 5", 5, map[16]);
+		assertEquals("Should return 7", 7, map[17]);
+		assertEquals("Should return 5", 5, map[18]);
+		assertEquals("Should return 1", 1, map[19]);
+		assertEquals("Should return 5", 5, map[20]);
+		assertEquals("Should return 5", 5, map[21]);
+		assertEquals("Should return 5", 5, map[22]);
+		assertEquals("Should return 5", 5, map[23]);
+		assertEquals("Should return 5", 5, map[24]);
+		assertEquals("Should return 5", 5, map[25]);
+
+	}
+	
+	
 
 	/**
 	 * Gets the proper work size.

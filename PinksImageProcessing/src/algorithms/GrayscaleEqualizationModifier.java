@@ -46,10 +46,10 @@ public class GrayscaleEqualizationModifier extends PixelModifier {
 		GrayscaleEqualization equalizer = new GrayscaleEqualization();
 		int[] histogramResult = equalizer.calculateHistogram(deviceManager, sourceData, getWorkSize(deviceManager, sourceData));
 		int[] cumulativeFrequencyResult = equalizer.distributeCumulativeFrequency(histogramResult);
-		int[] idealizedHistogram = equalizer.calculateIdealizedHistogram(cumulativeFrequencyResult);
+		int[] idealizedHistogram = equalizer.calculateIdealizedHistogram(cumulativeFrequencyResult, sourceData.length);
 		cumulativeFrequencyResult = equalizer.distributeCumulativeFrequency(idealizedHistogram);
 		int[] mapDesign = equalizer.designMap(cumulativeFrequencyResult);
-		int[] map = equalizer.getMap(mapDesign);
+		int[] map = equalizer.getMap(mapDesign, sourceData);
 		int calculatedTime = equalizer.getTime();
 		resultData = map;
 
