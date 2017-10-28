@@ -118,7 +118,8 @@ public class GrayscaleEqualization {
 	 * @return The ideal histogram.
 	 */
 	public int[] calculateIdealizedHistogram(int[] cumulativeFrequencyResult, int numOfPixels) {
-		// TODO Auto-generated method stub
+		int idealizedValue = numOfPixels / cumulativeFrequencyResult.length;
+		
 		return null;
 	}
 
