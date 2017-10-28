@@ -102,7 +102,7 @@ public class GrayscaleEqualization {
 		int[] freqResult = new int[histogramResult.length];
 
 		for (int i = 1; i <= freqResult.length - 1; i++) {
-			freqResult[i] += histogramResult[i - 1];
+			freqResult[i] += histogramResult[i] + freqResult[i - 1];
 		}
 		return freqResult;
 	}
@@ -127,11 +127,39 @@ public class GrayscaleEqualization {
 	 * 
 	 * @param cumulativeFrequencyResult
 	 *            The calculated frequency.
+	 * @param originalResult
+	 *            The original images cumulative frequency distrobution.
 	 * @return The map design.
 	 */
-	public int[] designMap(int[] cumulativeFrequencyResult) {
-		// TODO Auto-generated method stub
-		return null;
+	public int[] designMap(int[] cumulativeFrequencyResult, int[] originalResult) {
+		int[] mapDesign = new int[originalResult.length];
+		
+		for(int i = 0; i < mapDesign.length; i++) {
+			int original = originalResult[i];
+			int resultIndex = 0;
+			boolean isExact = false;
+			int j = 0;
+			int valueDifference = Integer.MAX_VALUE;
+			while(j < cumulativeFrequencyResult.length && !isExact) {
+				if(valueDifference == 0) {
+					resultIndex = j;
+					isExact = true;
+				}else {
+					int newDifference =  Math.abs(original - cumulativeFrequencyResult[j]);
+					if(newDifference < valueDifference && newDifference != 0) {
+						valueDifference = newDifference;
+						resultIndex = j;
+					}else if(newDifference == 0) {
+						valueDifference = newDifference;
+						resultIndex = j;
+						isExact = true;
+					}
+				}
+				j++;
+			}
+			mapDesign[i] = resultIndex;
+		}
+		return mapDesign;
 	}
 
 	/**
@@ -145,8 +173,8 @@ public class GrayscaleEqualization {
 	 */
 	public int[] getMap(int[] mapDesign, int[] data) {
 		int[] map = new int[data.length];
-		
-		for(int i = 0; i < map.length; i++) {
+
+		for (int i = 0; i < map.length; i++) {
 			map[i] = mapDesign[data[i]];
 		}
 		return map;
