@@ -124,8 +124,16 @@ public class GrayscaleEqualization {
 		for (int i = 0; i < histogram.length; i++) {
 			histogram[i] = idealizedValue;
 		}
-		if (numOfPixels % cumulativeFrequencyResult.length > 0) {
+		int modVal = numOfPixels % cumulativeFrequencyResult.length;
+		if (modVal == 1) {
 			histogram[(histogram.length - 1) / 2]++;
+		} else if (modVal > 1) {
+			int index = ((histogram.length - 1) / 2) - (modVal / 2);
+			while(modVal >= 0) {
+				histogram[index]++;
+				index++;
+				modVal--;
+			}
 		}
 		return histogram;
 	}
@@ -187,8 +195,8 @@ public class GrayscaleEqualization {
 			int alpha = (pixel & PixelModifier.getAlphaMask()) >> PixelModifier.getAlphaOffset();
 			int red = (pixel & PixelModifier.getRedMask()) >> PixelModifier.getRedOffset();
 			int newVal = mapDesign[red];
-			int newPixel = (alpha << PixelModifier.getAlphaOffset()) | (newVal << PixelModifier.getRedOffset()) | (newVal << PixelModifier.getBlueOffset())
-					| (newVal << PixelModifier.getGreenOffset());
+			int newPixel = (alpha << PixelModifier.getAlphaOffset()) | (newVal << PixelModifier.getRedOffset())
+					| (newVal << PixelModifier.getBlueOffset()) | (newVal << PixelModifier.getGreenOffset());
 			map[i] = newPixel;
 		}
 		return map;
