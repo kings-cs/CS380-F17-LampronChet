@@ -36,7 +36,7 @@ public abstract class PixelModifier {
 	protected static final int BLUE_MASK = 0x000000ff;
 	/** The blue offset. */
 	protected static final int BLUE_OFFSET = 0;
-	
+
 	/**
 	 * Modifies each pixel to change the image.
 	 * 
@@ -63,7 +63,6 @@ public abstract class PixelModifier {
 		return sourceData;
 	}
 
-
 	/**
 	 * Gets the proper work size.
 	 * 
@@ -87,15 +86,37 @@ public abstract class PixelModifier {
 		}
 		return maxItemsPerGroup;
 	}
+
 	/**
 	 * Repackages the image.
-	 * @param resultData The result data of the image.
-	 * @param image The image.
+	 * 
+	 * @param resultData
+	 *            The result data of the image.
+	 * @param image
+	 *            The image.
 	 */
 	public void packageImage(int[] resultData, BufferedImage image) {
 		DataBufferInt resultDataBuffer = new DataBufferInt(resultData, resultData.length);
 		Raster resultRastor = Raster.createRaster(image.getRaster().getSampleModel(), resultDataBuffer,
 				new Point(0, 0));
 		image.setData(resultRastor);
+	}
+
+	/**
+	 * Gets the alpha offset.
+	 * 
+	 * @return the alphaOffset
+	 */
+	public static int getAlphaOffset() {
+		return ALPHA_OFFSET;
+	}
+
+	/**
+	 * Gets the alpha mask.
+	 * 
+	 * @return the alphaMask
+	 */
+	public static int getAlphaMask() {
+		return ALPHA_MASK;
 	}
 }

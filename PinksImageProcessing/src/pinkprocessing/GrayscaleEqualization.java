@@ -14,6 +14,7 @@ import org.jocl.cl_kernel;
 import org.jocl.cl_mem;
 import org.jocl.cl_program;
 
+import algorithms.PixelModifier;
 import parallel.JoclInitializer;
 
 /**
@@ -120,10 +121,10 @@ public class GrayscaleEqualization {
 	public int[] calculateIdealizedHistogram(int[] cumulativeFrequencyResult, int numOfPixels) {
 		int idealizedValue = numOfPixels / cumulativeFrequencyResult.length;
 		int[] histogram = new int[cumulativeFrequencyResult.length];
-		for(int i = 0; i < histogram.length; i++ ) {
+		for (int i = 0; i < histogram.length; i++) {
 			histogram[i] = idealizedValue;
 		}
-		if(numOfPixels % cumulativeFrequencyResult.length > 0) {
+		if (numOfPixels % cumulativeFrequencyResult.length > 0) {
 			histogram[(histogram.length - 1) / 2]++;
 		}
 		return histogram;
@@ -140,23 +141,23 @@ public class GrayscaleEqualization {
 	 */
 	public int[] designMap(int[] cumulativeFrequencyResult, int[] originalResult) {
 		int[] mapDesign = new int[originalResult.length];
-		
-		for(int i = 0; i < mapDesign.length; i++) {
+
+		for (int i = 0; i < mapDesign.length; i++) {
 			int original = originalResult[i];
 			int resultIndex = 0;
 			boolean isExact = false;
 			int j = 0;
 			int valueDifference = Integer.MAX_VALUE;
-			while(j < cumulativeFrequencyResult.length && !isExact) {
-				if(valueDifference == 0) {
+			while (j < cumulativeFrequencyResult.length && !isExact) {
+				if (valueDifference == 0) {
 					resultIndex = j;
 					isExact = true;
-				}else {
-					int newDifference =  Math.abs(original - cumulativeFrequencyResult[j]);
-					if(newDifference < valueDifference && newDifference != 0) {
+				} else {
+					int newDifference = Math.abs(original - cumulativeFrequencyResult[j]);
+					if (newDifference < valueDifference && newDifference != 0) {
 						valueDifference = newDifference;
 						resultIndex = j;
-					}else if(newDifference == 0) {
+					} else if (newDifference == 0) {
 						valueDifference = newDifference;
 						resultIndex = j;
 						isExact = true;
@@ -182,7 +183,9 @@ public class GrayscaleEqualization {
 		int[] map = new int[data.length];
 
 		for (int i = 0; i < map.length; i++) {
-			map[i] = mapDesign[data[i]];
+			int pixel = data[i];
+			int alpha = (pixel & PixelModifier.getAlphaMask()) >> PixelModifier.getAlphaOffset();
+			map[i] = mapDesign[alpha];
 		}
 		return map;
 	}
