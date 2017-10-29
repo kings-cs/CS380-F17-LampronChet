@@ -46,24 +46,18 @@ public class HillisSteeleScan extends PixelModifier {
 	 * @throws FileNotFoundException
 	 *             Not thrown.
 	 */
-	public void scan(final float[] data, float[] result) throws FileNotFoundException {
+	protected void scan(final float[] data, float[] result) throws FileNotFoundException {
 
 		float[] from = new float[data.length];
 		float[] to = new float[data.length];
 
 		Pointer ptrData = Pointer.to(data);
 		Pointer ptrResult = Pointer.to(result);
-		Pointer ptrFrom = Pointer.to(from);
-		Pointer ptrTo = Pointer.to(to);
 
 		cl_mem memData = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * data.length, ptrData, null);
 		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_WRITE_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * result.length, ptrResult, null);
-		cl_mem memFrom = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
-				Sizeof.cl_float * from.length, ptrFrom, null);
-		cl_mem memTo = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
-				Sizeof.cl_float * to.length, ptrTo, null);
 
 		File kernelFile = new File("Kernels/HillisSteeleScan");
 		Scanner kernelScan = new Scanner(kernelFile);
@@ -84,8 +78,8 @@ public class HillisSteeleScan extends PixelModifier {
 
 		CL.clSetKernelArg(hillisSteeleKernel, 0, Sizeof.cl_mem, Pointer.to(memData));
 		CL.clSetKernelArg(hillisSteeleKernel, 1, Sizeof.cl_mem, Pointer.to(memResult));
-		CL.clSetKernelArg(hillisSteeleKernel, 2, Sizeof.cl_mem, Pointer.to(memFrom));
-		CL.clSetKernelArg(hillisSteeleKernel, 3, Sizeof.cl_mem, Pointer.to(memTo));
+		CL.clSetKernelArg(hillisSteeleKernel, 2, Sizeof.cl_float * from.length, null);
+		CL.clSetKernelArg(hillisSteeleKernel, 3, Sizeof.cl_float * to.length, null);
 
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), hillisSteeleKernel, 1, null, globalWorkSize, localWorkSize,
 				0, null, null);
@@ -94,8 +88,6 @@ public class HillisSteeleScan extends PixelModifier {
 				ptrResult, 0, null, null);
 
 		CL.clReleaseKernel(hillisSteeleKernel);
-		CL.clReleaseMemObject(memTo);
-		CL.clReleaseMemObject(memFrom);
 		CL.clReleaseMemObject(memResult);
 		CL.clReleaseMemObject(memData);
 
