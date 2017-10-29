@@ -86,7 +86,7 @@ public class GrayscaleEqualizationTest {
 	 * @throws FileNotFoundException
 	 *             Not thrown.
 	 */
-	@Ignore
+	@Test
 	public void testIdealizedHistogram() throws FileNotFoundException {
 		int[] data = new int[] { 0, 0, 0, 6, 20, 25, 25, 25};
 		GrayscaleEqualization equalizer = new GrayscaleEqualization();

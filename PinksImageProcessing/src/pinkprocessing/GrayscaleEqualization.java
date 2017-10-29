@@ -119,8 +119,14 @@ public class GrayscaleEqualization {
 	 */
 	public int[] calculateIdealizedHistogram(int[] cumulativeFrequencyResult, int numOfPixels) {
 		int idealizedValue = numOfPixels / cumulativeFrequencyResult.length;
-		
-		return null;
+		int[] histogram = new int[cumulativeFrequencyResult.length];
+		for(int i = 0; i < histogram.length; i++ ) {
+			histogram[i] = idealizedValue;
+		}
+		if(numOfPixels % cumulativeFrequencyResult.length > 0) {
+			histogram[(histogram.length - 1) / 2]++;
+		}
+		return histogram;
 	}
 
 	/**

@@ -44,6 +44,7 @@ import org.jocl.cl_device_id;
 
 import algorithms.BlurModifier;
 import algorithms.BlurModifierParallel;
+import algorithms.GrayscaleEqualizationModifier;
 import algorithms.GrayscaleModifier;
 import algorithms.GrayscaleModifierParallel;
 import algorithms.HorizontalFlip;
@@ -194,6 +195,10 @@ public class PiPGui extends JFrame {
 		JMenuItem mosaicParallel = new JMenuItem("Mosaic tiles(Parallel)");
 		mosaicParallel.addActionListener(new MosaicParallel());
 		options.add(mosaicParallel);
+
+		JMenuItem grayscaleEqualization = new JMenuItem("Equalize grayscale image");
+		grayscaleEqualization.addActionListener(new EqualizeGrayscaleImage());
+		options.add(grayscaleEqualization);
 
 		JMenuItem about = new JMenuItem("About");
 		about.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
@@ -750,7 +755,7 @@ public class PiPGui extends JFrame {
 	}
 
 	/**
-	 * Runs the Blur algorithm when prompted.
+	 * Runs the Mosaic algorithm when prompted.
 	 * 
 	 * @author Chet lampron
 	 *
@@ -775,6 +780,34 @@ public class PiPGui extends JFrame {
 					centerPanel.repaint();
 					isSaved = false;
 				}
+			} else {
+				JOptionPane.showMessageDialog(null, "Please load an image first");
+			}
+
+		}
+
+	}
+
+	/**
+	 * Runs the Blur algorithm when prompted.
+	 * 
+	 * @author Chet lampron
+	 *
+	 */
+	private class EqualizeGrayscaleImage implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			if (image != null) {
+				try {
+					GrayscaleEqualizationModifier pixelModifier = new GrayscaleEqualizationModifier(deviceManager);
+
+					image = pixelModifier.modifyPixel(image);
+				} catch (FileNotFoundException e) {
+					JOptionPane.showMessageDialog(null, "The image could not be processed");
+				}
+				centerPanel.repaint();
+				isSaved = false;
 			} else {
 				JOptionPane.showMessageDialog(null, "Please load an image first");
 			}
