@@ -90,6 +90,7 @@ public class GrayscaleEqualizationTest {
 	public void testIdealizedHistogram() throws FileNotFoundException {
 		int[] data = new int[] { 0, 0, 0, 6, 20, 25, 25, 25};
 		GrayscaleEqualization equalizer = new GrayscaleEqualization();
+		equalizer.setDeviceManager(deviceManager);
 		int[] calculatedIdealizedHistogram = equalizer.calculateIdealizedHistogram(data, 25);//(deviceManager, data, getWorkSize(deviceManager, data));
 
 		assertEquals("Should return 3", 3, calculatedIdealizedHistogram[0]);
