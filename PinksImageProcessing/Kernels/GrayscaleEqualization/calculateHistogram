@@ -1,5 +1,8 @@
 __kernel void calculate_histogram(__global const int *data, __global int *result, __global int *offset){
 			int i = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
-			int value = data[i];
+			int blueOffset = offset[0];
+			int blueMask = offset[1];
+			int blue = (data[i] & blueMask) >> blueOffset;
+			int value = blue;
 			atomic_inc(&result[value]);
 }
