@@ -157,19 +157,19 @@ public class GrayscaleEqualization {
 		long[] globalWorkSize = new long[] { cumulativeFrequencyResult.length };
 		long[] localWorkSize = new long[] { workSize };
 		deviceManager.createQueue();
-		cl_kernel calculateKernel = CL.clCreateKernel(program, "calculate_ideal_histogram", null);
+		cl_kernel idealKernel = CL.clCreateKernel(program, "calculate_ideal_histogram", null);
 
-		CL.clSetKernelArg(calculateKernel, 0, Sizeof.cl_mem, Pointer.to(memHistogram));
-		CL.clSetKernelArg(calculateKernel, 1, Sizeof.cl_mem, Pointer.to(memDimensions));
+		CL.clSetKernelArg(idealKernel, 0, Sizeof.cl_mem, Pointer.to(memHistogram));
+		CL.clSetKernelArg(idealKernel, 1, Sizeof.cl_mem, Pointer.to(memDimensions));
 		double startTime = System.nanoTime();
-		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), calculateKernel, 1, null, globalWorkSize, localWorkSize, 0,
+		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), idealKernel, 1, null, globalWorkSize, localWorkSize, 0,
 				null, null);
 		calculatedRuntime += System.nanoTime() - startTime;
 
 		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memHistogram, CL.CL_TRUE, 0, histogram.length * Sizeof.cl_int,
 				ptrHistogram, 0, null, null);
 
-		CL.clReleaseKernel(calculateKernel);
+		CL.clReleaseKernel(idealKernel);
 		CL.clReleaseProgram(program);
 		CL.clReleaseMemObject(memHistogram);
 		CL.clReleaseMemObject(memDimensions);
@@ -251,8 +251,7 @@ public class GrayscaleEqualization {
 			int alpha = (pixel & PixelModifier.getAlphaMask()) >> PixelModifier.getAlphaOffset();
 			int blue = (pixel & PixelModifier.getBlueMask()) >> PixelModifier.getBlueOffset();
 			int newVal = mapDesign[blue];
-			int newPixel = (alpha << PixelModifier.getAlphaOffset()) | (newVal << PixelModifier.getRedOffset())
-					| (newVal << PixelModifier.getBlueOffset()) | (newVal << PixelModifier.getGreenOffset());
+			int newPixel = (alpha << PixelModifier.getAlphaOffset() | (newVal << PixelModifier.getBlueOffset()));
 			map[i] = newPixel;
 		}
 		return map;
@@ -269,7 +268,9 @@ public class GrayscaleEqualization {
 
 	/**
 	 * Sets the device manager.
-	 * @param deviceManager2 The device manager.
+	 * 
+	 * @param deviceManager2
+	 *            The device manager.
 	 */
 	public void setDeviceManager(JoclInitializer deviceManager2) {
 		deviceManager = deviceManager2;
