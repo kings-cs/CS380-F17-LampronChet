@@ -40,8 +40,8 @@ public class BlurModifier extends PixelModifier {
 				int index = row * width + col;
 				int alpha = (sourceData[index] & PixelModifier.ALPHA_MASK) >> PixelModifier.getAlphaOffset();
 				int red = (sourceData[index] & PixelModifier.RED_MASK) >> PixelModifier.RED_OFFSET;
-				int green = (sourceData[index] & PixelModifier.GREEN_MASK) >> PixelModifier.getGreenOffset();
-				int blue = (sourceData[index] & PixelModifier.BLUE_MASK) >> PixelModifier.getBlueOffset();
+				int green = (sourceData[index] & PixelModifier.getGreenMask()) >> PixelModifier.getGreenOffset();
+				int blue = (sourceData[index] & PixelModifier.getBlueMask()) >> PixelModifier.getBlueOffset();
 
 				redArray[index] = red;
 				blueArray[index] = blue;

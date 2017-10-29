@@ -28,12 +28,12 @@ public abstract class PixelModifier {
 	protected static final int RED_OFFSET = 16;
 
 	/** The green mask. */
-	protected static final int GREEN_MASK = 0x0000ff00;
+	private static final int GREEN_MASK = 0x0000ff00;
 	/** The green offset. */
 	protected static final int GREEN_OFFSET = 8;
 
 	/** The blue mask. */
-	protected static final int BLUE_MASK = 0x000000ff;
+	private static final int BLUE_MASK = 0x000000ff;
 	/** The blue offset. */
 	private static final int BLUE_OFFSET = 0;
 
@@ -146,5 +146,19 @@ public abstract class PixelModifier {
 	 */
 	public static int getGreenOffset() {
 		return GREEN_OFFSET;
+	}
+
+	/**
+	 * @return the greenMask
+	 */
+	public static int getGreenMask() {
+		return GREEN_MASK;
+	}
+
+	/**
+	 * @return the blueMask
+	 */
+	public static int getBlueMask() {
+		return BLUE_MASK;
 	}
 }

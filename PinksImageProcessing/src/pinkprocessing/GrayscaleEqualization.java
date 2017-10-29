@@ -28,11 +28,15 @@ public class GrayscaleEqualization {
 	private static final int NUM_OF_COLORS = 256;
 	/** The calculated runtime. */
 	private int calculatedRuntime;
+	/** The device manager. */
+	private JoclInitializer deviceManager;
+	/** The work size. */
+	private int workSize;
 
 	/**
 	 * Calculates the histogram.
 	 * 
-	 * @param deviceManager
+	 * @param aDeviceManager
 	 *            The device manager.
 	 * @param sourceData
 	 *            The image source data.
@@ -42,16 +46,21 @@ public class GrayscaleEqualization {
 	 * @throws FileNotFoundException
 	 *             Not thrown.
 	 */
-	public int[] calculateHistogram(JoclInitializer deviceManager, int[] sourceData, int theWorkSize)
+	public int[] calculateHistogram(JoclInitializer aDeviceManager, int[] sourceData, int theWorkSize)
 			throws FileNotFoundException {
 		int[] frequency = new int[NUM_OF_COLORS];
-
+		this.deviceManager = aDeviceManager;
+		workSize = theWorkSize;
+		int[] offsets = {PixelModifier.getGreenOffset(), PixelModifier.getGreenMask()};
 		Pointer ptrSource = Pointer.to(sourceData);
 		Pointer ptrFreq = Pointer.to(frequency);
+		Pointer ptrOffsets = Pointer.to(frequency);
 
 		cl_mem memSource = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * sourceData.length, ptrSource, null);
-		cl_mem memFreq = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+		cl_mem memFreq = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
+				Sizeof.cl_float * frequency.length, ptrFreq, null);
+		cl_mem memOffsets = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * frequency.length, ptrFreq, null);
 
 		File kernelFile = new File("Kernels/GrayscaleEqualization/calculateHistogram");
@@ -66,8 +75,6 @@ public class GrayscaleEqualization {
 
 		CL.clBuildProgram(program, 0, null, null, null, null);
 
-		int workSize = theWorkSize;
-
 		long[] globalWorkSize = new long[] { sourceData.length };
 		long[] localWorkSize = new long[] { workSize };
 		deviceManager.createQueue();
@@ -75,6 +82,7 @@ public class GrayscaleEqualization {
 
 		CL.clSetKernelArg(calculateKernel, 0, Sizeof.cl_mem, Pointer.to(memSource));
 		CL.clSetKernelArg(calculateKernel, 1, Sizeof.cl_mem, Pointer.to(memFreq));
+		CL.clSetKernelArg(calculateKernel, 2, Sizeof.cl_mem, Pointer.to(memOffsets));
 		double startTime = System.nanoTime();
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), calculateKernel, 1, null, globalWorkSize, localWorkSize, 0,
 				null, null);
@@ -87,7 +95,7 @@ public class GrayscaleEqualization {
 		CL.clReleaseProgram(program);
 		CL.clReleaseMemObject(memFreq);
 		CL.clReleaseMemObject(memSource);
-
+		CL.clReleaseMemObject(memOffsets);
 		kernelScan.close();
 		return frequency;
 	}
@@ -117,24 +125,63 @@ public class GrayscaleEqualization {
 	 * @param numOfPixels
 	 *            The number of pixels.
 	 * @return The ideal histogram.
+	 * @throws FileNotFoundException
+	 *             Not thrown.
 	 */
-	public int[] calculateIdealizedHistogram(int[] cumulativeFrequencyResult, int numOfPixels) {
-		int idealizedValue = numOfPixels / cumulativeFrequencyResult.length;
+	public int[] calculateIdealizedHistogram(int[] cumulativeFrequencyResult, int numOfPixels)
+			throws FileNotFoundException {
+		//int idealizedValue = numOfPixels / cumulativeFrequencyResult.length;
 		int[] histogram = new int[cumulativeFrequencyResult.length];
-		for (int i = 0; i < histogram.length; i++) {
-			histogram[i] = idealizedValue;
+		int[] dimensions = { numOfPixels, cumulativeFrequencyResult.length, histogram.length };
+		Pointer ptrHistogram = Pointer.to(histogram);
+		Pointer ptrDimensions = Pointer.to(dimensions);
+
+		cl_mem memHistogram = CL.clCreateBuffer(deviceManager.getContext(),
+				CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * histogram.length, ptrHistogram, null);
+		cl_mem memDimensions = CL.clCreateBuffer(deviceManager.getContext(),
+				CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * dimensions.length, ptrDimensions,
+				null);
+
+		File kernelFile = new File("Kernels/GrayscaleEqualization/calculateIdealHistogram");
+		Scanner kernelScan = new Scanner(kernelFile);
+		StringBuffer sourceBuffer = new StringBuffer();
+		while (kernelScan.hasNextLine()) {
+			sourceBuffer.append(kernelScan.nextLine());
+			sourceBuffer.append("\n");
 		}
-		int modVal = numOfPixels % cumulativeFrequencyResult.length;
-		if (modVal == 1) {
-			histogram[(histogram.length - 1) / 2]++;
-		} else if (modVal > 1) {
-			int index = ((histogram.length - 1) / 2) - (modVal / 2);
-			while(modVal >= 0) {
-				histogram[index]++;
-				index++;
-				modVal--;
-			}
-		}
+		cl_program program = CL.clCreateProgramWithSource(deviceManager.getContext(), 1,
+				new String[] { sourceBuffer.toString() }, null, null);
+
+		CL.clBuildProgram(program, 0, null, null, null, null);
+
+		long[] globalWorkSize = new long[] { cumulativeFrequencyResult.length };
+		long[] localWorkSize = new long[] { workSize };
+		deviceManager.createQueue();
+		cl_kernel calculateKernel = CL.clCreateKernel(program, "calculate_ideal_histogram", null);
+
+		CL.clSetKernelArg(calculateKernel, 0, Sizeof.cl_mem, Pointer.to(memHistogram));
+		CL.clSetKernelArg(calculateKernel, 1, Sizeof.cl_mem, Pointer.to(memDimensions));
+		double startTime = System.nanoTime();
+		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), calculateKernel, 1, null, globalWorkSize, localWorkSize, 0,
+				null, null);
+		calculatedRuntime += System.nanoTime() - startTime;
+
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memHistogram, CL.CL_TRUE, 0, histogram.length * Sizeof.cl_int,
+				ptrHistogram, 0, null, null);
+
+		CL.clReleaseKernel(calculateKernel);
+		CL.clReleaseProgram(program);
+		CL.clReleaseMemObject(memHistogram);
+		CL.clReleaseMemObject(memDimensions);
+
+		kernelScan.close();
+		/*
+		 * for (int i = 0; i < histogram.length; i++) { histogram[i] = idealizedValue; }
+		 * int modVal = numOfPixels % cumulativeFrequencyResult.length; if (modVal == 1)
+		 * { histogram[(histogram.length - 1) / 2]++; } else if (modVal > 1) { int index
+		 * = ((histogram.length - 1) / 2) - (modVal / 2); while(modVal >= 0) {
+		 * histogram[index]++; index++; modVal--; } }
+		 */
 		return histogram;
 	}
 
@@ -193,7 +240,7 @@ public class GrayscaleEqualization {
 		for (int i = 0; i < map.length; i++) {
 			int pixel = data[i];
 			int alpha = (pixel & PixelModifier.getAlphaMask()) >> PixelModifier.getAlphaOffset();
-			int red = (pixel & PixelModifier.getRedMask()) >> PixelModifier.getRedOffset();
+			int red = (pixel & PixelModifier.getGreenMask()) >> PixelModifier.getGreenOffset();
 			int newVal = mapDesign[red];
 			int newPixel = (alpha << PixelModifier.getAlphaOffset()) | (newVal << PixelModifier.getRedOffset())
 					| (newVal << PixelModifier.getBlueOffset()) | (newVal << PixelModifier.getGreenOffset());

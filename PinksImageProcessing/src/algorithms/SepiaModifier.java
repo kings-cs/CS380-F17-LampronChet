@@ -35,8 +35,8 @@ public class SepiaModifier extends PixelModifier {
 
 				int alpha = (pixel & PixelModifier.ALPHA_MASK) >> PixelModifier.getAlphaOffset();
 				int red = (pixel & PixelModifier.RED_MASK) >> PixelModifier.RED_OFFSET;
-				int green = (pixel & PixelModifier.GREEN_MASK) >> PixelModifier.getGreenOffset();
-				int blue = (pixel & PixelModifier.BLUE_MASK) >> PixelModifier.getBlueOffset();
+				int green = (pixel & PixelModifier.getGreenMask()) >> PixelModifier.getGreenOffset();
+				int blue = (pixel & PixelModifier.getBlueMask()) >> PixelModifier.getBlueOffset();
 
 				int average = (red + blue + green) / 3;
 
