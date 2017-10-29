@@ -14,5 +14,4 @@ __kernel void calculate_ideal_histogram(__global int *result, __global const int
 				modVal--;
 			}
 		}
-	
 }

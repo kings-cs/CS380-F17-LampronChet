@@ -91,6 +91,7 @@ public class GrayscaleEqualizationTest {
 		int[] data = new int[] { 0, 0, 0, 6, 20, 25, 25, 25};
 		GrayscaleEqualization equalizer = new GrayscaleEqualization();
 		equalizer.setDeviceManager(deviceManager);
+		equalizer.setWorkSize(1);
 		int[] calculatedIdealizedHistogram = equalizer.calculateIdealizedHistogram(data, 25);//(deviceManager, data, getWorkSize(deviceManager, data));
 
 		assertEquals("Should return 3", 3, calculatedIdealizedHistogram[0]);

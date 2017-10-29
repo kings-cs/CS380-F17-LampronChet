@@ -194,6 +194,7 @@ public class GrayscaleEqualization {
 		return histogram;
 	}
 
+
 	/**
 	 * Designs the map.
 	 * 
@@ -274,6 +275,16 @@ public class GrayscaleEqualization {
 	 */
 	public void setDeviceManager(JoclInitializer deviceManager2) {
 		deviceManager = deviceManager2;
+	}
+
+	/**
+	 * Sets the work size.
+	 * 
+	 * @param workSize2
+	 *            The desired workSize.
+	 */
+	public void setWorkSize(int workSize2) {
+		workSize = workSize2;
 	}
 
 }
