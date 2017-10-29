@@ -21,7 +21,7 @@ import parallel.JoclInitializer;
  * @author Chet Lampron
  *
  */
-public class HillisSteeleScan extends PixelModifier{
+public class HillisSteeleScan extends PixelModifier {
 
 	/** The device manager. */
 	private JoclInitializer deviceManager;
@@ -98,7 +98,7 @@ public class HillisSteeleScan extends PixelModifier{
 		CL.clReleaseMemObject(memFrom);
 		CL.clReleaseMemObject(memResult);
 		CL.clReleaseMemObject(memData);
-		
+
 		kernelScan.close();
 	}
 
@@ -125,7 +125,7 @@ public class HillisSteeleScan extends PixelModifier{
 		}
 		return maxItemsPerGroup;
 	}
-	
+
 	@Override
 	public BufferedImage modifyPixel(BufferedImage image) throws FileNotFoundException {
 		// TODO Auto-generated method stub

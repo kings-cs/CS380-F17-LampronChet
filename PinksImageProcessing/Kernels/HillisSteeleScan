@@ -1,17 +1,25 @@
-__kernel void hillis_steele(__global const int *data, __global *result, __local float *from, __local float *to){
+__kernel void hillis_steele(__global const int *data,
+ __global int *result,
+  __local float *from,
+   __local float *to){
+   
 	int i = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
+	int local_number = get_local_id(0);
+	from[local_number] = data[i];
+	to[local_number] = data[i];
 	
-	from[i] = data[i];
-	to[i] = data[i];
+	barrier(CLK_LOCAL_MEM_FENCE);
 	for(int distance = 1; distance < get_local_size(0); distance * 2){
-		int local_number = get_local_id(0);
 		if(local_number > distance - 1){
 			to[local_number] = from[local_number] + from[local_number - distance];
 		}else{
 			to[local_number] = from[local_number];
 		}
-		
+		barrier(CLK_LOCAL_MEM_FENCE);
+		__local float *temp = to;
+		to = from;
+		from = temp;
 	}
 	
-	
+	result[i] = from[local_number];
 }
