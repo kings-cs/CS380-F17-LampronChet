@@ -140,6 +140,8 @@ public class GrayscaleEqualizationTest {
 		int[] mapDesign = new int[] { 0, 0, 0, 1, 5, 7, 7, 7};
 		int[] data = new int[] { 4, 4, 4, 4, 4, 3, 4, 5, 4, 3, 3, 5, 5, 5, 3, 3, 4, 5, 4, 3, 4, 4, 4, 4, 4 };
 		GrayscaleEqualization equalizer = new GrayscaleEqualization();
+		equalizer.setDeviceManager(deviceManager);
+		equalizer.setWorkSize(1);
 		int[] map = equalizer.getMap(mapDesign, data);//(deviceManager, data, getWorkSize(deviceManager, data));
 
 			

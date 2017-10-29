@@ -1,0 +1,13 @@
+__kernel void get_map(__global int *source, __global int *result, __global const int *mapDesign, __global const int *dimensions){
+			int i = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
+			int pixel = source[i];
+			
+			int alpha = (pixel & dimensions[3]) >> dimensions[2];
+			int blue = (pixel & dimensions[1]) >> dimensions[0];
+			
+			int newVal = mapDesign[blue];
+			
+			int newPixel = (alpha << dimensions[2] | (newVal << dimensions[0]));
+			
+			result[i] = newPixel;
+}
