@@ -17,9 +17,9 @@ import parallel.JoclInitializer;
  *
  */
 public abstract class PixelModifier {
-	/** The alpha mask. */
+	/** The red mask. */
 	protected static final int ALPHA_MASK = 0xff000000;
-	/** The alpha offset. */
+	/** The red offset. */
 	protected static final int ALPHA_OFFSET = 24;
 
 	/** The red mask. */
@@ -35,7 +35,7 @@ public abstract class PixelModifier {
 	/** The blue mask. */
 	protected static final int BLUE_MASK = 0x000000ff;
 	/** The blue offset. */
-	protected static final int BLUE_OFFSET = 0;
+	private static final int BLUE_OFFSET = 0;
 
 	/**
 	 * Modifies each pixel to change the image.
@@ -103,8 +103,31 @@ public abstract class PixelModifier {
 	}
 
 	/**
-	 * Gets the alpha offset.
+	 * Gets the red offset.
 	 * 
+	 * @return the redOffset
+	 */
+	public static int getRedOffset() {
+		return RED_OFFSET;
+	}
+
+	/**
+	 * Gets the red mask.
+	 * 
+	 * @return the redMask
+	 */
+	public static int getRedMask() {
+		return RED_MASK;
+	}
+
+	/**
+	 * @return the alphaMask
+	 */
+	public static int getAlphaMask() {
+		return ALPHA_MASK;
+	}
+
+	/**
 	 * @return the alphaOffset
 	 */
 	public static int getAlphaOffset() {
@@ -112,11 +135,16 @@ public abstract class PixelModifier {
 	}
 
 	/**
-	 * Gets the alpha mask.
-	 * 
-	 * @return the alphaMask
+	 * @return the blueOffset
 	 */
-	public static int getAlphaMask() {
-		return ALPHA_MASK;
+	public static int getBlueOffset() {
+		return BLUE_OFFSET;
+	}
+
+	/**
+	 * @return the greenOffset
+	 */
+	public static int getGreenOffset() {
+		return GREEN_OFFSET;
 	}
 }

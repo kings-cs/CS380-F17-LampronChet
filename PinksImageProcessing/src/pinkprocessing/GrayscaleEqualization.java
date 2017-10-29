@@ -185,7 +185,11 @@ public class GrayscaleEqualization {
 		for (int i = 0; i < map.length; i++) {
 			int pixel = data[i];
 			int alpha = (pixel & PixelModifier.getAlphaMask()) >> PixelModifier.getAlphaOffset();
-			map[i] = mapDesign[alpha];
+			int red = (pixel & PixelModifier.getRedMask()) >> PixelModifier.getRedOffset();
+			int newVal = mapDesign[red];
+			int newPixel = (alpha << PixelModifier.getAlphaOffset()) | (newVal << PixelModifier.getRedOffset()) | (newVal << PixelModifier.getBlueOffset())
+					| (newVal << PixelModifier.getGreenOffset());
+			map[i] = newPixel;
 		}
 		return map;
 	}

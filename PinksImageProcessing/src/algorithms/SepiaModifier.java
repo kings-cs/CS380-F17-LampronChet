@@ -33,10 +33,10 @@ public class SepiaModifier extends PixelModifier {
 				int index = row * width + col;
 				int pixel = sourceData[index];
 
-				int alpha = (pixel & PixelModifier.ALPHA_MASK) >> PixelModifier.ALPHA_OFFSET;
+				int alpha = (pixel & PixelModifier.ALPHA_MASK) >> PixelModifier.getAlphaOffset();
 				int red = (pixel & PixelModifier.RED_MASK) >> PixelModifier.RED_OFFSET;
-				int green = (pixel & PixelModifier.GREEN_MASK) >> PixelModifier.GREEN_OFFSET;
-				int blue = (pixel & PixelModifier.BLUE_MASK) >> PixelModifier.BLUE_OFFSET;
+				int green = (pixel & PixelModifier.GREEN_MASK) >> PixelModifier.getGreenOffset();
+				int blue = (pixel & PixelModifier.BLUE_MASK) >> PixelModifier.getBlueOffset();
 
 				int average = (red + blue + green) / 3;
 
@@ -59,8 +59,8 @@ public class SepiaModifier extends PixelModifier {
 					green = 0;
 				}
 
-				int newPixel = (alpha << ALPHA_OFFSET) | (red << RED_OFFSET) | (blue << BLUE_OFFSET)
-						| (green << GREEN_OFFSET);
+				int newPixel = (alpha << getAlphaOffset()) | (red << RED_OFFSET) | (blue << getBlueOffset())
+						| (green << getGreenOffset());
 
 				resultData[index] = newPixel;
 

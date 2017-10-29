@@ -38,10 +38,10 @@ public class BlurModifier extends PixelModifier {
 		for (int row = 0; row < height; row++) {
 			for (int col = 0; col < width; col++) {
 				int index = row * width + col;
-				int alpha = (sourceData[index] & PixelModifier.ALPHA_MASK) >> PixelModifier.ALPHA_OFFSET;
+				int alpha = (sourceData[index] & PixelModifier.ALPHA_MASK) >> PixelModifier.getAlphaOffset();
 				int red = (sourceData[index] & PixelModifier.RED_MASK) >> PixelModifier.RED_OFFSET;
-				int green = (sourceData[index] & PixelModifier.GREEN_MASK) >> PixelModifier.GREEN_OFFSET;
-				int blue = (sourceData[index] & PixelModifier.BLUE_MASK) >> PixelModifier.BLUE_OFFSET;
+				int green = (sourceData[index] & PixelModifier.GREEN_MASK) >> PixelModifier.getGreenOffset();
+				int blue = (sourceData[index] & PixelModifier.BLUE_MASK) >> PixelModifier.getBlueOffset();
 
 				redArray[index] = red;
 				blueArray[index] = blue;
@@ -97,8 +97,8 @@ public class BlurModifier extends PixelModifier {
 			int newGreen = modifiedGreenArray[i];
 			int newBlue = modifiedBlueArray[i];
 			int alpha = alphaArray[i];
-			int newPixel = (alpha << ALPHA_OFFSET) | (newRed << RED_OFFSET) | (newBlue << BLUE_OFFSET)
-					| (newGreen << GREEN_OFFSET);
+			int newPixel = (alpha << getAlphaOffset()) | (newRed << RED_OFFSET) | (newBlue << getBlueOffset())
+					| (newGreen << getGreenOffset());
 
 			resultData[i] = newPixel;
 		}
