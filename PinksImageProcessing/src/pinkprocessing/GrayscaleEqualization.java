@@ -113,9 +113,9 @@ public class GrayscaleEqualization {
 	public int[] distributeCumulativeFrequency(int[] histogramResult) throws FileNotFoundException {
 		int[] freqResult = new int[histogramResult.length];
 
-		// for (int i = 1; i <= freqResult.length - 1; i++) {
-		// freqResult[i] += histogramResult[i] + freqResult[i - 1];
-		// }
+//		for (int i = 1; i <= freqResult.length - 1; i++) {
+//			freqResult[i] += histogramResult[i] + freqResult[i - 1];
+//		}
 		HillisSteeleScan scan = new HillisSteeleScan(deviceManager);
 		scan.scan(histogramResult, freqResult);
 		return freqResult;

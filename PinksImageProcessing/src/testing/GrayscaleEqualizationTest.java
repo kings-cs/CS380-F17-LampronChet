@@ -70,6 +70,7 @@ public class GrayscaleEqualizationTest {
 	public void testCumulativeFrequency() throws FileNotFoundException {
 		int[] data = new int[] { 0, 0, 0, 6, 14, 5, 0, 0};
 		GrayscaleEqualization equalizer = new GrayscaleEqualization();
+		equalizer.setDeviceManager(deviceManager);
 		int[] distributedFreq = equalizer.distributeCumulativeFrequency(data);//(deviceManager, data, getWorkSize(deviceManager, data));
 
 		assertEquals("Should return 6", 6, distributedFreq[3]);

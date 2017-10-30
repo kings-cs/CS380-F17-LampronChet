@@ -3,15 +3,10 @@ __kernel void calculate_ideal_histogram(__global int *result, __global const int
 	int idealizedValue = dimensions[0] / dimensions[1];
 	result[i] = idealizedValue;
 	barrier(CLK_LOCAL_MEM_FENCE);
-	int modVal =dimensions[0] % dimensions[1];
-	if (modVal == 1) {
-			atomic_inc(&result[(dimensions[2] - 1) / 2]);
-	}else if (modVal > 1) {
-			int index = ((dimensions[2] - 1) / 2) - (modVal / 2);
-			while(modVal >= 0) {
-				atomic_inc(&result[index]);
-				index++;
-				modVal--;
-			}
-		}
+	int modVal = dimensions[0] % dimensions[1];
+	int firstIndex = ((dimensions[2] - 1) / 2) - (modVal / 2);
+	int lastIndex = ((dimensions[2] - 1) / 2) + (modVal / 2);
+	if (i >= firstIndex && i <= lastIndex) {
+			atomic_inc(&result[i]);
+	}
 }
