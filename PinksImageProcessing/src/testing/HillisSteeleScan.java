@@ -39,25 +39,25 @@ public class HillisSteeleScan extends PixelModifier {
 	/**
 	 * Scans data inclusively.
 	 * 
-	 * @param data
+	 * @param histogramResult
 	 *            The data to scan.
-	 * @param result
+	 * @param freqResult
 	 *            The result array.
 	 * @throws FileNotFoundException
 	 *             Not thrown.
 	 */
-	protected void scan(final float[] data, float[] result) throws FileNotFoundException {
+	public void scan(final int[] histogramResult, int[] freqResult) throws FileNotFoundException {
 
-		float[] from = new float[data.length];
-		float[] to = new float[data.length];
+		float[] from = new float[histogramResult.length];
+		float[] to = new float[histogramResult.length];
 
-		Pointer ptrData = Pointer.to(data);
-		Pointer ptrResult = Pointer.to(result);
+		Pointer ptrData = Pointer.to(histogramResult);
+		Pointer ptrResult = Pointer.to(freqResult);
 
 		cl_mem memData = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
-				Sizeof.cl_float * data.length, ptrData, null);
+				Sizeof.cl_float * histogramResult.length, ptrData, null);
 		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_WRITE_ONLY | CL.CL_MEM_COPY_HOST_PTR,
-				Sizeof.cl_float * result.length, ptrResult, null);
+				Sizeof.cl_float * freqResult.length, ptrResult, null);
 
 		File kernelFile = new File("Kernels/HillisSteeleScan");
 		Scanner kernelScan = new Scanner(kernelFile);
@@ -71,8 +71,8 @@ public class HillisSteeleScan extends PixelModifier {
 
 		CL.clBuildProgram(program, 0, null, null, null, null);
 
-		long[] globalWorkSize = new long[] { data.length };
-		long[] localWorkSize = new long[] { getWorkSize(deviceManager, data) };
+		long[] globalWorkSize = new long[] { histogramResult.length };
+		long[] localWorkSize = new long[] { getWorkSize(deviceManager, histogramResult) };
 
 		cl_kernel hillisSteeleKernel = CL.clCreateKernel(program, "hillis_steele", null);
 
@@ -84,7 +84,7 @@ public class HillisSteeleScan extends PixelModifier {
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), hillisSteeleKernel, 1, null, globalWorkSize, localWorkSize,
 				0, null, null);
 
-		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0, result.length * Sizeof.cl_float,
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0, freqResult.length * Sizeof.cl_float,
 				ptrResult, 0, null, null);
 
 		CL.clReleaseKernel(hillisSteeleKernel);

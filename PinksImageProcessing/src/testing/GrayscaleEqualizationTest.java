@@ -91,8 +91,7 @@ public class GrayscaleEqualizationTest {
 		int[] data = new int[] { 0, 0, 0, 6, 20, 25, 25, 25};
 		GrayscaleEqualization equalizer = new GrayscaleEqualization();
 		equalizer.setDeviceManager(deviceManager);
-		equalizer.setWorkSize(1);
-		int[] calculatedIdealizedHistogram = equalizer.calculateIdealizedHistogram(data, 25);//(deviceManager, data, getWorkSize(deviceManager, data));
+		int[] calculatedIdealizedHistogram = equalizer.calculateIdealizedHistogram(data, 25, 1);//(deviceManager, data, getWorkSize(deviceManager, data));
 
 		assertEquals("Should return 3", 3, calculatedIdealizedHistogram[0]);
 		assertEquals("Should return 3", 3, calculatedIdealizedHistogram[1]);
@@ -116,7 +115,8 @@ public class GrayscaleEqualizationTest {
 		int[] data = new int[] { 3, 6, 9, 13, 16, 19, 22, 25};
 		int[] oldData = new int[] { 0, 0, 0, 6, 20, 25, 25, 25};
 		GrayscaleEqualization equalizer = new GrayscaleEqualization();
-		int[] mapDesign = equalizer.designMap(data, oldData);//(deviceManager, data, getWorkSize(deviceManager, data));
+		equalizer.setDeviceManager(deviceManager);
+		int[] mapDesign = equalizer.designMap(data, oldData, 1);//(deviceManager, data, getWorkSize(deviceManager, data));
 
 		assertEquals("Should return 0", 0, mapDesign[0]);
 		assertEquals("Should return 0", 0, mapDesign[1]);

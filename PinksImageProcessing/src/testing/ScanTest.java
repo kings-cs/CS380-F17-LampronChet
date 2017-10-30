@@ -49,13 +49,13 @@ public class ScanTest {
 	 */
 	@Test
 	public void testHillisSteele() {
-		float[] data = new float[256];
+		int[] data = new int[256];
 
 		for (int i = 0; i < data.length; i++) {
 			data[i] = 1;
 		}
 
-		float[] result = new float[256];
+		int[] result = new int[256];
 
 		HillisSteeleScan scan = new HillisSteeleScan(deviceManager);
 

@@ -7,7 +7,7 @@ __kernel void get_map(__global int *source, __global int *result, __global const
 			
 			int newVal = mapDesign[blue];
 			
-			int newPixel = (alpha << dimensions[2] | (newVal << dimensions[0]));
+			int newPixel = (alpha << dimensions[2] | (newVal << dimensions[5]) | (newVal << dimensions[4]) | (newVal << dimensions[0]));
 			
 			result[i] = newPixel;
 }

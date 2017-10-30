@@ -1,0 +1,26 @@
+__kernel void design_map(__global int *source, __global int *result, __global const int *cumulative, __global const int *dimensions){
+		 int i = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
+		 int original = source[i];
+		 int resultIndex = 0;
+		 bool isExact = false;
+		 int j = 0;
+		 int valueDifference = dimensions[1];
+	while (j < dimensions[0] && !isExact) {
+		if (valueDifference == 0) {
+		 	resultIndex = j;
+		 	isExact = true;
+		} else {
+			int newDifference = abs(original - cumulative[j]);
+			if (newDifference < valueDifference && newDifference != 0) {
+		 		valueDifference = newDifference;
+		 		resultIndex = j;
+			} else if (newDifference == 0) {
+		 		valueDifference = newDifference;
+		 		resultIndex = j;
+		 		isExact = true;
+		 	}
+		}
+		 	j++;
+	}
+		 result[i] = resultIndex;
+}
