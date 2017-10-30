@@ -56,7 +56,7 @@ public class HillisSteeleScan extends PixelModifier {
 
 		cl_mem memData = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * histogramResult.length, ptrData, null);
-		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_WRITE_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * freqResult.length, ptrResult, null);
 
 		File kernelFile = new File("Kernels/HillisSteeleScan");
