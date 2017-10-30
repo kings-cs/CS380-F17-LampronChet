@@ -31,6 +31,7 @@ public class GrayscaleEqualizationTest {
 		CL.setExceptionsEnabled(true);
 		deviceManager = new JoclInitializer();
 		cl_device_id[] devices = deviceManager.getDeviceIds();
+		System.out.println(devices[0]);
 		int i = 0;
 		boolean contextCreated = false;
 		while (i < devices.length && !contextCreated) {

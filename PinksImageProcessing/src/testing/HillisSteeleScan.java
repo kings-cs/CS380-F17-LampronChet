@@ -48,8 +48,8 @@ public class HillisSteeleScan extends PixelModifier {
 	 */
 	public void scan(final int[] histogramResult, int[] freqResult) throws FileNotFoundException {
 
-		float[] from = new float[histogramResult.length];
-		float[] to = new float[histogramResult.length];
+		//float[] from = new float[histogramResult.length];
+		//float[] to = new float[histogramResult.length];
 
 		Pointer ptrData = Pointer.to(histogramResult);
 		Pointer ptrResult = Pointer.to(freqResult);
@@ -78,8 +78,8 @@ public class HillisSteeleScan extends PixelModifier {
 
 		CL.clSetKernelArg(hillisSteeleKernel, 0, Sizeof.cl_mem, Pointer.to(memData));
 		CL.clSetKernelArg(hillisSteeleKernel, 1, Sizeof.cl_mem, Pointer.to(memResult));
-		CL.clSetKernelArg(hillisSteeleKernel, 2, Sizeof.cl_float * from.length, null);
-		CL.clSetKernelArg(hillisSteeleKernel, 3, Sizeof.cl_float * to.length, null);
+		CL.clSetKernelArg(hillisSteeleKernel, 2, Sizeof.cl_float * localWorkSize[0], null);
+		CL.clSetKernelArg(hillisSteeleKernel, 3, Sizeof.cl_float * localWorkSize[0], null);
 
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), hillisSteeleKernel, 1, null, globalWorkSize, localWorkSize,
 				0, null, null);
