@@ -7,7 +7,6 @@ import java.io.FileNotFoundException;
 import org.jocl.CL;
 import org.jocl.cl_device_id;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import parallel.JoclInitializer;

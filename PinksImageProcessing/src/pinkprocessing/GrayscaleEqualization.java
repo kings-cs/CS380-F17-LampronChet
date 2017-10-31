@@ -94,7 +94,6 @@ public class GrayscaleEqualization {
 		CL.clSetKernelArg(calculateKernel, 1, Sizeof.cl_mem, Pointer.to(memFreq));
 		CL.clSetKernelArg(calculateKernel, 2, Sizeof.cl_mem, Pointer.to(memOffsets));
 		if(isOptimize) {
-			int[] local = new int[sourceData.length];
 			CL.clSetKernelArg(calculateKernel, 3, Sizeof.cl_float * workSize, null);
 		}
 		double startTime = System.nanoTime();
