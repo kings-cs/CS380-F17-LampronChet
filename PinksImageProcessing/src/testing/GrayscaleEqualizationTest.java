@@ -50,17 +50,37 @@ public class GrayscaleEqualizationTest {
 	 *             Not thrown.
 	 */
 	@Test
-	public void testCalculateHistogram() throws FileNotFoundException {
+	public void testCalculateHistogramNot() throws FileNotFoundException {
 		int[] data = new int[] { 4, 4, 4, 4, 4, 3, 4, 5, 4, 3, 3, 5, 5, 5, 3, 3, 4, 5, 4, 3, 4, 4, 4, 4, 4 };
 		GrayscaleEqualization equalizer = new GrayscaleEqualization();
-		int[] calculatedHistogram = equalizer.calculateHistogram(deviceManager, data, getWorkSize(deviceManager, data));
+		int[] calculatedHistogram = equalizer.calculateHistogram(deviceManager, data, getWorkSize(deviceManager, data),
+				false);
 
 		assertEquals("Should return 6", 6, calculatedHistogram[3]);
 		assertEquals("Should return 14", 14, calculatedHistogram[4]);
 		assertEquals("Should return 5", 5, calculatedHistogram[5]);
 
 	}
-	
+
+	/**
+	 * Test for calculateHeuristic.
+	 * 
+	 * @throws FileNotFoundException
+	 *             Not thrown.
+	 */
+	@Test
+	public void testCalculateHistogram() throws FileNotFoundException {
+		int[] data = new int[] { 4, 4, 4, 4, 4, 3, 4, 5, 4, 3, 3, 5, 5, 5, 3, 3, 4, 5, 4, 3, 4, 4, 4, 4, 4 };
+		GrayscaleEqualization equalizer = new GrayscaleEqualization();
+		int[] calculatedHistogram = equalizer.calculateHistogram(deviceManager, data, getWorkSize(deviceManager, data),
+				true);
+
+		assertEquals("Should return 6", 6, calculatedHistogram[3]);
+		assertEquals("Should return 14", 14, calculatedHistogram[4]);
+		assertEquals("Should return 5", 5, calculatedHistogram[5]);
+
+	}
+
 	/**
 	 * Test for distributeCumulativeFrequency.
 	 * 
@@ -69,10 +89,11 @@ public class GrayscaleEqualizationTest {
 	 */
 	@Test
 	public void testCumulativeFrequency() throws FileNotFoundException {
-		int[] data = new int[] { 0, 0, 0, 6, 14, 5, 0, 0};
+		int[] data = new int[] { 0, 0, 0, 6, 14, 5, 0, 0 };
 		GrayscaleEqualization equalizer = new GrayscaleEqualization();
 		equalizer.setDeviceManager(deviceManager);
-		int[] distributedFreq = equalizer.distributeCumulativeFrequency(data);//(deviceManager, data, getWorkSize(deviceManager, data));
+		int[] distributedFreq = equalizer.distributeCumulativeFrequency(data);// (deviceManager, data,
+																				// getWorkSize(deviceManager, data));
 
 		assertEquals("Should return 6", 6, distributedFreq[3]);
 		assertEquals("Should return 20", 20, distributedFreq[4]);
@@ -81,7 +102,7 @@ public class GrayscaleEqualizationTest {
 		assertEquals("Should return 25", 25, distributedFreq[7]);
 
 	}
-	
+
 	/**
 	 * Test for calculatedIdealizedHistogram.
 	 * 
@@ -90,10 +111,12 @@ public class GrayscaleEqualizationTest {
 	 */
 	@Test
 	public void testIdealizedHistogram() throws FileNotFoundException {
-		int[] data = new int[] { 0, 0, 0, 6, 20, 25, 25, 25};
+		int[] data = new int[] { 0, 0, 0, 6, 20, 25, 25, 25 };
 		GrayscaleEqualization equalizer = new GrayscaleEqualization();
 		equalizer.setDeviceManager(deviceManager);
-		int[] calculatedIdealizedHistogram = equalizer.calculateIdealizedHistogram(data, 25, 1);//(deviceManager, data, getWorkSize(deviceManager, data));
+		int[] calculatedIdealizedHistogram = equalizer.calculateIdealizedHistogram(data, 25, 1);// (deviceManager, data,
+																								// getWorkSize(deviceManager,
+																								// data));
 
 		assertEquals("Should return 3", 3, calculatedIdealizedHistogram[0]);
 		assertEquals("Should return 3", 3, calculatedIdealizedHistogram[1]);
@@ -105,7 +128,7 @@ public class GrayscaleEqualizationTest {
 		assertEquals("Should return 3", 3, calculatedIdealizedHistogram[7]);
 
 	}
-	
+
 	/**
 	 * Test for designMap.
 	 * 
@@ -114,11 +137,12 @@ public class GrayscaleEqualizationTest {
 	 */
 	@Test
 	public void testDesignMap() throws FileNotFoundException {
-		int[] data = new int[] { 3, 6, 9, 13, 16, 19, 22, 25};
-		int[] oldData = new int[] { 0, 0, 0, 6, 20, 25, 25, 25};
+		int[] data = new int[] { 3, 6, 9, 13, 16, 19, 22, 25 };
+		int[] oldData = new int[] { 0, 0, 0, 6, 20, 25, 25, 25 };
 		GrayscaleEqualization equalizer = new GrayscaleEqualization();
 		equalizer.setDeviceManager(deviceManager);
-		int[] mapDesign = equalizer.designMap(data, oldData, 1);//(deviceManager, data, getWorkSize(deviceManager, data));
+		int[] mapDesign = equalizer.designMap(data, oldData, 1);// (deviceManager, data, getWorkSize(deviceManager,
+																// data));
 
 		assertEquals("Should return 0", 0, mapDesign[0]);
 		assertEquals("Should return 0", 0, mapDesign[1]);
@@ -130,7 +154,7 @@ public class GrayscaleEqualizationTest {
 		assertEquals("Should return 7", 7, mapDesign[7]);
 
 	}
-	
+
 	/**
 	 * Test for getMap.
 	 * 
@@ -139,14 +163,13 @@ public class GrayscaleEqualizationTest {
 	 */
 	@Test
 	public void testGetMap() throws FileNotFoundException {
-		int[] mapDesign = new int[] { 0, 0, 0, 1, 5, 7, 7, 7};
+		int[] mapDesign = new int[] { 0, 0, 0, 1, 5, 7, 7, 7 };
 		int[] data = new int[] { 4, 4, 4, 4, 4, 3, 4, 5, 4, 3, 3, 5, 5, 5, 3, 3, 4, 5, 4, 3, 4, 4, 4, 4, 4 };
 		GrayscaleEqualization equalizer = new GrayscaleEqualization();
 		equalizer.setDeviceManager(deviceManager);
 		equalizer.setWorkSize(1);
-		int[] map = equalizer.getMap(mapDesign, data);//(deviceManager, data, getWorkSize(deviceManager, data));
+		int[] map = equalizer.getMap(mapDesign, data);// (deviceManager, data, getWorkSize(deviceManager, data));
 
-			
 		assertEquals("Should return 5", 5, map[0]);
 		assertEquals("Should return 5", 5, map[1]);
 		assertEquals("Should return 5", 5, map[2]);
@@ -174,8 +197,6 @@ public class GrayscaleEqualizationTest {
 		assertEquals("Should return 5", 5, map[24]);
 
 	}
-	
-	
 
 	/**
 	 * Gets the proper work size.

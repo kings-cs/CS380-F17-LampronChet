@@ -199,6 +199,10 @@ public class PiPGui extends JFrame {
 		JMenuItem grayscaleEqualization = new JMenuItem("Equalize grayscale image");
 		grayscaleEqualization.addActionListener(new EqualizeGrayscaleImage());
 		options.add(grayscaleEqualization);
+		
+		JMenuItem grayscaleEqualizationO = new JMenuItem("Optimized Equalize grayscale image");
+		grayscaleEqualizationO.addActionListener(new OptimizedEqualizeGrayscaleImage());
+		options.add(grayscaleEqualizationO);
 
 		JMenuItem about = new JMenuItem("About");
 		about.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
@@ -789,7 +793,7 @@ public class PiPGui extends JFrame {
 	}
 
 	/**
-	 * Runs the Blur algorithm when prompted.
+	 * Runs the unoptimized equalize grayscale algorithm when prompted.
 	 * 
 	 * @author Chet lampron
 	 *
@@ -800,7 +804,35 @@ public class PiPGui extends JFrame {
 		public void actionPerformed(ActionEvent arg0) {
 			if (image != null) {
 				try {
-					GrayscaleEqualizationModifier pixelModifier = new GrayscaleEqualizationModifier(deviceManager);
+					GrayscaleEqualizationModifier pixelModifier = new GrayscaleEqualizationModifier(deviceManager, false);
+
+					image = pixelModifier.modifyPixel(image);
+				} catch (FileNotFoundException e) {
+					JOptionPane.showMessageDialog(null, "The image could not be processed");
+				}
+				centerPanel.repaint();
+				isSaved = false;
+			} else {
+				JOptionPane.showMessageDialog(null, "Please load an image first");
+			}
+
+		}
+
+	}
+	
+	/**
+	 * Runs the optimized equalize grayscale algorithm when prompted.
+	 * 
+	 * @author Chet lampron
+	 *
+	 */
+	private class OptimizedEqualizeGrayscaleImage implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			if (image != null) {
+				try {
+					GrayscaleEqualizationModifier pixelModifier = new GrayscaleEqualizationModifier(deviceManager, true);
 
 					image = pixelModifier.modifyPixel(image);
 				} catch (FileNotFoundException e) {

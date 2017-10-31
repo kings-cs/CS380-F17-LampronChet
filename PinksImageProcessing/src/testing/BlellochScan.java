@@ -46,19 +46,17 @@ public class BlellochScan extends PixelModifier {
 	 *             Not thrown.
 	 */
 	public void scan(final float[] data, float[] result) throws FileNotFoundException {
-
-		int[] size = { data.length };
-
+		int[] dimensions = {data.length};
 		Pointer ptrData = Pointer.to(data);
 		Pointer ptrResult = Pointer.to(result);
-		Pointer ptrSize = Pointer.to(size);
+		Pointer ptrDimensions = Pointer.to(dimensions);
 
 		cl_mem memData = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * data.length, ptrData, null);
-		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_WRITE_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * result.length, ptrResult, null);
-		cl_mem memSize = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
-				Sizeof.cl_float * size.length, ptrSize, null);
+		cl_mem memDimensions = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
+				Sizeof.cl_float * dimensions.length, ptrDimensions, null);
 
 		File kernelFile = new File("Kernels/Blelloch");
 		Scanner kernelScan = new Scanner(kernelFile);
@@ -80,7 +78,7 @@ public class BlellochScan extends PixelModifier {
 		CL.clSetKernelArg(hillisSteeleKernel, 0, Sizeof.cl_mem, Pointer.to(memData));
 		CL.clSetKernelArg(hillisSteeleKernel, 1, Sizeof.cl_mem, Pointer.to(memResult));
 		CL.clSetKernelArg(hillisSteeleKernel, 2, Sizeof.cl_float * localWorkSize[0], null);
-		CL.clSetKernelArg(hillisSteeleKernel, 3, Sizeof.cl_mem, Pointer.to(memSize));
+		CL.clSetKernelArg(hillisSteeleKernel, 3, Sizeof.cl_mem, Pointer.to(memDimensions));
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), hillisSteeleKernel, 1, null, globalWorkSize, localWorkSize,
 				0, null, null);
 

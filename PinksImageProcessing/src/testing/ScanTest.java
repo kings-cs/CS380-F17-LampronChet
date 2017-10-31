@@ -4,13 +4,11 @@
 package testing;
 
 import static org.junit.Assert.assertTrue;
-
 import java.io.FileNotFoundException;
 
 import org.jocl.CL;
 import org.jocl.cl_device_id;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import parallel.JoclInitializer;
@@ -38,6 +36,7 @@ public class ScanTest {
 		while (i < devices.length && !contextCreated) {
 			if (deviceManager.isGpu(devices[i])) {
 				deviceManager.createContext(devices[i]);
+				deviceManager.createQueue();
 				contextCreated = true;
 			}
 			i++;
@@ -92,7 +91,6 @@ public class ScanTest {
 		}
 		
 		for (int i = 0; i < result.length; i++) {
-			System.out.println(result[i]);
 			assertTrue("Should be: " + i + " but was: " + result[i], result[i] == i);
 		}
 	}

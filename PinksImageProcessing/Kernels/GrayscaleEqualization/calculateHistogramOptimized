@@ -1,0 +1,12 @@
+__kernel void calculate_histogram_optimized(__global const int *data, __global int *result, __global int *offset, local int *local_data){
+			int i = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
+			int local_number = get_local_id(0);
+			local_data[local_number] = data[i];
+			barrier(CLK_LOCAL_MEM_FENCE);
+			
+			int blueOffset = offset[0];
+			int blueMask = offset[1];
+			int blue = (local_data[local_number] & blueMask) >> blueOffset;
+			int value = blue;
+			atomic_inc(&result[value]);
+}

@@ -28,7 +28,7 @@ public class GrayscaleEqualization {
 	/** the possible number of color values. */
 	private static final int NUM_OF_COLORS = 256;
 	/** The calculated runtime. */
-	private int calculatedRuntime;
+	private long calculatedRuntime;
 	/** The device manager. */
 	private JoclInitializer deviceManager;
 	/** The work size. */
@@ -43,12 +43,13 @@ public class GrayscaleEqualization {
 	 *            The image source data.
 	 * @param theWorkSize
 	 *            The calculated work size.
+	 *            @param isOptimize Which kernel the method should call. 
 	 * @return The calculated histogram.
 	 * @throws FileNotFoundException
 	 *             Not thrown.
 	 */
-	public int[] calculateHistogram(JoclInitializer aDeviceManager, int[] sourceData, int theWorkSize)
-			throws FileNotFoundException {
+	public int[] calculateHistogram(JoclInitializer aDeviceManager, int[] sourceData, int theWorkSize,
+			boolean isOptimize) throws FileNotFoundException {
 		int[] frequency = new int[NUM_OF_COLORS];
 		this.deviceManager = aDeviceManager;
 		workSize = theWorkSize;
@@ -63,8 +64,16 @@ public class GrayscaleEqualization {
 				Sizeof.cl_float * frequency.length, ptrFreq, null);
 		cl_mem memOffsets = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * offsets.length, ptrOffsets, null);
-
-		File kernelFile = new File("Kernels/GrayscaleEqualization/calculateHistogram");
+		String kernelLocation = "";
+		String kernelName = "";
+		if (!isOptimize) {
+			kernelLocation = "Kernels/GrayscaleEqualization/calculateHistogram";
+			kernelName = "calculate_histogram";
+		} else {
+			kernelLocation = "Kernels/GrayscaleEqualization/calculateHistogramOptimized";
+			kernelName = "calculate_histogram_optimized";
+		}
+		File kernelFile = new File(kernelLocation);
 		Scanner kernelScan = new Scanner(kernelFile);
 		StringBuffer sourceBuffer = new StringBuffer();
 		while (kernelScan.hasNextLine()) {
@@ -79,11 +88,15 @@ public class GrayscaleEqualization {
 		long[] globalWorkSize = new long[] { sourceData.length };
 		long[] localWorkSize = new long[] { workSize };
 		deviceManager.createQueue();
-		cl_kernel calculateKernel = CL.clCreateKernel(program, "calculate_histogram", null);
+		cl_kernel calculateKernel = CL.clCreateKernel(program, kernelName, null);
 
 		CL.clSetKernelArg(calculateKernel, 0, Sizeof.cl_mem, Pointer.to(memSource));
 		CL.clSetKernelArg(calculateKernel, 1, Sizeof.cl_mem, Pointer.to(memFreq));
 		CL.clSetKernelArg(calculateKernel, 2, Sizeof.cl_mem, Pointer.to(memOffsets));
+		if(isOptimize) {
+			int[] local = new int[sourceData.length];
+			CL.clSetKernelArg(calculateKernel, 3, Sizeof.cl_float * workSize, null);
+		}
 		double startTime = System.nanoTime();
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), calculateKernel, 1, null, globalWorkSize, localWorkSize, 0,
 				null, null);
@@ -113,11 +126,11 @@ public class GrayscaleEqualization {
 	public int[] distributeCumulativeFrequency(int[] histogramResult) throws FileNotFoundException {
 		int[] freqResult = new int[histogramResult.length];
 
-//		for (int i = 1; i <= freqResult.length - 1; i++) {
-//			freqResult[i] += histogramResult[i] + freqResult[i - 1];
-//		}
+		// for (int i = 1; i <= freqResult.length - 1; i++) {
+		// freqResult[i] += histogramResult[i] + freqResult[i - 1];
+		// }
 		HillisSteeleScan scan = new HillisSteeleScan(deviceManager);
-		scan.scan(histogramResult, freqResult);
+		calculatedRuntime += scan.scan(histogramResult, freqResult);
 		return freqResult;
 	}
 
@@ -382,7 +395,7 @@ public class GrayscaleEqualization {
 	 * 
 	 * @return The runtime.
 	 */
-	public int getTime() {
+	public long getTime() {
 		return calculatedRuntime;
 	}
 
