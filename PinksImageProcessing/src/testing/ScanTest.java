@@ -73,7 +73,7 @@ public class ScanTest {
 	/**
 	 * Tests exclusive scan on a single work group.
 	 */
-	@Ignore
+	@Test
 	public void testBlelloch() {
 		float[] data = new float[256];
 

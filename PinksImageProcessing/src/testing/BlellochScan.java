@@ -47,23 +47,18 @@ public class BlellochScan extends PixelModifier {
 	 */
 	public void scan(final float[] data, float[] result) throws FileNotFoundException {
 
-		float[] localData = new float[data.length];
-		int[] size = new int[1];
-		size[0] = localData.length;
+		int[] size = { data.length };
 
 		Pointer ptrData = Pointer.to(data);
 		Pointer ptrResult = Pointer.to(result);
-		Pointer ptrLocalData = Pointer.to(localData);
 		Pointer ptrSize = Pointer.to(size);
 
 		cl_mem memData = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * data.length, ptrData, null);
 		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_WRITE_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * result.length, ptrResult, null);
-		cl_mem memLocalData = CL.clCreateBuffer(deviceManager.getContext(),
-				CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * localData.length, ptrLocalData, null);
-		cl_mem memSize = CL.clCreateBuffer(deviceManager.getContext(),
-				CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * size.length, ptrSize, null);
+		cl_mem memSize = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
+				Sizeof.cl_float * size.length, ptrSize, null);
 
 		File kernelFile = new File("Kernels/Blelloch");
 		Scanner kernelScan = new Scanner(kernelFile);
@@ -84,7 +79,7 @@ public class BlellochScan extends PixelModifier {
 
 		CL.clSetKernelArg(hillisSteeleKernel, 0, Sizeof.cl_mem, Pointer.to(memData));
 		CL.clSetKernelArg(hillisSteeleKernel, 1, Sizeof.cl_mem, Pointer.to(memResult));
-		CL.clSetKernelArg(hillisSteeleKernel, 2, Sizeof.cl_mem, Pointer.to(memLocalData));
+		CL.clSetKernelArg(hillisSteeleKernel, 2, Sizeof.cl_float * localWorkSize[0], null);
 		CL.clSetKernelArg(hillisSteeleKernel, 3, Sizeof.cl_mem, Pointer.to(memSize));
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), hillisSteeleKernel, 1, null, globalWorkSize, localWorkSize,
 				0, null, null);
@@ -93,7 +88,6 @@ public class BlellochScan extends PixelModifier {
 				ptrResult, 0, null, null);
 
 		CL.clReleaseKernel(hillisSteeleKernel);
-		CL.clReleaseMemObject(memLocalData);
 		CL.clReleaseMemObject(memResult);
 		CL.clReleaseMemObject(memData);
 
