@@ -1,4 +1,5 @@
 
+
 # CS380-F17-LampronChet
 
 Hello I'm PIP! It's nice to meet you!
@@ -21,6 +22,7 @@ I. Basic instructions:
  	<br>	//When saving the image, if the filetype is not specified in the filename it will default to the type of png. THIS FEATURE DOES NOT WORK YET PLEASE SEE BUGS.
 	<br> 	4. Open the raw README.md by clicking about or ctrl-a. Temporarily disabled.
 	<br>	5. Close a file using the Close menu item, but be careful I treat this as my garbage collector, the FILE WILL BE LOST!
+	<br>    6. Mosaic asks for a number of tiles. Please enter an integer value like 2048. A custom JOptionPane is used here so that you may cancel your tiles selection without running Mosaic.
 	
 II. Image editing:
 	<br>Implemented items:
@@ -43,9 +45,8 @@ III. Close the program:
 	
 IV. Bugs:
 	<br>About is implemented, but only displays the raw text currently. Raw text link must be updated semi frequently.
-	<br>.gif will only display the first image in the file.
+	<br>.gif will only display the first frame in the file.
 	<br>Saving without a file type does not make PNG, please specify the file type in the name.
-	<br>Hitting cancel on mosaic defaults to 1024, will add cancel option in next update.
 	
 V. Runtime chart:
 
@@ -187,6 +188,20 @@ V. Runtime chart:
     <td> Nvidia GTX 970 </td>
     <td> Windows 10 </td>
   </tr>
+  
+  <tr>
+    <td> Grayscale Equalization</td>
+    <td> 35.8ms </td>
+    <td> Nvidia GTX 970 </td>
+    <td> Windows 10 </td>
+  </tr>
+  
+  <tr>
+    <td> Grayscale Equalization Optimized</td>
+    <td> 31.4ms </td>
+    <td> Nvidia GTX 970 </td>
+    <td> Windows 10 </td>
+  </tr>
 
 </table>
 
@@ -195,3 +210,7 @@ VI. Supported File Types:
 <br>.jpg
 <br>.jpeg
 <br>.gif
+
+VII. Histogram Optimizations:
+To optimize this algorithm I have moved the image data into local memory. This did not reduce the atomics, but did reduce the runtime. 
+<br>Each algorithm was run 10 times on an image of size 1920 x 1200. The optimized algorithm ran 4ms faster on average.
