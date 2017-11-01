@@ -56,6 +56,7 @@ import algorithms.RotateRight;
 import algorithms.SepiaModifier;
 import algorithms.SepiaModifierParallel;
 import algorithms.VerticalFlip;
+import algorithms.ZoomIn;
 import parallel.JoclInitializer;
 import pinkprocessing.FileHandler;
 
@@ -96,6 +97,10 @@ public class PiPGui extends JFrame {
 	private JMenuItem save;
 	/** The open item. */
 	private JMenuItem open;
+	/** The zoom in button. */
+	private JMenuItem zoomIn;
+	/** The zoom out button. */
+	private JMenuItem zoomOut;
 	/** Manages the devices on this computer to allow for parallel processing. */
 	private JoclInitializer deviceManager;
 	/** The button group for the devices. */
@@ -115,9 +120,9 @@ public class PiPGui extends JFrame {
 
 		JEditorPane webPane = new JEditorPane();
 		webPane.setEditable(false);
-		 URL webSite = new
-		 URL("https://raw.githubusercontent.com/kings-cs/CS380-F17-LampronChet/master/README.md?token=AQf_j6gK-4p0NZ5KmSw-E5bXVGKbbfb9ks5aAl5MwA%3D%3D");
-		 webPane.setPage(webSite);
+		URL webSite = new URL(
+				"https://raw.githubusercontent.com/kings-cs/CS380-F17-LampronChet/master/README.md?token=AQf_j6gK-4p0NZ5KmSw-E5bXVGKbbfb9ks5aAl5MwA%3D%3D");
+		webPane.setPage(webSite);
 
 		aboutPane = new JScrollPane(webPane);
 		webPage = new JFrame("About");
@@ -201,12 +206,21 @@ public class PiPGui extends JFrame {
 		JMenuItem grayscaleEqualization = new JMenuItem("Equalize grayscale image");
 		grayscaleEqualization.addActionListener(new EqualizeGrayscaleImage());
 		options.add(grayscaleEqualization);
-		
+
 		JMenuItem grayscaleEqualizationO = new JMenuItem("Efficient Equalize grayscale image");
 		grayscaleEqualizationO.addActionListener(new OptimizedEqualizeGrayscaleImage());
 		options.add(grayscaleEqualizationO);
-		//TODO
-		JMenuItem zoomIn = new JMenuItem("Zoom In");
+		// TODO
+		ActionListener zoomListen = new ZoomListener();
+		zoomIn = new JMenuItem("Zoom In");
+		zoomIn.addActionListener(zoomListen);
+		zoom.add(zoomIn);
+		
+		zoomOut = new JMenuItem("Zoom Out");
+		zoomOut.addActionListener(zoomListen);
+		zoom.add(zoomOut);
+		
+		
 
 		JMenuItem about = new JMenuItem("About");
 		about.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
@@ -394,10 +408,10 @@ public class PiPGui extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			 webPage.setSize(new Dimension(500, 500));
-			 webPage.setVisible(true);
-			 webPage.toFront();
-			//JOptionPane.showMessageDialog(null, "Down for Maintenance!");
+			webPage.setSize(new Dimension(500, 500));
+			webPage.setVisible(true);
+			webPage.toFront();
+			// JOptionPane.showMessageDialog(null, "Down for Maintenance!");
 		}
 
 	}
@@ -798,6 +812,46 @@ public class PiPGui extends JFrame {
 	}
 
 	/**
+	 * Runs the zoom algorithm when prompted.
+	 * 
+	 * @author Chet lampron
+	 *
+	 */
+	private class ZoomListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			if (image != null) {
+				if (arg0.getSource().equals(zoomIn)) {
+					ZoomIn pixelModifier = new ZoomIn(true);
+
+					try {
+						image = pixelModifier.modifyPixel(image);
+					} catch (FileNotFoundException e) {
+						JOptionPane.showMessageDialog(null, "Image not found");
+					}
+					centerPanel.repaint();
+					isSaved = false;
+				}else {
+					ZoomIn pixelModifier = new ZoomIn(false);
+
+					try {
+						image = pixelModifier.modifyPixel(image);
+					} catch (FileNotFoundException e) {
+						JOptionPane.showMessageDialog(null, "Image not found");
+					}
+					centerPanel.repaint();
+					isSaved = false;
+				}
+			} else {
+				JOptionPane.showMessageDialog(null, "Please load an image first");
+			}
+
+		}
+
+	}
+
+	/**
 	 * Runs the unoptimized equalize grayscale algorithm when prompted.
 	 * 
 	 * @author Chet lampron
@@ -809,7 +863,8 @@ public class PiPGui extends JFrame {
 		public void actionPerformed(ActionEvent arg0) {
 			if (image != null) {
 				try {
-					GrayscaleEqualizationModifier pixelModifier = new GrayscaleEqualizationModifier(deviceManager, false);
+					GrayscaleEqualizationModifier pixelModifier = new GrayscaleEqualizationModifier(deviceManager,
+							false);
 
 					image = pixelModifier.modifyPixel(image);
 				} catch (FileNotFoundException e) {
@@ -824,7 +879,7 @@ public class PiPGui extends JFrame {
 		}
 
 	}
-	
+
 	/**
 	 * Runs the optimized equalize grayscale algorithm when prompted.
 	 * 
@@ -837,7 +892,8 @@ public class PiPGui extends JFrame {
 		public void actionPerformed(ActionEvent arg0) {
 			if (image != null) {
 				try {
-					GrayscaleEqualizationModifier pixelModifier = new GrayscaleEqualizationModifier(deviceManager, true);
+					GrayscaleEqualizationModifier pixelModifier = new GrayscaleEqualizationModifier(deviceManager,
+							true);
 
 					image = pixelModifier.modifyPixel(image);
 				} catch (FileNotFoundException e) {
