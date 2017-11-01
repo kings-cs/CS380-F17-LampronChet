@@ -2,6 +2,7 @@
 package gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 //import java.awt.Color;
 //import java.awt.Desktop;
 import java.awt.Dimension;
@@ -20,6 +21,7 @@ import java.io.FileNotFoundException;
 //import java.io.FileNotFoundException;
 //import java.io.FileReader;
 import java.io.IOException;
+import java.net.URL;
 //import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -114,9 +116,9 @@ public class PiPGui extends JFrame {
 
 		JEditorPane webPane = new JEditorPane();
 		webPane.setEditable(false);
-		// URL webSite = new
-		// URL("https://raw.githubusercontent.com/kings-cs/CS380-F17-LampronChet/master/README.md?token=AQf_j4IAz45KV6IPBOtIZSkNLgqyLfknks5Z3R_KwA%3D%3D");
-		// webPane.setPage(webSite);
+		 URL webSite = new
+		 URL("https://raw.githubusercontent.com/kings-cs/CS380-F17-LampronChet/master/README.md?token=AQf_j6gK-4p0NZ5KmSw-E5bXVGKbbfb9ks5aAl5MwA%3D%3D");
+		 webPane.setPage(webSite);
 
 		aboutPane = new JScrollPane(webPane);
 		webPage = new JFrame("About");
@@ -200,7 +202,7 @@ public class PiPGui extends JFrame {
 		grayscaleEqualization.addActionListener(new EqualizeGrayscaleImage());
 		options.add(grayscaleEqualization);
 		
-		JMenuItem grayscaleEqualizationO = new JMenuItem("Optimized Equalize grayscale image");
+		JMenuItem grayscaleEqualizationO = new JMenuItem("Efficient Equalize grayscale image");
 		grayscaleEqualizationO.addActionListener(new OptimizedEqualizeGrayscaleImage());
 		options.add(grayscaleEqualizationO);
 
@@ -389,10 +391,10 @@ public class PiPGui extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			// webPage.setSize(new Dimension(500, 500));
-			// webPage.setVisible(true);
-			// webPage.toFront();
-			JOptionPane.showMessageDialog(null, "Down for Maintenance!");
+			 webPage.setSize(new Dimension(500, 500));
+			 webPage.setVisible(true);
+			 webPage.toFront();
+			//JOptionPane.showMessageDialog(null, "Down for Maintenance!");
 		}
 
 	}
