@@ -8,7 +8,6 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 
-import javax.swing.JOptionPane;
 
 /**
  * Class to zoom the image in by a factor of 10.
@@ -25,7 +24,6 @@ public class ZoomIn extends PixelModifier {
 	
 	@Override
 	public BufferedImage modifyPixel(BufferedImage image) throws FileNotFoundException {
-		double startTime = System.nanoTime();
 		int width = image.getWidth();
 		int height = image.getHeight();
 
@@ -44,7 +42,6 @@ public class ZoomIn extends PixelModifier {
 		Graphics2D g = zoomedImage.createGraphics();
 		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		g.drawImage(image, 0, 0, newWidth, newHeight, null);
-		JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() - startTime) / 1000000.0 + "ms");
 
 		return zoomedImage;
 	}
