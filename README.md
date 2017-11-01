@@ -5,6 +5,7 @@
 Hello I'm PIP! It's nice to meet you!
 I will handle all of your image processing needs.
 
+
 Table of Contents:
 I: Basic Instructions
 II: Image editing
@@ -38,6 +39,8 @@ II. Image editing:
 	<br>10. Horizontal flip in parallel
 	<br>11. Mosaic
 	<br>12. Mosaic in parallel
+	<br>13. Grayscale Histogram Equalization
+	<br>14. Efficient Histogram Equalization
 	<br>Many more to come soon!
 
 III. Close the program:
