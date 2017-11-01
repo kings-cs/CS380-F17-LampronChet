@@ -212,5 +212,5 @@ VI. Supported File Types:
 <br>.gif
 
 VII. Histogram Optimizations:
-To optimize this algorithm I have moved the image data into local memory. This did not reduce the atomics, but did reduce the runtime. 
+<br>To optimize this algorithm I have moved the image data into local memory. This did not reduce the atomics, but did reduce the runtime. 
 <br>Each algorithm was run 10 times on an image of size 1920 x 1200. The optimized algorithm ran 4ms faster on average.
