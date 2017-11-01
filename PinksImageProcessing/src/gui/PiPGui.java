@@ -148,6 +148,7 @@ public class PiPGui extends JFrame {
 		// file.setForeground(new Color(171, 14, 165));
 		JMenu options = new JMenu("Options");
 		JMenu transform = new JMenu("Transform");
+		JMenu zoom = new JMenu("Zoom");
 
 		JMenuItem horizontalFlip = new JMenuItem("Horizontal flip");
 		transform.add(horizontalFlip);
@@ -204,6 +205,8 @@ public class PiPGui extends JFrame {
 		JMenuItem grayscaleEqualizationO = new JMenuItem("Efficient Equalize grayscale image");
 		grayscaleEqualizationO.addActionListener(new OptimizedEqualizeGrayscaleImage());
 		options.add(grayscaleEqualizationO);
+		//TODO
+		JMenuItem zoomIn = new JMenuItem("Zoom In");
 
 		JMenuItem about = new JMenuItem("About");
 		about.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
@@ -212,6 +215,7 @@ public class PiPGui extends JFrame {
 		menuBar.add(file);
 		menuBar.add(options);
 		menuBar.add(transform);
+		menuBar.add(zoom);
 		menuBar.add(about);
 		open = new JMenuItem("Open");
 		open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));

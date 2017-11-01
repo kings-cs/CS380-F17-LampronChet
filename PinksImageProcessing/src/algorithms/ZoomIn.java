@@ -3,6 +3,8 @@
  */
 package algorithms;
 
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 
@@ -15,51 +17,33 @@ import javax.swing.JOptionPane;
  *
  */
 public class ZoomIn extends PixelModifier {
-
+	private  boolean isZoom;
+	
+	public ZoomIn(boolean zoom) {
+		isZoom = zoom;
+	}
+	
 	@Override
 	public BufferedImage modifyPixel(BufferedImage image) throws FileNotFoundException {
 		double startTime = System.nanoTime();
 		int width = image.getWidth();
 		int height = image.getHeight();
 
-		int newWidth = (int) (width + (width * .1));
-		int newHeight = (int) (height + (height * .1));
-
-		int[] sourceData = super.unwrapImage(image);
-
-		int[] resultData = new int[newWidth * newHeight];
-
-		BufferedImage zoomedImage = null;
-		int newCol = 0;
-		for (int row = 0; row < newHeight; row++) {
-			for (int col = 0; col < newWidth; col++) {
-				int index = row * width + col;
-				int pixel = 0;
-				if (row < height && col < width) {
-					pixel = sourceData[index];
-				}else{
-					int tempRow = 0;
-					int tempCol = 0;
-					if(row >= height && col < width){
-						tempRow = height - 1;
-						tempCol = col;
-					}else if(row < height && col >= width){
-						tempRow = row;
-						tempCol = width - 1;
-					}else{
-						tempRow = height - 1;
-						tempCol = width - 1;
-					}
-					int tempIndex = tempRow * width + tempCol;
-					pixel = sourceData[tempIndex];
-				}
-				if(newCol == 9){
-					
-				}
-
-			}
+		int newWidth = 0;
+		int newHeight = 0;
+		if (isZoom) {
+			newWidth = (int) (width + (width * .1));
+			newHeight = (int) (height + (height * .1));
+		} else {
+			newWidth = (int) (width - (width * .1));
+			newHeight = (int) (height - (height * .1));
 		}
-		packageImage(resultData, image);
+
+		BufferedImage zoomedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
+
+		Graphics2D g = zoomedImage.createGraphics();
+		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		g.drawImage(image, 0, 0, newWidth, newHeight, null);
 		JOptionPane.showMessageDialog(null, "Total Time: " + (System.nanoTime() - startTime) / 1000000.0 + "ms");
 
 		return zoomedImage;
