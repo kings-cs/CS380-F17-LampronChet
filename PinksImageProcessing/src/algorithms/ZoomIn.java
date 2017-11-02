@@ -8,7 +8,6 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 
-
 /**
  * Class to zoom the image in by a factor of 10.
  * 
@@ -16,12 +15,19 @@ import java.io.FileNotFoundException;
  *
  */
 public class ZoomIn extends PixelModifier {
-	private  boolean isZoom;
-	
+	/** Whether it is zoom in or out. */
+	private boolean isZoom;
+
+	/**
+	 * Constructs a zoom in object.
+	 * 
+	 * @param zoom
+	 *            Whether it is zoom in or out.
+	 */
 	public ZoomIn(boolean zoom) {
 		isZoom = zoom;
 	}
-	
+
 	@Override
 	public BufferedImage modifyPixel(BufferedImage image) throws FileNotFoundException {
 		int width = image.getWidth();
