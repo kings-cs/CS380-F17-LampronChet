@@ -46,8 +46,9 @@ public class BlellochScan extends PixelModifier {
 	 *             Not thrown.
 	 */
 	public void scan(final float[] data, float[] result) throws FileNotFoundException {
-		int[] dimensions = {data.length};
-		Pointer ptrData = Pointer.to(data);
+		int[] dimensions = { data.length };
+		float[] theData = padArray(data);
+		Pointer ptrData = Pointer.to(theData);
 		Pointer ptrResult = Pointer.to(result);
 		Pointer ptrDimensions = Pointer.to(dimensions);
 
@@ -55,8 +56,9 @@ public class BlellochScan extends PixelModifier {
 				Sizeof.cl_float * data.length, ptrData, null);
 		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * result.length, ptrResult, null);
-		cl_mem memDimensions = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
-				Sizeof.cl_float * dimensions.length, ptrDimensions, null);
+		cl_mem memDimensions = CL.clCreateBuffer(deviceManager.getContext(),
+				CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * dimensions.length, ptrDimensions,
+				null);
 
 		File kernelFile = new File("Kernels/Blelloch");
 		Scanner kernelScan = new Scanner(kernelFile);
@@ -114,6 +116,28 @@ public class BlellochScan extends PixelModifier {
 			}
 		}
 		return maxItemsPerGroup;
+	}
+
+	/**
+	 * Pads the array with 0's.
+	 * 
+	 * @param old
+	 *            The original array.
+	 * @return The padded array.
+	 */
+	public float[] padArray(float[] old) {
+		float[] result = null;
+
+		double power = Math.log(old.length) / Math.log(2);
+		double lengthPow = Math.ceil(power);
+		int length = (int) Math.pow(2, lengthPow);
+		result = new float[length];
+		for (int i = 0; i < old.length; i++) {
+			result[i] = old[i];
+		}
+
+		return result;
+
 	}
 
 	@Override

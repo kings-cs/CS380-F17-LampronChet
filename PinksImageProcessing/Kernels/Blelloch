@@ -34,3 +34,40 @@ __kernel void blelloch(__global const float *data, __global float *result, __loc
 		result[index] = local_data[index];
 		
 }
+
+__kernel void blelloch_accumulator(__global const float *data, __global float *result, __global float *accumulator, __local float *local_data, __global int *dimensions){
+		int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
+		int local_number = get_local_id(0);
+		local_data[local_number] = data[index];
+		barrier(CLK_LOCAL_MEM_FENCE);
+		
+		int distance = 1;
+		
+		for(int space = (get_local_size(0) / 2); space >= 1; space = space >> 1){
+			if(local_number < space){
+				int i = distance * (2 * local_number + 1) - 1;
+				int j = distance * (2 * local_number + 2) - 1;
+				local_data[j] += local_data[i];
+			}
+			distance = distance * 2;
+		}
+		barrier(CLK_LOCAL_MEM_FENCE);
+		
+		if(index == 0){
+			local_data[dimensions[0] - 1] = 0;
+		}
+		
+		for(int space = 1; space < get_local_size(0);space = space << 1){
+			distance = distance >> 1;
+			if(local_number < space){
+				int i = distance * (2 * local_number + 1) - 1;
+				int j = distance * (2 * local_number + 2) - 1;
+				float temp = local_data[j];
+				local_data[j] += local_data[i];
+				local_data[i] = temp;
+			}
+			barrier(CLK_LOCAL_MEM_FENCE);
+		}
+		result[index] = local_data[index];
+		
+}

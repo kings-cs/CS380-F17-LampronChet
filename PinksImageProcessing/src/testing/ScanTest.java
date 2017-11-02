@@ -1,14 +1,13 @@
-/**
- * 
- */
 package testing;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import java.io.FileNotFoundException;
 
 import org.jocl.CL;
 import org.jocl.cl_device_id;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import parallel.JoclInitializer;
@@ -69,18 +68,19 @@ public class ScanTest {
 		}
 	}
 
+
 	/**
 	 * Tests exclusive scan on a single work group.
 	 */
 	@Test
 	public void testBlelloch() {
-		float[] data = new float[256];
+		float[] data = new float[250];
 
 		for (int i = 0; i < data.length; i++) {
 			data[i] = 1;
 		}
 
-		float[] result = new float[256];
+		float[] result = new float[250];
 
 		BlellochScan scan = new BlellochScan(deviceManager);
 
@@ -89,10 +89,76 @@ public class ScanTest {
 		} catch (FileNotFoundException e) {
 			System.out.println("Kernel not found.");
 		}
-		
+
 		for (int i = 0; i < result.length; i++) {
 			assertTrue("Should be: " + i + " but was: " + result[i], result[i] == i);
 		}
+	}
+
+	/**
+	 * Tests exclusive scan on size greater than group_size but not greater than
+	 * group_size * group_size..
+	 */
+	@Ignore
+	public void testBlellochGourpsize1() {
+		float[] data = new float[2048];
+
+		for (int i = 0; i < data.length; i++) {
+			data[i] = 1;
+		}
+
+		float[] result = new float[2048];
+
+		BlellochScan scan = new BlellochScan(deviceManager);
+
+		try {
+			scan.scan(data, result);
+		} catch (FileNotFoundException e) {
+			System.out.println("Kernel not found.");
+		}
+
+		for (int i = 0; i < result.length; i++) {
+			assertTrue("Should be: " + i + " but was: " + result[i], result[i] == i);
+		}
+	}
+
+	/**
+	 * Tests exclusive scan on size greater than group_size * group_size..
+	 */
+	@Ignore
+	public void testBlellochGourpsize2() {
+		float[] data = new float[(int) (16 * Math.pow(2, 20))];
+
+		for (int i = 0; i < data.length; i++) {
+			data[i] = 1;
+		}
+
+		float[] result = new float[(int) (16 * Math.pow(2, 20))];
+
+		BlellochScan scan = new BlellochScan(deviceManager);
+
+		try {
+			scan.scan(data, result);
+		} catch (FileNotFoundException e) {
+			System.out.println("Kernel not found.");
+		}
+
+		for (int i = 0; i < result.length; i++) {
+			assertTrue("Should be: " + i + " but was: " + result[i], result[i] == i);
+		}
+	}
+	
+	/**
+	 * Tests padding the array.
+	 */
+	@Test
+	public void testPad() {
+		float[] data = new float[245];
+		BlellochScan scan = new BlellochScan(deviceManager);
+		float[] result = scan.padArray(data);
+		
+		assertEquals("Should return 256", 256, result.length);
+		assertEquals("Should return 0", 0, (int) result[250]);
 	}
 
 }
