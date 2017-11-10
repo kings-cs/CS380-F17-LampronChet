@@ -156,10 +156,11 @@ public class ScanTest {
 	public void testPad() {
 		float[] data = new float[245];
 		BlellochScan scan = new BlellochScan(deviceManager);
+		scan.getWorkSize(deviceManager, data);
 		float[] result = scan.padArray(data);
 		
-		assertEquals("Should return 256", 256, result.length);
-		assertEquals("Should return 0", 0, (int) result[250]);
+		assertEquals("Should return 245", 245, result.length);
+		assertEquals("Should return 0", 0, (int) result[244]);
 	}
 
 }

@@ -133,7 +133,7 @@ public class BlellochScan extends PixelModifier {
 
 		double power = old.length / workSize;
 		double lengthPow = Math.ceil(power);
-		int length = (int) Math.pow(2, lengthPow);
+		int length = (int) (lengthPow * workSize);
 		result = new float[length];
 		for (int i = 0; i < old.length; i++) {
 			result[i] = old[i];
