@@ -120,21 +120,21 @@ public class PiPGui extends JFrame {
 
 		JEditorPane webPane = new JEditorPane();
 		webPane.setEditable(false);
-		URL webSite = new URL(
-				"https://raw.githubusercontent.com/kings-cs/CS380-F17-LampronChet/master/README.md?token=AQf_j6gK-4p0NZ5KmSw-E5bXVGKbbfb9ks5aAl5MwA%3D%3D");
-		webPane.setPage(webSite);
+		//URL webSite = new URL(
+		//		"https://raw.githubusercontent.com/kings-cs/CS380-F17-LampronChet/master/README.md?token=AQf_j6gK-4p0NZ5KmSw-E5bXVGKbbfb9ks5aAl5MwA%3D%3D");
+		//webPane.setPage(webSite);
 
 		aboutPane = new JScrollPane(webPane);
 		webPage = new JFrame("About");
-		webPage.setVisible(false);
-		webPage.add(aboutPane);
+		//webPage.setVisible(false);
+		//webPage.add(aboutPane);
 
-		webPage.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosed(WindowEvent e) {
-				dispose();
-			}
-		});
+		//webPage.addWindowListener(new WindowAdapter() {
+		//	@Override
+	//		public void windowClosed(WindowEvent e) {
+		//		dispose();
+		//	}
+		//});
 
 		deviceMap = new HashMap<>();
 		deviceManager = new JoclInitializer();
@@ -408,10 +408,10 @@ public class PiPGui extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			webPage.setSize(new Dimension(500, 500));
-			webPage.setVisible(true);
-			webPage.toFront();
-			// JOptionPane.showMessageDialog(null, "Down for Maintenance!");
+//			webPage.setSize(new Dimension(500, 500));
+//			webPage.setVisible(true);
+//			webPage.toFront();
+			 JOptionPane.showMessageDialog(null, "Down for Maintenance!");
 		}
 
 	}

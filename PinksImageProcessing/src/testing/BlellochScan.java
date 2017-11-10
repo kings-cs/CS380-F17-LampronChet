@@ -24,6 +24,8 @@ import parallel.JoclInitializer;
 public class BlellochScan extends PixelModifier {
 	/** The device manager. */
 	private JoclInitializer deviceManager;
+	/** The work group size. */
+	private int workSize;
 
 	/**
 	 * Constructs an inclusive scan object.
@@ -47,6 +49,7 @@ public class BlellochScan extends PixelModifier {
 	 */
 	public void scan(final float[] data, float[] result) throws FileNotFoundException {
 		int[] dimensions = { data.length };
+		getWorkSize(deviceManager, data);
 		float[] theData = padArray(data);
 		Pointer ptrData = Pointer.to(theData);
 		Pointer ptrResult = Pointer.to(result);
@@ -71,9 +74,9 @@ public class BlellochScan extends PixelModifier {
 				new String[] { sourceBuffer.toString() }, null, null);
 
 		CL.clBuildProgram(program, 0, null, null, null, null);
-
+		
 		long[] globalWorkSize = new long[] { data.length };
-		long[] localWorkSize = new long[] { getWorkSize(deviceManager, data) };
+		long[] localWorkSize = new long[] { workSize };
 
 		cl_kernel hillisSteeleKernel = CL.clCreateKernel(program, "blelloch", null);
 
@@ -103,7 +106,7 @@ public class BlellochScan extends PixelModifier {
 	 *            The proper device manager.
 	 * @return The proper work size;
 	 */
-	public int getWorkSize(JoclInitializer deviceManager, float[] data) {
+	public void getWorkSize(JoclInitializer deviceManager, float[] data) {
 		int maxItemsPerGroup = deviceManager.getMaxWorkGroupSize();
 		boolean isDivisible = false;
 
@@ -115,7 +118,7 @@ public class BlellochScan extends PixelModifier {
 				maxItemsPerGroup--;
 			}
 		}
-		return maxItemsPerGroup;
+		workSize = maxItemsPerGroup;
 	}
 
 	/**
@@ -128,7 +131,7 @@ public class BlellochScan extends PixelModifier {
 	public float[] padArray(float[] old) {
 		float[] result = null;
 
-		double power = Math.log(old.length) / Math.log(2);
+		double power = old.length / workSize;
 		double lengthPow = Math.ceil(power);
 		int length = (int) Math.pow(2, lengthPow);
 		result = new float[length];

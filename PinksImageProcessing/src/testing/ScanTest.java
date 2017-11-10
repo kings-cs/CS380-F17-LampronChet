@@ -85,6 +85,7 @@ public class ScanTest {
 		BlellochScan scan = new BlellochScan(deviceManager);
 
 		try {
+			scan.getWorkSize(deviceManager, data);
 			scan.scan(data, result);
 		} catch (FileNotFoundException e) {
 			System.out.println("Kernel not found.");
