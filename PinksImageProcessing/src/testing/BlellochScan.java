@@ -104,7 +104,6 @@ public class BlellochScan extends PixelModifier {
 	 *            The data array.
 	 * @param deviceManager
 	 *            The proper device manager.
-	 * @return The proper work size;
 	 */
 	public void getWorkSize(JoclInitializer deviceManager, float[] data) {
 		int maxItemsPerGroup = deviceManager.getMaxWorkGroupSize();
@@ -132,8 +131,8 @@ public class BlellochScan extends PixelModifier {
 		float[] result = null;
 
 		double power = old.length / workSize;
-		double lengthPow = Math.ceil(power);
-		int length = (int) (lengthPow * workSize);
+		int lengthModifier = (int) Math.ceil(power);
+		int length = (lengthModifier * workSize);
 		result = new float[length];
 		for (int i = 0; i < old.length; i++) {
 			result[i] = old[i];
