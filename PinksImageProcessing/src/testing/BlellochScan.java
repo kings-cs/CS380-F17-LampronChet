@@ -51,12 +51,13 @@ public class BlellochScan extends PixelModifier {
 		int[] dimensions = { data.length };
 		getWorkSize(deviceManager, data);
 		float[] theData = padArray(data);
+		getWorkSize(deviceManager, theData);
 		Pointer ptrData = Pointer.to(theData);
 		Pointer ptrResult = Pointer.to(result);
 		Pointer ptrDimensions = Pointer.to(dimensions);
 
 		cl_mem memData = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
-				Sizeof.cl_float * data.length, ptrData, null);
+				Sizeof.cl_float * theData.length, ptrData, null);
 		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * result.length, ptrResult, null);
 		cl_mem memDimensions = CL.clCreateBuffer(deviceManager.getContext(),

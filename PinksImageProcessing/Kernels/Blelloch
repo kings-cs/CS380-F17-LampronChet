@@ -17,8 +17,10 @@ __kernel void blelloch(__global const float *data, __global float *result, __loc
 		}
 		
 		if(local_number == 1){
-			local_data[dimensions[0] - 1] = 0;
+			local_data[get_local_size(0)] = 0;
 		}
+		barrier(CLK_LOCAL_MEM_FENCE);
+		
 		for(int space = 1; space < get_local_size(0);space = space << 1){
 			distance = distance >> 1;
 			if(local_number < space){
@@ -29,9 +31,6 @@ __kernel void blelloch(__global const float *data, __global float *result, __loc
 				local_data[i] = temp;
 			}
 			barrier(CLK_LOCAL_MEM_FENCE);
-		}
-		if(local_number == 1){
-			local_data[dimensions[0] - 1] = 0;
 		}
 		result[index] = local_data[local_number];
 		
