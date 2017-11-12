@@ -35,4 +35,3 @@ __kernel void blelloch(__global const float *data, __global float *result, __loc
 		result[index] = local_data[local_number];
 		
 }
-
