@@ -131,9 +131,17 @@ public class BlellochScan extends PixelModifier {
 	public float[] padArray(float[] old) {
 		float[] result = null;
 
-		double power = old.length / workSize;
-		int lengthModifier = (int) Math.ceil(power);
-		int length = (lengthModifier * workSize);
+//		double power = old.length / workSize;
+//		int lengthModifier = (int) Math.ceil(power);
+//		int length = (lengthModifier * workSize);
+		int length = 1;
+		boolean isGreater = false;
+		while(!isGreater) {
+			length = length << 1;
+			if(length > old.length) {
+				isGreater = true;
+			}
+		}
 		result = new float[length];
 		for (int i = 0; i < old.length; i++) {
 			result[i] = old[i];
