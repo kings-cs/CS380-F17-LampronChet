@@ -72,9 +72,9 @@ public class BlellochScan extends PixelModifier {
 
 		CL.clBuildProgram(program, 0, null, null, null, null);
 
-		long[] globalWorkSize = new long[] { data.length };
+		long[] globalWorkSize = new long[] { paddedData.length };
 		long[] localWorkSize = new long[] { workSize };
-		int accumSize = data.length / workSize;
+		int accumSize = paddedData.length / workSize;
 		float[] accumulator = new float[accumSize];
 		Pointer ptrAccum = Pointer.to(accumulator);
 		cl_mem memAccum = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
@@ -173,7 +173,7 @@ public class BlellochScan extends PixelModifier {
 		boolean isGreater = false;
 		while (!isGreater) {
 			length = length << 1;
-			if (length > old.length) {
+			if (length >= old.length) {
 				isGreater = true;
 			}
 		}
