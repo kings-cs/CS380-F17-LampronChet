@@ -100,7 +100,7 @@ public class ScanTest {
 	 * Tests exclusive scan on size greater than group_size but not greater than
 	 * group_size * group_size..
 	 */
-	@Ignore
+	@Test
 	public void testBlellochGourpsize1() {
 		float[] data = new float[2048];
 
@@ -126,7 +126,7 @@ public class ScanTest {
 	/**
 	 * Tests exclusive scan on size greater than group_size * group_size..
 	 */
-	@Ignore
+	@Test
 	public void testBlellochGourpsize2() {
 		float[] data = new float[(int) (16 * Math.pow(2, 20))];
 
@@ -159,7 +159,7 @@ public class ScanTest {
 		scan.getWorkSize(deviceManager, data);
 		float[] result = scan.padArray(data);
 		
-		assertEquals("Should return 246", 246, result.length);
+		assertEquals("Should return 256", 256, result.length);
 		assertEquals("Should return 0", 0, (int) result[244]);
 	}
 

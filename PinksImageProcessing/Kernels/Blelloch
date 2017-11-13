@@ -1,4 +1,4 @@
-__kernel void blelloch(__global const float *data, __global float *result, __local float *local_data, __global int *dimensions){
+__kernel void blelloch(__global const float *data, __global float *result, __global float *accumulator,  __local float *local_data){
 		int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
 		int local_number = get_local_id(0);
 		local_data[local_number] = data[index];
@@ -32,6 +32,17 @@ __kernel void blelloch(__global const float *data, __global float *result, __loc
 			}
 			barrier(CLK_LOCAL_MEM_FENCE);
 		}
+		if(local_number == get_local_size(0) - 1){
+			accumulator[get_group_id(0)] = local_data[local_number] + data[index];
+		}
 		result[index] = local_data[local_number];
 		
+}
+
+__kernel void increment(__global const float *padded, global float *result, global float *incrementValues){
+	int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
+	
+	int group = get_group_id(0);
+	result[index] = padded[index] + incrementValues[group];
+	
 }
