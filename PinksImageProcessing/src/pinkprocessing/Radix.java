@@ -38,7 +38,7 @@ public class Radix {
 	public int[] calculateAdress(int[] values, int[] predicateValues, int[] normalScan, int[] predicateScan) {
 		int[] returnBits = new int[values.length];
 		for(int i = 0; i < values.length; i++) {
-			//TODO
+			in
 		}
 		return returnBits;
 	}
