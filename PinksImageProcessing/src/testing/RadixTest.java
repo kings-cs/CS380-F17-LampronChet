@@ -144,6 +144,7 @@ public class RadixTest {
 		getProperWorkSize(deviceManager, data);
 		Radix sort = new Radix(workSize, deviceManager);
 		sort.fullSort(data, result);
+		System.out.println(result[15]);
 		for(int i = 0;i < data.length; i++) {
 			assertTrue("Should return " + expectedResult[i] + " but was " + result[i], result[i] == expectedResult[i]);
 		}
