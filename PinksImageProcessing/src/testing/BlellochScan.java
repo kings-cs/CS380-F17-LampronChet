@@ -47,10 +47,10 @@ public class BlellochScan extends PixelModifier {
 	 * @throws FileNotFoundException
 	 *             Not thrown.
 	 */
-	public void scan(final float[] data, float[] result) throws FileNotFoundException {
+	public void scan(final int[] data, int[] result) throws FileNotFoundException {
 		getWorkSize(deviceManager, data);
-		float[] paddedData = padArray(data);
-		float[] paddedResult = padArray(result);
+		int[] paddedData = padArray(data);
+		int[] paddedResult = padArray(result);
 		getWorkSize(deviceManager, paddedData);
 		Pointer ptrData = Pointer.to(paddedData);
 		Pointer ptrResult = Pointer.to(paddedResult);
@@ -75,7 +75,7 @@ public class BlellochScan extends PixelModifier {
 		long[] globalWorkSize = new long[] { paddedData.length };
 		long[] localWorkSize = new long[] { workSize };
 		int accumSize = paddedData.length / workSize;
-		float[] accumulator = new float[accumSize];
+		int[] accumulator = new int[accumSize];
 		Pointer ptrAccum = Pointer.to(accumulator);
 		cl_mem memAccum = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * accumulator.length, ptrAccum, null);
@@ -85,7 +85,7 @@ public class BlellochScan extends PixelModifier {
 		CL.clSetKernelArg(blellochKernel, 0, Sizeof.cl_mem, Pointer.to(memData));
 		CL.clSetKernelArg(blellochKernel, 1, Sizeof.cl_mem, Pointer.to(memResult));
 		CL.clSetKernelArg(blellochKernel, 2, Sizeof.cl_mem, Pointer.to(memAccum));
-		CL.clSetKernelArg(blellochKernel, 3, Sizeof.cl_float * localWorkSize[0], null);
+		CL.clSetKernelArg(blellochKernel, 3, Sizeof.cl_int * localWorkSize[0], null);
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), blellochKernel, 1, null, globalWorkSize, localWorkSize, 0,
 				null, null);
 
@@ -94,7 +94,7 @@ public class BlellochScan extends PixelModifier {
 		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memAccum, CL.CL_TRUE, 0, accumulator.length * Sizeof.cl_float,
 				ptrAccum, 0, null, null);
 
-		float[] increments = new float[accumulator.length];
+		int[] increments = new int[accumulator.length];
 		if (accumulator.length > 1) {
 			scan(accumulator, increments);
 		}
@@ -102,7 +102,7 @@ public class BlellochScan extends PixelModifier {
 		cl_mem memIncrement = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * increments.length, ptrIncrement, null);
 
-		float[] finalResult = new float[paddedData.length];
+		int[] finalResult = new int[paddedData.length];
 		Pointer ptrFinal = Pointer.to(finalResult);
 		cl_mem memFinal = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * finalResult.length, ptrFinal, null);
@@ -163,8 +163,8 @@ public class BlellochScan extends PixelModifier {
 	 *            The original array.
 	 * @return The padded array.
 	 */
-	public float[] padArray(float[] old) {
-		float[] result = null;
+	public int[] padArray(int[] old) {
+		int[] result = null;
 
 		// double power = old.length / workSize;
 		// int lengthModifier = (int) Math.ceil(power);
@@ -177,7 +177,7 @@ public class BlellochScan extends PixelModifier {
 				isGreater = true;
 			}
 		}
-		result = new float[length];
+		result = new int[length];
 		for (int i = 0; i < old.length; i++) {
 			result[i] = old[i];
 		}

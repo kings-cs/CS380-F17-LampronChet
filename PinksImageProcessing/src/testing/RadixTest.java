@@ -18,7 +18,7 @@ public class RadixTest {
 	public void testIsolate() {
 		int[] values = { 10, 11, 2, 9, 0, 6, 1, 4, 7, 3, 8, 5 };
 
-		Radix radix = new Radix(1);
+		Radix radix = new Radix(1, null);
 
 		int[] returnVal = radix.isolateBit(values, 0);
 
@@ -35,7 +35,7 @@ public class RadixTest {
 	public void testFlip() {
 		int[] values = { 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1 };
 
-		Radix radix = new Radix(1);
+		Radix radix = new Radix(1, null);
 
 		int[] returnVal = radix.flipBits(values);
 
@@ -52,7 +52,7 @@ public class RadixTest {
 	public void testScanNormal() {
 		int[] values = { 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1 };
 
-		Radix radix = new Radix(1);
+		Radix radix = new Radix(1, null);
 
 		int[] returnVal = radix.scan(values);
 
@@ -69,7 +69,7 @@ public class RadixTest {
 	public void testScanPredicate() {
 		int[] values = { 1, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0 };
 
-		Radix radix = new Radix(1);
+		Radix radix = new Radix(1, null);
 
 		int[] returnVal = radix.scan(values);
 
@@ -90,7 +90,7 @@ public class RadixTest {
 		int[] predicateScan = { 0, 0, 0, 1, 1, 1, 2, 2, 3, 4, 4, 5 };
 		int[] expectedValues = { 10, 2, 0, 6, 4, 8, 11, 9, 1, 7, 3, 5 };
 
-		Radix radix = new Radix(1);
+		Radix radix = new Radix(1, null);
 
 		int[] result = radix.calculateAdress(values, predicateValues, normalScan, predicateScan);
 		for (int i = 0; i < values.length; i++) {

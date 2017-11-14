@@ -74,13 +74,13 @@ public class ScanTest {
 	 */
 	@Test
 	public void testBlelloch() {
-		float[] data = new float[250];
+		int[] data = new int[250];
 
 		for (int i = 0; i < data.length; i++) {
 			data[i] = 1;
 		}
 
-		float[] result = new float[250];
+		int[] result = new int[250];
 
 		BlellochScan scan = new BlellochScan(deviceManager);
 
@@ -102,13 +102,13 @@ public class ScanTest {
 	 */
 	@Test
 	public void testBlellochGourpsize1() {
-		float[] data = new float[2048];
+		int[] data = new int[2048];
 
 		for (int i = 0; i < data.length; i++) {
 			data[i] = 1;
 		}
 
-		float[] result = new float[2048];
+		int[] result = new int[2048];
 
 		BlellochScan scan = new BlellochScan(deviceManager);
 
@@ -128,13 +128,13 @@ public class ScanTest {
 	 */
 	@Test
 	public void testBlellochGourpsize2() {
-		float[] data = new float[(int) (16 * Math.pow(2, 20))];
+		int[] data = new int[(int) (16 * Math.pow(2, 20))];
 
 		for (int i = 0; i < data.length; i++) {
 			data[i] = 1;
 		}
 
-		float[] result = new float[(int) (16 * Math.pow(2, 20))];
+		int[] result = new int[(int) (16 * Math.pow(2, 20))];
 
 		BlellochScan scan = new BlellochScan(deviceManager);
 
@@ -154,10 +154,10 @@ public class ScanTest {
 	 */
 	@Test
 	public void testPad() {
-		float[] data = new float[246];
+		int[] data = new int[246];
 		BlellochScan scan = new BlellochScan(deviceManager);
 		scan.getWorkSize(deviceManager, data);
-		float[] result = scan.padArray(data);
+		int[] result = scan.padArray(data);
 		
 		assertEquals("Should return 256", 256, result.length);
 		assertEquals("Should return 0", 0, (int) result[244]);
