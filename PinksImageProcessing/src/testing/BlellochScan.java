@@ -48,10 +48,10 @@ public class BlellochScan extends PixelModifier {
 	 *             Not thrown.
 	 */
 	public void scan(final int[] data, int[] result) throws FileNotFoundException {
-		getWorkSize(deviceManager, data);
+		getProperWorkSize(deviceManager, data);
 		int[] paddedData = padArray(data);
 		int[] paddedResult = padArray(result);
-		getWorkSize(deviceManager, paddedData);
+		getProperWorkSize(deviceManager, paddedData);
 		Pointer ptrData = Pointer.to(paddedData);
 		Pointer ptrResult = Pointer.to(paddedResult);
 
@@ -141,7 +141,7 @@ public class BlellochScan extends PixelModifier {
 	 * @param deviceManager
 	 *            The proper device manager.
 	 */
-	public void getWorkSize(JoclInitializer deviceManager, float[] data) {
+	public void getProperWorkSize(JoclInitializer deviceManager, int[] data) {
 		int maxItemsPerGroup = deviceManager.getMaxWorkGroupSize();
 		boolean isDivisible = false;
 

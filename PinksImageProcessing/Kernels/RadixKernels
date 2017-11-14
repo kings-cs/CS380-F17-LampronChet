@@ -1,0 +1,35 @@
+__kernel void isolateBit(__global const int *values, __global int* returnBits, __global int *bit){
+	int i = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
+	returnBits[i] = (values[i] >> bit[0]) & 1;
+}
+
+__kernel void flipBit(__global const int *values, __global int* returnBits){
+	int i = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
+	returnBits[i] = (values[i] ^ 1);
+}
+
+__kernel void calculateAdress(__global const int *data, __global const int *values, __global int *predicateValues, 
+__global int *normalScan, __global int *predicateScan, __global int *returnBits, __global int *dimensions){
+		int i = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
+		int predicateLength = dimensions[0];
+		int p = values[i];
+		int notP = predicateValues[i];
+		int scanP = normalScan[i];
+		int scanNotP = predicateScan[i];
+		int first = 0;
+		int second = 0;
+		if (p == 1) {
+			if (predicateValues[predicateLength - 1] == 1) {
+				first = predicateScan[predicateLength - 1] + 1;
+			} else {
+				first = predicateScan[predicateLength - 1];
+			}
+		}
+		if (notP == 1) {
+			second = scanNotP;
+		} else {
+			second = scanP;
+		}
+		int adress = first + second;
+		returnBits[adress] = data[i];
+}
