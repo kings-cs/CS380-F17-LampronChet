@@ -39,10 +39,15 @@ __kernel void blelloch(__global const float *data, __global float *result, __glo
 		
 }
 
-__kernel void increment(__global const float *padded, global float *result, global float *incrementValues){
+__kernel void increment(__global const float *padded, __global float *result, __global float *incrementValues){
 	int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
 	
 	int group = get_group_id(0);
 	result[index] = padded[index] + incrementValues[group];
 	
+}
+
+__kernel void pad(__global const int *old, __global int *result){
+	int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
+	result[index] = old[index];
 }

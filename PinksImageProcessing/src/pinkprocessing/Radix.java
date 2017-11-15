@@ -28,11 +28,30 @@ public class Radix {
 	/** The calculated runtime. */
 	private long calculatedRuntime;
 
+	/**
+	 * Constructs a radix object.
+	 * 
+	 * @param theWorkSize
+	 *            The work size.
+	 * @param deviceManager
+	 *            The device manager.
+	 */
 	public Radix(int theWorkSize, JoclInitializer deviceManager) {
 		workSize = theWorkSize;
 		this.deviceManager = deviceManager;
 	}
 
+	/**
+	 * Isolates the specified bit.
+	 * 
+	 * @param values
+	 *            The numbers to retrieve bits from.
+	 * @param bit
+	 *            The bit to isolate.
+	 * @return The isolated bits.
+	 * @throws FileNotFoundException
+	 *             Not thrown.
+	 */
 	public int[] isolateBit(int[] values, int bit) throws FileNotFoundException {
 		int[] returnBits = new int[values.length];
 		int[] bitMask = { bit };
@@ -91,6 +110,15 @@ public class Radix {
 		return returnBits;
 	}
 
+	/**
+	 * Flips the bits to their opposite.
+	 * 
+	 * @param values
+	 *            The values to flip.
+	 * @return The flipped bits.
+	 * @throws FileNotFoundException
+	 *             Not thrown.
+	 */
 	public int[] flipBits(int[] values) throws FileNotFoundException {
 		int[] returnBits = new int[values.length];
 
@@ -144,15 +172,46 @@ public class Radix {
 		return returnBits;
 	}
 
+	/**
+	 * Runs the exclusive scan.
+	 * 
+	 * @param values
+	 *            The values to scan.
+	 * @return The scanned array.
+	 * @throws FileNotFoundException
+	 *             Not thrown.
+	 */
 	public int[] scan(int[] values) throws FileNotFoundException {
 		BlellochScan scan = new BlellochScan(deviceManager);
 		int[] result = new int[values.length];
-		scan.scan(values, result);
+		calculatedRuntime += scan.scan(values, result);
 		return result;
 	}
 
-	public void calculateAdress(int[] data, int[] startKeys, int[] resultKeys, int[] values, int[] predicateValues, int[] normalScan, int[] predicateScan, int[] returnBits)
-			throws FileNotFoundException {
+	/**
+	 * Calculates and places each value in their new address.
+	 * 
+	 * @param data
+	 *            The original data.
+	 * @param startKeys
+	 *            The starting index values.
+	 * @param resultKeys
+	 *            The index values moved around.
+	 * @param values
+	 *            The non flipped bits.
+	 * @param predicateValues
+	 *            The flipped bits.
+	 * @param normalScan
+	 *            The normal scan.
+	 * @param predicateScan
+	 *            The scan of the flipped bits.
+	 * @param returnBits
+	 *            The return values.
+	 * @throws FileNotFoundException
+	 *             Not thrown.
+	 */
+	public void calculateAddress(int[] data, int[] startKeys, int[] resultKeys, int[] values, int[] predicateValues,
+			int[] normalScan, int[] predicateScan, int[] returnBits) throws FileNotFoundException {
 		int[] dimensions = { predicateValues.length };
 
 		Pointer ptrData = Pointer.to(data);
@@ -169,8 +228,9 @@ public class Radix {
 				Sizeof.cl_float * data.length, ptrData, null);
 		cl_mem memStart = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * startKeys.length, ptrStartKeys, null);
-		cl_mem memResultKeys = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
-				Sizeof.cl_float * resultKeys.length, ptrResultKeys, null);
+		cl_mem memResultKeys = CL.clCreateBuffer(deviceManager.getContext(),
+				CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * resultKeys.length, ptrResultKeys,
+				null);
 		cl_mem memValues = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * values.length, ptrValues, null);
 		cl_mem memPredicateValues = CL.clCreateBuffer(deviceManager.getContext(),
@@ -210,7 +270,7 @@ public class Radix {
 
 		CL.clSetKernelArg(isolateKernel, 0, Sizeof.cl_mem, Pointer.to(memData));
 		CL.clSetKernelArg(isolateKernel, 1, Sizeof.cl_mem, Pointer.to(memStart));
-		CL.clSetKernelArg(isolateKernel, 2, Sizeof.cl_mem, Pointer.to(memResultKeys));		
+		CL.clSetKernelArg(isolateKernel, 2, Sizeof.cl_mem, Pointer.to(memResultKeys));
 		CL.clSetKernelArg(isolateKernel, 3, Sizeof.cl_mem, Pointer.to(memValues));
 		CL.clSetKernelArg(isolateKernel, 4, Sizeof.cl_mem, Pointer.to(memPredicateValues));
 		CL.clSetKernelArg(isolateKernel, 5, Sizeof.cl_mem, Pointer.to(memNormalScan));
@@ -260,6 +320,20 @@ public class Radix {
 		// }
 	}
 
+	/**
+	 * Runs all the methods together to fully sort an array.
+	 * 
+	 * @param data
+	 *            The data to sort.
+	 * @param result
+	 *            The result array.
+	 * @param startKeys
+	 *            The starting index values.
+	 * @param endKeys
+	 *            The ending index values.
+	 * @throws FileNotFoundException
+	 *             Not thrown.
+	 */
 	public void fullSort(int[] data, int[] result, int[] startKeys, int[] endKeys) throws FileNotFoundException {
 		int[] tempData = data;
 		int[] tempStart = startKeys;
@@ -268,10 +342,19 @@ public class Radix {
 			int[] flippedBits = flipBits(bits);
 			int[] normalScan = scan(bits);
 			int[] predicateScan = scan(flippedBits);
-			calculateAdress(tempData, tempStart, endKeys, bits, flippedBits, normalScan, predicateScan, result);
+			calculateAddress(tempData, tempStart, endKeys, bits, flippedBits, normalScan, predicateScan, result);
 			tempData = result;
 			tempStart = endKeys;
 		}
+	}
+
+	/**
+	 * Gets the runtime.
+	 * 
+	 * @return The runtime.
+	 */
+	public long getRuntime() {
+		return calculatedRuntime;
 	}
 
 }

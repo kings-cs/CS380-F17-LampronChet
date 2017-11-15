@@ -20,7 +20,6 @@ import java.io.FileNotFoundException;
 //import java.io.FileNotFoundException;
 //import java.io.FileReader;
 import java.io.IOException;
-import java.net.URL;
 //import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -126,8 +125,8 @@ public class PiPGui extends JFrame {
 
 		aboutPane = new JScrollPane(webPane);
 		webPage = new JFrame("About");
-		//webPage.setVisible(false);
-		//webPage.add(aboutPane);
+		webPage.setVisible(false);
+		webPage.add(aboutPane);
 
 		//webPage.addWindowListener(new WindowAdapter() {
 		//	@Override

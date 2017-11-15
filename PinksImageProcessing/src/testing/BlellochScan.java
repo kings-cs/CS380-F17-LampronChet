@@ -44,10 +44,11 @@ public class BlellochScan extends PixelModifier {
 	 *            The data to scan.
 	 * @param result
 	 *            The result array.
+	 * @return The runtime.
 	 * @throws FileNotFoundException
 	 *             Not thrown.
 	 */
-	public void scan(final int[] data, int[] result) throws FileNotFoundException {
+	public long scan(final int[] data, int[] result) throws FileNotFoundException {
 		getProperWorkSize(deviceManager, data);
 		int[] paddedData = padArray(data);
 		int[] paddedResult = padArray(result);
@@ -86,11 +87,13 @@ public class BlellochScan extends PixelModifier {
 		CL.clSetKernelArg(blellochKernel, 1, Sizeof.cl_mem, Pointer.to(memResult));
 		CL.clSetKernelArg(blellochKernel, 2, Sizeof.cl_mem, Pointer.to(memAccum));
 		CL.clSetKernelArg(blellochKernel, 3, Sizeof.cl_int * localWorkSize[0], null);
+		long startTime = System.nanoTime();
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), blellochKernel, 1, null, globalWorkSize, localWorkSize, 0,
 				null, null);
+		long calculatedRuntime = System.nanoTime() - startTime;
 
-		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0, paddedResult.length * Sizeof.cl_float,
-				ptrResult, 0, null, null);
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0,
+				paddedResult.length * Sizeof.cl_float, ptrResult, 0, null, null);
 		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memAccum, CL.CL_TRUE, 0, accumulator.length * Sizeof.cl_float,
 				ptrAccum, 0, null, null);
 
@@ -99,8 +102,8 @@ public class BlellochScan extends PixelModifier {
 			scan(accumulator, increments);
 		}
 		Pointer ptrIncrement = Pointer.to(increments);
-		cl_mem memIncrement = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
-				Sizeof.cl_float * increments.length, ptrIncrement, null);
+		cl_mem memIncrement = CL.clCreateBuffer(deviceManager.getContext(),
+				CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * increments.length, ptrIncrement, null);
 
 		int[] finalResult = new int[paddedData.length];
 		Pointer ptrFinal = Pointer.to(finalResult);
@@ -111,14 +114,14 @@ public class BlellochScan extends PixelModifier {
 		CL.clSetKernelArg(incrementKernel, 0, Sizeof.cl_mem, Pointer.to(memResult));
 		CL.clSetKernelArg(incrementKernel, 1, Sizeof.cl_mem, Pointer.to(memFinal));
 		CL.clSetKernelArg(incrementKernel, 2, Sizeof.cl_mem, Pointer.to(memIncrement));
-		
+		startTime = System.nanoTime();
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), incrementKernel, 1, null, globalWorkSize, localWorkSize, 0,
 				null, null);
-
+		calculatedRuntime += System.nanoTime() - startTime;
 		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memFinal, CL.CL_TRUE, 0, finalResult.length * Sizeof.cl_float,
 				ptrFinal, 0, null, null);
 
-		for(int i = 0; i < result.length; i++) {
+		for (int i = 0; i < result.length; i++) {
 			result[i] = finalResult[i];
 		}
 		CL.clReleaseKernel(blellochKernel);
@@ -131,6 +134,7 @@ public class BlellochScan extends PixelModifier {
 		CL.clReleaseMemObject(memIncrement);
 
 		kernelScan.close();
+		return calculatedRuntime;
 	}
 
 	/**
@@ -162,8 +166,10 @@ public class BlellochScan extends PixelModifier {
 	 * @param old
 	 *            The original array.
 	 * @return The padded array.
+	 * @throws FileNotFoundException
+	 *             Not thrown.
 	 */
-	public int[] padArray(int[] old) {
+	public int[] padArray(int[] old) throws FileNotFoundException {
 		int[] result = null;
 
 		// double power = old.length / workSize;
@@ -178,10 +184,49 @@ public class BlellochScan extends PixelModifier {
 			}
 		}
 		result = new int[length];
+
+//		Pointer ptrOld = Pointer.to(old);
+//		Pointer ptrResult = Pointer.to(result);
+//
+//		cl_mem memOld = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+//				Sizeof.cl_float * old.length, ptrOld, null);
+//		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+//				Sizeof.cl_float * result.length, ptrResult, null);
+//
+//		File kernelFile = new File("Kernels/Blelloch");
+//		Scanner kernelScan = new Scanner(kernelFile);
+//		StringBuffer sourceBuffer = new StringBuffer();
+//		while (kernelScan.hasNextLine()) {
+//			sourceBuffer.append(kernelScan.nextLine());
+//			sourceBuffer.append("\n");
+//		}
+//		cl_program program = CL.clCreateProgramWithSource(deviceManager.getContext(), 1,
+//				new String[] { sourceBuffer.toString() }, null, null);
+//
+//		CL.clBuildProgram(program, 0, null, null, null, null);
+//
+//		long[] globalWorkSize = new long[] { old.length };
+//		long[] localWorkSize = new long[] { workSize };
+//
+//		cl_kernel padKernel = CL.clCreateKernel(program, "pad", null);
+//		
+//		CL.clSetKernelArg(padKernel, 0, Sizeof.cl_mem, Pointer.to(memOld));
+//		CL.clSetKernelArg(padKernel, 1, Sizeof.cl_mem, Pointer.to(memResult));
+//		
+//		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), padKernel, 1, null, globalWorkSize, localWorkSize, 0,
+//				null, null);
+//		
+//		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0, result.length * Sizeof.cl_float,
+//				ptrResult, 0, null, null);
+		
 		for (int i = 0; i < old.length; i++) {
 			result[i] = old[i];
 		}
-
+//		CL.clReleaseKernel(padKernel);
+//		CL.clReleaseProgram(program);
+//		CL.clReleaseMemObject(memOld);
+//		CL.clReleaseMemObject(memResult);
+//		kernelScan.close();
 		return result;
 
 	}

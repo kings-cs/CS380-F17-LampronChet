@@ -7,7 +7,6 @@ import java.io.FileNotFoundException;
 import org.jocl.CL;
 import org.jocl.cl_device_id;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import parallel.JoclInitializer;
@@ -67,7 +66,6 @@ public class ScanTest {
 			assertTrue(result[i - 1] == i);
 		}
 	}
-
 
 	/**
 	 * Tests exclusive scan on a single work group.
@@ -148,17 +146,20 @@ public class ScanTest {
 			assertTrue("Should be: " + i + " but was: " + result[i], result[i] == i);
 		}
 	}
-	
+
 	/**
 	 * Tests padding the array.
+	 * 
+	 * @throws FileNotFoundException
+	 *             Not thrown.
 	 */
 	@Test
-	public void testPad() {
+	public void testPad() throws FileNotFoundException {
 		int[] data = new int[246];
 		BlellochScan scan = new BlellochScan(deviceManager);
 		scan.getWorkSize(deviceManager, data);
 		int[] result = scan.padArray(data);
-		
+
 		assertEquals("Should return 256", 256, result.length);
 		assertEquals("Should return 0", 0, (int) result[244]);
 	}
