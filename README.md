@@ -41,13 +41,14 @@ II. Image editing:
 	<br>12. Mosaic in parallel
 	<br>13. Grayscale Histogram Equalization
 	<br>14. Efficient Histogram Equalization
+	<br>15. Zoom in and out in increments of 10%
 	<br>Many more to come soon!
 
 III. Close the program:
 	<br>1.You can close the program with the normal x, the close menu option, or alt-f4. 
 	
 IV. Bugs:
-	<br>About is implemented, but only displays the raw text currently. Raw text link must be updated often.
+	<br>About is implemented, but only displays the raw text currently. Raw text link must be updated often, . This feature has been removed until a permanent solution is found.
 	<br>.gif will only display the first frame in the file.
 	<br>Saving without a file type does not make PNG, please specify the file type in the name.
 	
@@ -205,6 +206,27 @@ V. Runtime chart:
     <td> Nvidia GTX 970 </td>
     <td> Windows 10 </td>
   </tr>
+  
+  <tr>
+    <td> Radix sort on a size of 250</td>
+    <td> 46.4ms </td>
+    <td> Nvidia GTX 970 </td>
+    <td> Windows 10 </td>
+  </tr>
+  
+   <tr>
+    <td> Radix sort on a size of 4096</td>
+    <td> 55.2ms </td>
+    <td> Nvidia GTX 970 </td>
+    <td> Windows 10 </td>
+  </tr>
+  
+   <tr>
+    <td> Radix sort on a size of 1048576</td>
+    <td> 2312.3ms </td>
+    <td> Nvidia GTX 970 </td>
+    <td> Windows 10 </td>
+  </tr>
 
 </table>
 
@@ -217,3 +239,9 @@ VI. Supported File Types:
 VII. Histogram Optimizations:
 <br>To optimize this algorithm I have moved the image data into local memory. This did not reduce the atomics, but did reduce the runtime. 
 <br>Each algorithm was run 10 times on an image of size 1920 x 1200. The optimized algorithm ran 4ms faster on average.
+
+VIII. Radix notes:
+<br>Radix has been implemented. The test classes can be found in src/testing/RadixTest. The code can be found in src/pinklprocessing/Radix.
+<br> I attempted to convert pad array to parallel, but that left me with a division by 0 in my kernel and a log file with a stack trace that I could not read. The code is there, but commented out.
+<br> I have coded all pieces of the radix sort in parallel, the sequential code is left in place but commented out.
+<br> The kernels can be found in /Kernels/RadixKernels.
