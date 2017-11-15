@@ -121,10 +121,12 @@ public class RadixTest {
 		int[] normalScan = { 0, 0, 1, 1, 2, 2, 2, 3, 3, 4, 5, 5 };
 		int[] predicateScan = { 0, 1, 1, 2, 2, 3, 4, 4, 5, 5, 5, 6};
 		int[] expectedValues = { 10, 2, 0, 6, 4, 8, 11, 9, 1, 7, 3, 5 };
+		int[] startKeys = new int[12];
+		int[] resultKeys = new int[12];
 
 		Radix radix = new Radix(1, deviceManager);
 		int[] result = new int[values.length];
-		radix.calculateAdress(data, values, predicateValues, normalScan, predicateScan, result);
+		radix.calculateAdress(data, startKeys, resultKeys, values, predicateValues, normalScan, predicateScan, result);
 		for (int i = 0; i < values.length; i++) {
 			assertTrue("Should return " + expectedValues[i] + " but was " + result[i], result[i] == expectedValues[i]);
 		}
@@ -135,6 +137,8 @@ public class RadixTest {
 		int[] data = new int[250];
 		int[] result = new int[250];
 		int[] expectedResult = new int[250];
+		int[] startKeys = new int[250];
+		int[] resultKeys = new int[250];
 		int dataPlacer = 249;
 		for(int i = 0; i < data.length; i++) {
 			data[i] = dataPlacer;
@@ -143,8 +147,51 @@ public class RadixTest {
 		}
 		getProperWorkSize(deviceManager, data);
 		Radix sort = new Radix(workSize, deviceManager);
-		sort.fullSort(data, result);
-		System.out.println(result[15]);
+		sort.fullSort(data, result, startKeys, resultKeys);
+		for(int i = 0;i < data.length; i++) {
+			assertTrue("Should return " + expectedResult[i] + " but was " + result[i], result[i] == expectedResult[i]);
+		}
+	}
+	
+	@Test
+	public void testFullSortMedium() throws FileNotFoundException {
+		int[] data = new int[2048];
+		int[] result = new int[2048];
+		int[] expectedResult = new int[2048];
+		int[] startKeys = new int[2048];
+		int[] resultKeys = new int[2048];
+		int dataPlacer = 2047;
+		for(int i = 0; i < data.length; i++) {
+			data[i] = dataPlacer;
+			startKeys[i] = i;
+			expectedResult[i] = i;
+			dataPlacer--;
+		}
+		getProperWorkSize(deviceManager, data);
+		Radix sort = new Radix(workSize, deviceManager);
+		sort.fullSort(data, result, startKeys, resultKeys);
+		for(int i = 0;i < data.length; i++) {
+			assertTrue("Should return " + expectedResult[i] + " but was " + result[i], result[i] == expectedResult[i]);
+		}
+	}
+	
+	@Test
+	public void testFullSortLarge() throws FileNotFoundException {
+		int[] data = new int[10000];
+		int[] result = new int[10000];
+		int[] expectedResult = new int[10000];
+		int[] startKeys = new int[10000];
+		int[] resultKeys = new int[10000];
+		int dataPlacer = 9999;
+		for(int i = 0; i < data.length; i++) {
+			data[i] = dataPlacer;
+			startKeys[i] = i;
+			expectedResult[i] = i;
+			dataPlacer--;
+		}
+		getProperWorkSize(deviceManager, data);
+		Radix sort = new Radix(workSize, deviceManager);
+		sort.fullSort(data, result, startKeys, resultKeys);
 		for(int i = 0;i < data.length; i++) {
 			assertTrue("Should return " + expectedResult[i] + " but was " + result[i], result[i] == expectedResult[i]);
 		}

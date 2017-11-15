@@ -151,11 +151,13 @@ public class Radix {
 		return result;
 	}
 
-	public int[] calculateAdress(int[] data, int[] values, int[] predicateValues, int[] normalScan, int[] predicateScan, int[] returnBits)
+	public void calculateAdress(int[] data, int[] startKeys, int[] resultKeys, int[] values, int[] predicateValues, int[] normalScan, int[] predicateScan, int[] returnBits)
 			throws FileNotFoundException {
 		int[] dimensions = { predicateValues.length };
 
 		Pointer ptrData = Pointer.to(data);
+		Pointer ptrStartKeys = Pointer.to(startKeys);
+		Pointer ptrResultKeys = Pointer.to(resultKeys);
 		Pointer ptrValues = Pointer.to(values);
 		Pointer ptrPredicateValues = Pointer.to(predicateValues);
 		Pointer ptrNormalScan = Pointer.to(normalScan);
@@ -165,6 +167,10 @@ public class Radix {
 
 		cl_mem memData = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * data.length, ptrData, null);
+		cl_mem memStart = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+				Sizeof.cl_float * startKeys.length, ptrStartKeys, null);
+		cl_mem memResultKeys = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+				Sizeof.cl_float * resultKeys.length, ptrResultKeys, null);
 		cl_mem memValues = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * values.length, ptrValues, null);
 		cl_mem memPredicateValues = CL.clCreateBuffer(deviceManager.getContext(),
@@ -203,12 +209,14 @@ public class Radix {
 		cl_kernel isolateKernel = CL.clCreateKernel(program, kernelName, null);
 
 		CL.clSetKernelArg(isolateKernel, 0, Sizeof.cl_mem, Pointer.to(memData));
-		CL.clSetKernelArg(isolateKernel, 1, Sizeof.cl_mem, Pointer.to(memValues));
-		CL.clSetKernelArg(isolateKernel, 2, Sizeof.cl_mem, Pointer.to(memPredicateValues));
-		CL.clSetKernelArg(isolateKernel, 3, Sizeof.cl_mem, Pointer.to(memNormalScan));
-		CL.clSetKernelArg(isolateKernel, 4, Sizeof.cl_mem, Pointer.to(memPredicateScan));
-		CL.clSetKernelArg(isolateKernel, 5, Sizeof.cl_mem, Pointer.to(memReturn));
-		CL.clSetKernelArg(isolateKernel, 6, Sizeof.cl_mem, Pointer.to(memDimensions));
+		CL.clSetKernelArg(isolateKernel, 1, Sizeof.cl_mem, Pointer.to(memStart));
+		CL.clSetKernelArg(isolateKernel, 2, Sizeof.cl_mem, Pointer.to(memResultKeys));		
+		CL.clSetKernelArg(isolateKernel, 3, Sizeof.cl_mem, Pointer.to(memValues));
+		CL.clSetKernelArg(isolateKernel, 4, Sizeof.cl_mem, Pointer.to(memPredicateValues));
+		CL.clSetKernelArg(isolateKernel, 5, Sizeof.cl_mem, Pointer.to(memNormalScan));
+		CL.clSetKernelArg(isolateKernel, 6, Sizeof.cl_mem, Pointer.to(memPredicateScan));
+		CL.clSetKernelArg(isolateKernel, 7, Sizeof.cl_mem, Pointer.to(memReturn));
+		CL.clSetKernelArg(isolateKernel, 8, Sizeof.cl_mem, Pointer.to(memDimensions));
 
 		double startTime = System.nanoTime();
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), isolateKernel, 1, null, globalWorkSize, localWorkSize, 0,
@@ -250,16 +258,19 @@ public class Radix {
 		// int adress = first + second;
 		// returnBits[adress] = data[i];
 		// }
-		return returnBits;
 	}
 
-	public void fullSort(int[] data, int[] result) throws FileNotFoundException {
+	public void fullSort(int[] data, int[] result, int[] startKeys, int[] endKeys) throws FileNotFoundException {
+		int[] tempData = data;
+		int[] tempStart = startKeys;
 		for (int i = 0; i < 32; i++) {
-			int[] bits = isolateBit(data, i);
+			int[] bits = isolateBit(tempData, i);
 			int[] flippedBits = flipBits(bits);
 			int[] normalScan = scan(bits);
 			int[] predicateScan = scan(flippedBits);
-			calculateAdress(data, bits, flippedBits, normalScan, predicateScan, result);
+			calculateAdress(tempData, tempStart, endKeys, bits, flippedBits, normalScan, predicateScan, result);
+			tempData = result;
+			tempStart = endKeys;
 		}
 	}
 

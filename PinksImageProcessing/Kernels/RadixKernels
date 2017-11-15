@@ -8,7 +8,7 @@ __kernel void flipBit(__global const int *values, __global int* returnBits){
 	returnBits[i] = (values[i] ^ 1);
 }
 
-__kernel void calculateAdress(__global const int *data, __global const int *values, __global int *predicateValues, 
+__kernel void calculateAdress(__global const int *data, __global int *startKeys, __global int *resultKeys, __global const int *values, __global int *predicateValues, 
 __global int *normalScan, __global int *predicateScan, __global int *returnBits, __global int *dimensions){
 		int i = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
 		int predicateLength = dimensions[0];
@@ -32,4 +32,5 @@ __global int *normalScan, __global int *predicateScan, __global int *returnBits,
 		}
 		int adress = first + second;
 		returnBits[adress] = data[i];
+		resultKeys[adress] = startKeys[i];
 }
