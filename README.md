@@ -48,7 +48,7 @@ III. Close the program:
 	<br>1.You can close the program with the normal x, the close menu option, or alt-f4. 
 	
 IV. Bugs:
-	<br>About is implemented, but only displays the raw text currently. Raw text link must be updated often, . This feature has been removed until a permanent solution is found.
+	<br>About is implemented, but only displays the raw text currently. Raw text link must be updated often, when not updated the program will not run. This feature has been removed until a permanent solution is found.
 	<br>.gif will only display the first frame in the file.
 	<br>Saving without a file type does not make PNG, please specify the file type in the name.
 	
