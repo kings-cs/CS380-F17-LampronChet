@@ -184,6 +184,7 @@ public class RadixTest {
 		getProperWorkSize(deviceManager, data);
 		Radix sort = new Radix(workSize, deviceManager);
 		sort.fullSort(data, result, startKeys, resultKeys);
+		//System.out.println("small: " + sort.getRuntime() / 1000000.0);
 		for (int i = 0; i < data.length; i++) {
 			assertTrue("Should return " + expectedResult[i] + " but was " + result[i], result[i] == expectedResult[i]);
 		}
@@ -197,12 +198,12 @@ public class RadixTest {
 	 */
 	@Test
 	public void testFullSortMedium() throws FileNotFoundException {
-		int[] data = new int[2048];
-		int[] result = new int[2048];
-		int[] expectedResult = new int[2048];
-		int[] startKeys = new int[2048];
-		int[] resultKeys = new int[2048];
-		int dataPlacer = 2047;
+		int[] data = new int[4096];
+		int[] result = new int[4096];
+		int[] expectedResult = new int[4096];
+		int[] startKeys = new int[4096];
+		int[] resultKeys = new int[4096];
+		int dataPlacer = 4095;
 		for (int i = 0; i < data.length; i++) {
 			data[i] = dataPlacer;
 			startKeys[i] = i;
@@ -212,6 +213,7 @@ public class RadixTest {
 		getProperWorkSize(deviceManager, data);
 		Radix sort = new Radix(workSize, deviceManager);
 		sort.fullSort(data, result, startKeys, resultKeys);
+		//System.out.println("medium: " + sort.getRuntime() / 1000000.0);
 		for (int i = 0; i < data.length; i++) {
 			assertTrue("Should return " + expectedResult[i] + " but was " + result[i], result[i] == expectedResult[i]);
 		}
@@ -240,6 +242,7 @@ public class RadixTest {
 		getProperWorkSize(deviceManager, data);
 		Radix sort = new Radix(workSize, deviceManager);
 		sort.fullSort(data, result, startKeys, resultKeys);
+		//System.out.println("large: " + sort.getRuntime() / 1000000.0);
 		for (int i = 0; i < data.length; i++) {
 			assertTrue("Should return " + expectedResult[i] + " but was " + result[i], result[i] == expectedResult[i]);
 		}

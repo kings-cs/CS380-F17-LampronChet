@@ -190,7 +190,7 @@ public class BlellochScan extends PixelModifier {
 //
 //		cl_mem memOld = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 //				Sizeof.cl_float * old.length, ptrOld, null);
-//		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+//		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
 //				Sizeof.cl_float * result.length, ptrResult, null);
 //
 //		File kernelFile = new File("Kernels/Blelloch");
@@ -218,7 +218,7 @@ public class BlellochScan extends PixelModifier {
 //		
 //		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0, result.length * Sizeof.cl_float,
 //				ptrResult, 0, null, null);
-		
+//		
 		for (int i = 0; i < old.length; i++) {
 			result[i] = old[i];
 		}
