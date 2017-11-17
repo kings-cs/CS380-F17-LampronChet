@@ -96,7 +96,7 @@ public class MosaicModifierParallel extends PixelModifier {
 				CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * dimensions.length, ptrDimensions,
 				null);
 		cl_mem memTiles = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
-				Sizeof.cl_float * tilePoints.length, ptrTiles, null);
+				Sizeof.cl_int * tilePoints.length, ptrTiles, null);
 
 		File kernelFile = new File("Kernels/MosaicKernel");
 		Scanner kernelScan = new Scanner(kernelFile);
