@@ -925,7 +925,8 @@ public class PiPGui extends JFrame {
 						JOptionPane.OK_CANCEL_OPTION);
 				if (result == JOptionPane.OK_OPTION) {
 					try {
-						MosaicModifierParallel pixelModifier = new MosaicModifierParallel(result, deviceManager);
+						int tiles = Integer.parseInt(cancelOption.getTiles().getText());
+						MosaicModifierParallel pixelModifier = new MosaicModifierParallel(tiles, deviceManager);
 						image = pixelModifier.modifyPixel(image);
 						centerPanel.repaint();
 						isSaved = false;
