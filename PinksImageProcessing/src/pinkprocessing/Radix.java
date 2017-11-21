@@ -147,7 +147,7 @@ public class Radix {
 
 		long[] globalWorkSize = new long[] { values.length };
 		long[] localWorkSize = new long[] { workSize };
-		deviceManager.createQueue();
+		//deviceManager.createQueue();
 		cl_kernel isolateKernel = CL.clCreateKernel(program, kernelName, null);
 
 		CL.clSetKernelArg(isolateKernel, 0, Sizeof.cl_mem, Pointer.to(memValues));
@@ -265,7 +265,7 @@ public class Radix {
 
 		long[] globalWorkSize = new long[] { values.length };
 		long[] localWorkSize = new long[] { workSize };
-		deviceManager.createQueue();
+		//deviceManager.createQueue();
 		cl_kernel isolateKernel = CL.clCreateKernel(program, kernelName, null);
 
 		CL.clSetKernelArg(isolateKernel, 0, Sizeof.cl_mem, Pointer.to(memData));
