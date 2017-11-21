@@ -294,6 +294,11 @@ public class Radix {
 		CL.clReleaseMemObject(memNormalScan);
 		CL.clReleaseMemObject(memPredicateValues);
 		CL.clReleaseMemObject(memData);
+		CL.clReleaseMemObject(memDimensions);
+		CL.clReleaseMemObject(memResultKeys);
+		CL.clReleaseMemObject(memStart);
+		
+		
 		kernelScan.close();
 
 		// for (int i = 0; i < values.length; i++) {
