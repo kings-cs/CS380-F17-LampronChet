@@ -184,7 +184,7 @@ public class RadixTest {
 		getProperWorkSize(deviceManager, data);
 		Radix sort = new Radix(workSize, deviceManager);
 		sort.fullSort(data, result, startKeys, resultKeys);
-		//System.out.println("small: " + sort.getRuntime() / 1000000.0);
+		System.out.println("small: " + sort.getRuntime() / 1000000.0);
 		for (int i = 0; i < data.length; i++) {
 			assertTrue("Should return " + expectedResult[i] + " but was " + result[i], result[i] == expectedResult[i]);
 		}
@@ -213,7 +213,7 @@ public class RadixTest {
 		getProperWorkSize(deviceManager, data);
 		Radix sort = new Radix(workSize, deviceManager);
 		sort.fullSort(data, result, startKeys, resultKeys);
-		//System.out.println("medium: " + sort.getRuntime() / 1000000.0);
+		System.out.println("medium: " + sort.getRuntime() / 1000000.0);
 		for (int i = 0; i < data.length; i++) {
 			assertTrue("Should return " + expectedResult[i] + " but was " + result[i], result[i] == expectedResult[i]);
 		}
@@ -242,7 +242,7 @@ public class RadixTest {
 		getProperWorkSize(deviceManager, data);
 		Radix sort = new Radix(workSize, deviceManager);
 		sort.fullSort(data, result, startKeys, resultKeys);
-		//System.out.println("large: " + sort.getRuntime() / 1000000.0);
+		System.out.println("large: " + sort.getRuntime() / 1000000.0);
 		for (int i = 0; i < data.length; i++) {
 			assertTrue("Should return " + expectedResult[i] + " but was " + result[i], result[i] == expectedResult[i]);
 		}
