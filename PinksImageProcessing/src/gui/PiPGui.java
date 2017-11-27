@@ -50,6 +50,7 @@ import algorithms.GrayscaleModifierParallel;
 import algorithms.HorizontalFlip;
 import algorithms.MosaicModifier;
 import algorithms.MosaicModifierParallel;
+import algorithms.RedEyeModifier;
 import algorithms.RotateLeft;
 import algorithms.RotateRight;
 import algorithms.SepiaModifier;
@@ -119,21 +120,21 @@ public class PiPGui extends JFrame {
 
 		JEditorPane webPane = new JEditorPane();
 		webPane.setEditable(false);
-		//URL webSite = new URL(
-		//		"https://raw.githubusercontent.com/kings-cs/CS380-F17-LampronChet/master/README.md?token=AQf_j6gK-4p0NZ5KmSw-E5bXVGKbbfb9ks5aAl5MwA%3D%3D");
-		//webPane.setPage(webSite);
+		// URL webSite = new URL(
+		// "https://raw.githubusercontent.com/kings-cs/CS380-F17-LampronChet/master/README.md?token=AQf_j6gK-4p0NZ5KmSw-E5bXVGKbbfb9ks5aAl5MwA%3D%3D");
+		// webPane.setPage(webSite);
 
 		aboutPane = new JScrollPane(webPane);
 		webPage = new JFrame("About");
 		webPage.setVisible(false);
 		webPage.add(aboutPane);
 
-		//webPage.addWindowListener(new WindowAdapter() {
-		//	@Override
-	//		public void windowClosed(WindowEvent e) {
-		//		dispose();
-		//	}
-		//});
+		// webPage.addWindowListener(new WindowAdapter() {
+		// @Override
+		// public void windowClosed(WindowEvent e) {
+		// dispose();
+		// }
+		// });
 
 		deviceMap = new HashMap<>();
 		deviceManager = new JoclInitializer();
@@ -210,16 +211,19 @@ public class PiPGui extends JFrame {
 		grayscaleEqualizationO.addActionListener(new OptimizedEqualizeGrayscaleImage());
 		options.add(grayscaleEqualizationO);
 		// TODO
+
+		JMenuItem redEyeRemoval = new JMenuItem("Remove red eye");
+		redEyeRemoval.addActionListener(new RedEyeListener());
+		options.add(redEyeRemoval);
+
 		ActionListener zoomListen = new ZoomListener();
 		zoomIn = new JMenuItem("Zoom In");
 		zoomIn.addActionListener(zoomListen);
 		zoom.add(zoomIn);
-		
+
 		zoomOut = new JMenuItem("Zoom Out");
 		zoomOut.addActionListener(zoomListen);
 		zoom.add(zoomOut);
-		
-		
 
 		JMenuItem about = new JMenuItem("About");
 		about.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
@@ -407,10 +411,10 @@ public class PiPGui extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-//			webPage.setSize(new Dimension(500, 500));
-//			webPage.setVisible(true);
-//			webPage.toFront();
-			 JOptionPane.showMessageDialog(null, "Down for Maintenance!");
+			// webPage.setSize(new Dimension(500, 500));
+			// webPage.setVisible(true);
+			// webPage.toFront();
+			JOptionPane.showMessageDialog(null, "Down for Maintenance!");
 		}
 
 	}
@@ -831,7 +835,7 @@ public class PiPGui extends JFrame {
 					}
 					centerPanel.repaint();
 					isSaved = false;
-				}else {
+				} else {
 					ZoomIn pixelModifier = new ZoomIn(false);
 
 					try {
@@ -933,6 +937,54 @@ public class PiPGui extends JFrame {
 					} catch (FileNotFoundException e) {
 						JOptionPane.showMessageDialog(null, "The image could not be processed");
 					}
+				}
+			} else {
+				JOptionPane.showMessageDialog(null, "Please load an image first");
+			}
+
+		}
+
+	}
+
+	/**
+	 * Runs the Grayscale algorithm when prompted.
+	 * 
+	 * @author Chet lampron
+	 *
+	 */
+	private class RedEyeListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			if (image != null) {
+				JOptionPane.showMessageDialog(null, "Select your template");
+				JFileChooser choose = new JFileChooser("Select your template: ");
+				FileFilter filter = new FileNameExtensionFilter("Pictures",
+						new String[] { "jpg", "jpeg", "png", "gif" });
+				choose.setFileFilter(filter);
+				int val = choose.showOpenDialog(null);
+
+				if (val == JFileChooser.APPROVE_OPTION) {
+					BufferedImage template = null;
+					try {
+						String filePath = choose.getSelectedFile().getAbsolutePath();
+						template = fileHandler.createImage(filePath);
+					} catch (IOException e) {
+						JOptionPane.showMessageDialog(null, "Image could not be processed");
+					} catch (NullPointerException n) {
+						JOptionPane.showMessageDialog(null,
+								"Oops! Looks like you double clicked your folder instead of a file. Try again!");
+					}
+
+					RedEyeModifier pixelModifier = new RedEyeModifier(deviceManager, template);
+
+					try {
+						image = pixelModifier.modifyPixel(image);
+					} catch (FileNotFoundException e) {
+						JOptionPane.showMessageDialog(null, "The Image could not be found: this is the actual image, not the template");
+					}
+					centerPanel.repaint();
+					isSaved = false;
 				}
 			} else {
 				JOptionPane.showMessageDialog(null, "Please load an image first");
