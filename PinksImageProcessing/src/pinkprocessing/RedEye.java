@@ -147,6 +147,7 @@ public class RedEye {
 				ptrAccum, 0, null, null);
 
 		if (accumulator.length > 1) {
+			System.out.println("accum length " + accumulator.length + " data length is " + data.length);
 			reduce(accumulator, result, resultIndex);
 		}
 		result[resultIndex] = accumulator[0];
