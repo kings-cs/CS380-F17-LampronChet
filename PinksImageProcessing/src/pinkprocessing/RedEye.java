@@ -1,5 +1,6 @@
 package pinkprocessing;
 
+import algorithms.PixelModifier;
 import parallel.JoclInitializer;
 
 /**
@@ -29,11 +30,25 @@ public class RedEye {
 	 *            The data of the image.
 	 * @return The average.
 	 */
-	public int calculateTemplateAverage(float[] data) {
-		int total = 0;
+	public int[] calculateTemplateAverage(int[] data) {
+		int redTotal = 0;
+		int blueTotal = 0;
+		int greenTotal = 0;
+
 		for (int i = 0; i < data.length; i++) {
-			total += data[i];
+			int pixel = data[i];
+			int alpha = (pixel & PixelModifier.getAlphaMask()) >> PixelModifier.getAlphaOffset();
+			int red = (pixel & PixelModifier.getRedMask()) >> PixelModifier.getRedOffset();
+			int green = (pixel & PixelModifier.getGreenMask()) >> PixelModifier.getGreenOffset();
+			int blue = (pixel & PixelModifier.getBlueMask()) >> PixelModifier.getBlueOffset();
+			redTotal += red;
+			blueTotal += blue;
+			greenTotal += green;
 		}
-		return total / data.length;
+		int redAvg = redTotal / data.length;
+		int greenAvg = greenTotal / data.length;
+		int blueAvg = blueTotal / data.length;
+		int[] averages = { redAvg, greenAvg, blueAvg };
+		return averages;
 	}
 }
