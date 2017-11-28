@@ -169,7 +169,7 @@ public class BlellochScan extends PixelModifier {
 	 * @throws FileNotFoundException
 	 *             Not thrown.
 	 */
-	public int[] padArray(int[] old) throws FileNotFoundException {
+	public static int[] padArray(int[] old) throws FileNotFoundException {
 		int[] result = null;
 
 		// double power = old.length / workSize;

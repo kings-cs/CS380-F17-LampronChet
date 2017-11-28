@@ -1,5 +1,5 @@
-__kernel void caluclateAverage(__global const int *data,  __global int *accumulator, __global const int *dimensions){
-	int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
+__kernel void calculateAverage(__global const int *data,  __global int *accumulator, __local int *local_data){
+		int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
 		int local_number = get_local_id(0);
 		local_data[local_number] = data[index];
 		barrier(CLK_LOCAL_MEM_FENCE);
