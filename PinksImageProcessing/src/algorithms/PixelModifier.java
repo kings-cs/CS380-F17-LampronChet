@@ -72,7 +72,7 @@ public abstract class PixelModifier {
 	 *            The proper device manager.
 	 * @return The proper work size;
 	 */
-	public int getWorkSize(JoclInitializer deviceManager, int[] data) {
+	public static int getWorkSize(JoclInitializer deviceManager, int[] data) {
 		int maxItemsPerGroup = deviceManager.getMaxWorkGroupSize();
 		boolean isDivisible = false;
 

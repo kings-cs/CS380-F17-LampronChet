@@ -5,13 +5,17 @@ package testing;
 
 import static org.junit.Assert.*;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+import org.jocl.CL;
+import org.jocl.cl_device_id;
 import org.junit.Before;
 import org.junit.Test;
 
 import algorithms.PixelModifier;
 import algorithms.RedEyeModifier;
+import parallel.JoclInitializer;
 import pinkprocessing.FileHandler;
 import pinkprocessing.RedEye;
 
@@ -20,19 +24,45 @@ import pinkprocessing.RedEye;
  *
  */
 public class RedEyeTest {
+	/** The device manager. */
+	private JoclInitializer deviceManager;
 
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@Before
 	public void setUp() throws Exception {
+		CL.setExceptionsEnabled(true);
+		deviceManager = new JoclInitializer();
+		cl_device_id[] devices = deviceManager.getDeviceIds();
+		int i = 0;
+		boolean contextCreated = false;
+		while (i < devices.length && !contextCreated) {
+			if (deviceManager.isGpu(devices[i])) {
+				deviceManager.createContext(devices[i]);
+				deviceManager.createQueue();
+				contextCreated = true;
+			}
+			i++;
+		}
 	}
 
+	/**
+	 * Not Found
+	 * 
+	 * @throws IOException
+	 */
 	@Test
-	public void testTemplateAverageSmall() {
-		RedEye tester = new RedEye(null);
+	public void testTemplateAverage() throws IOException {
+		RedEye tester = new RedEye(deviceManager);
 		PixelModifier modifier = new RedEyeModifier(null, null);
 		FileHandler file = new FileHandler();
+		BufferedImage template = file.createImage("Docs/red_eye_effect_template_5.png");
+		int[] data = modifier.unwrapImage(template);
+		int[] averages = tester.calculateTemplateAverage(data);
+		assertTrue("Should be 179 for red but was: " + averages[0], averages[0] == 179);
+		assertTrue("Should be 111 for green but was: " + averages[1], averages[1] == 111);
+		assertTrue("Should be 115 for blue but was: " + averages[2], averages[2] == 115);
 	}
 
 }

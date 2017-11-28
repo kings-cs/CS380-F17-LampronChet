@@ -1,0 +1,22 @@
+__kernel void caluclateAverage(__global const int *redArray, __global const int *blueArray, __global const int *greenArray,  __global int *result, __global const int *dimensions){
+	int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
+	int red = redArray[index];
+	int green = greenArray[index];
+	int blue = blueArray[index];
+	int length = dimensions[0];
+	int redAvg = 0;
+	int greenAvg = 0;
+	int blueAvg = 0;
+	
+	int redTotal += red;
+	int greenTotal += green;
+	int blueTotal += blue;
+	
+	redAvg = redTotal / length;
+	greenAvg = greenTotal / length;
+	blueAvg = blueTotal / length;
+	
+	result[0] = redAvg;
+	result[1] = greenAvg;
+	result[2] = blueAvg;
+}
