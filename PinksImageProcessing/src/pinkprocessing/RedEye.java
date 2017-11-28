@@ -131,10 +131,8 @@ public class RedEye {
 		cl_mem memDimensions = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * dimensions.length, ptrDimensions, null);
 		CL.clSetKernelArg(separateKernel, 0, Sizeof.cl_mem, Pointer.to(memRed));
-		CL.clSetKernelArg(separateKernel, 1, Sizeof.cl_mem, Pointer.to(memBlue));
-		CL.clSetKernelArg(separateKernel, 2, Sizeof.cl_mem, Pointer.to(memGreen));
-		CL.clSetKernelArg(separateKernel, 3, Sizeof.cl_mem, Pointer.to(memResult));
-		CL.clSetKernelArg(separateKernel, 4, Sizeof.cl_mem, Pointer.to(memDimensions));
+		CL.clSetKernelArg(separateKernel, 1, Sizeof.cl_mem, Pointer.to(memResult));
+		CL.clSetKernelArg(separateKernel, 2, Sizeof.cl_mem, Pointer.to(memDimensions));
 		startTime = System.nanoTime();
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), averageKernel, 1, null, globalWorkSize, localWorkSize, 0,
 				null, null);
