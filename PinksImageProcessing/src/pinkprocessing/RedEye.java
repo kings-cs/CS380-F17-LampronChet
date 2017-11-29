@@ -161,10 +161,10 @@ public class RedEye {
 
 		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memAccum, CL.CL_TRUE, 0, accumulator.length * Sizeof.cl_float,
 				ptrAccum, 0, null, null);
-
+		int value = 0;
 		if (accumulator.length > 1) {
 			System.out.println("accum length " + accumulator.length + " data length is " + data.length);
-
+			//value = accumulator[0];
 			reduce(accumulator, result, resultIndex);
 		}
 
