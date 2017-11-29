@@ -22,6 +22,10 @@ import testing.BlellochScan;
  *
  */
 public class RedEye {
+	private static final int RED_INDEX = 0;
+	private static final int GREEN_INDEX = 1;
+	private static final int BLUE_INDEX = 2;
+
 	/** The device manager. */
 	private JoclInitializer deviceManager;
 
@@ -29,6 +33,12 @@ public class RedEye {
 	private long calculatedTime;
 	/** The worksize. */
 	private int workSize;
+
+	private int[] redArray;
+
+	private int[] greenArray;
+
+	private int[] blueArray;
 
 	/**
 	 * Constructs a RedEye helper object.
@@ -149,18 +159,17 @@ public class RedEye {
 				null, null);
 		long calculatedRuntime = System.nanoTime() - startTime;
 
-	
 		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memAccum, CL.CL_TRUE, 0, accumulator.length * Sizeof.cl_float,
 				ptrAccum, 0, null, null);
 
 		if (accumulator.length > 1) {
 			System.out.println("accum length " + accumulator.length + " data length is " + data.length);
-			
+
 			reduce(accumulator, result, resultIndex);
 		}
-		
+
 		System.out.println("Accumulator value: " + accumulator[0]);
-		//System.out.println(accumulator[1]);
+		// System.out.println(accumulator[1]);
 		result[resultIndex] = accumulator[0];
 
 	}
@@ -181,9 +190,9 @@ public class RedEye {
 		int blueIndex = 2;
 		int[] resultData = new int[3];
 
-		int[] redArray = new int[data.length];
-		int[] blueArray = new int[data.length];
-		int[] greenArray = new int[data.length];
+		redArray = new int[data.length];
+		blueArray = new int[data.length];
+		greenArray = new int[data.length];
 		splitChannels(data, redArray, greenArray, blueArray);
 		reduce(redArray, resultData, redIndex);
 		reduce(greenArray, resultData, greenIndex);
@@ -212,5 +221,26 @@ public class RedEye {
 		// int blueAvg = blueTotal / data.length;
 		// int[] averages = { redAvg, greenAvg, blueAvg };
 		return resultData;
+	}
+
+	public int[] sumDifferenceTemplate(int[] averages) {
+		int redSum = 0;
+		int greenSum = 0;
+		int blueSum = 0;
+
+		for (int i = 0; i < redArray.length; i++) {
+			int difference = redArray[i] - averages[RED_INDEX];
+			redSum += difference;
+		}
+		for (int i = 0; i < greenArray.length; i++) {
+			int difference = greenArray[i] - averages[GREEN_INDEX];
+			greenSum += difference;
+		}
+		for (int i = 0; i < blueArray.length; i++) {
+			int difference = blueArray[i] - averages[BLUE_INDEX];
+			blueSum += difference;
+		}
+		int[] sumOfDifferences = { redSum, greenSum, blueSum };
+		return sumOfDifferences;
 	}
 }
