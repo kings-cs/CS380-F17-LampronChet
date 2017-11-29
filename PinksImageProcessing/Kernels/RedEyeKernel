@@ -19,3 +19,11 @@ __kernel void calculateAverage(__global const int *data,  __global int *accumula
 			accumulator[get_group_id(0)] = local_data[local_number];
 		}
 }
+
+__kernel void calculateDifference(__global const int *data, __global const int *averages, __global int *result){
+	int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
+	int average = averages[0];
+	int current = data[index];
+	int difference = current - average;
+	result[index] = difference;
+}

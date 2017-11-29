@@ -163,14 +163,16 @@ public class RedEye {
 				ptrAccum, 0, null, null);
 		int value = 0;
 		if (accumulator.length > 1) {
-			System.out.println("accum length " + accumulator.length + " data length is " + data.length);
+		//	System.out.println("accum length " + accumulator.length + " data length is " + data.length);
 			//value = accumulator[0];
 			reduce(accumulator, result, resultIndex);
+		}else{
+			//System.out.println("Accumulator value: " + accumulator[0]);
+			// System.out.println(accumulator[1]);
+			result[resultIndex] = accumulator[0];
 		}
 
-		System.out.println("Accumulator value: " + accumulator[0]);
-		// System.out.println(accumulator[1]);
-		result[resultIndex] = accumulator[0];
+	
 
 	}
 
@@ -197,7 +199,7 @@ public class RedEye {
 		reduce(redArray, resultData, redIndex);
 		reduce(greenArray, resultData, greenIndex);
 		reduce(blueArray, resultData, blueIndex);
-		System.out.println("length of data: " + data.length);
+		//System.out.println("length of data: " + data.length);
 		for (int i = 0; i < resultData.length; i++) {
 			resultData[i] = resultData[i] / data.length;
 		}

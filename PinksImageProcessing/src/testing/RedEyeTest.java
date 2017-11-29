@@ -4,7 +4,6 @@
 package testing;
 
 import static org.junit.Assert.assertTrue;
-
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -63,6 +62,24 @@ public class RedEyeTest {
 		assertTrue("Should be 179 for red but was: " + averages[0], averages[0] == 179);
 		assertTrue("Should be 111 for green but was: " + averages[1], averages[1] == 111);
 		assertTrue("Should be 115 for blue but was: " + averages[2], averages[2] == 115);
+	}
+	/**
+	 * Not Found
+	 * 
+	 * @throws IOException
+	 */
+	@Test
+	public void testTemplateDifferences() throws IOException {
+		RedEye tester = new RedEye(deviceManager);
+		PixelModifier modifier = new RedEyeModifier(null, null);
+		FileHandler file = new FileHandler();
+		BufferedImage template = file.createImage("Docs/red_eye_effect_template_5.png");
+		int[] data = modifier.unwrapImage(template);
+		int[] averages = tester.calculateTemplateAverage(data);
+		int[] differences = tester.sumDifferenceTemplate(averages);
+		//assertTrue("Should be 179 for red but was: " + differences[0], differences[0] == 179);
+		//assertTrue("Should be 111 for green but was: " + differences[1], differences[1] == 111);
+		assertTrue("Should be 115 for blue but was: " + differences[2], differences[2] == 115);
 	}
 
 }
