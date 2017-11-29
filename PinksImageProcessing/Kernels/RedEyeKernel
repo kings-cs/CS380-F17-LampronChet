@@ -16,7 +16,6 @@ __kernel void calculateAverage(__global const int *data,  __global int *accumula
 			barrier(CLK_LOCAL_MEM_FENCE);
 		}
 		if(local_number == get_local_size(0) - 1){
-			accumulator[get_group_id(0)] = local_data[local_number] + data[index];
+			accumulator[get_group_id(0)] = local_data[local_number];
 		}
-		//result[index] = local_data[local_number];
 }

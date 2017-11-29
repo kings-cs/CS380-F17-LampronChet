@@ -24,10 +24,10 @@ import testing.BlellochScan;
 public class RedEye {
 	/** The device manager. */
 	private JoclInitializer deviceManager;
-	
+
 	/** The calculated time. */
 	private long calculatedTime;
-	/**The worksize. */
+	/** The worksize. */
 	private int workSize;
 
 	/**
@@ -40,7 +40,7 @@ public class RedEye {
 		deviceManager = theDeviceManager;
 		calculatedTime = 0;
 	}
-	
+
 	public void splitChannels(int[] data, int red[], int[] green, int[] blue) throws FileNotFoundException {
 		int[] alphaArray = new int[data.length];
 		Pointer ptrSource = Pointer.to(data);
@@ -49,7 +49,7 @@ public class RedEye {
 		Pointer ptrGreen = Pointer.to(green);
 
 		Pointer ptrAlpha = Pointer.to(alphaArray);
-		
+
 		cl_mem memSource = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * data.length, ptrSource, null);
 		cl_mem memRed = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
@@ -60,7 +60,7 @@ public class RedEye {
 				Sizeof.cl_float * green.length, ptrGreen, null);
 		cl_mem memAlpha = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * alphaArray.length, ptrAlpha, null);
-		
+
 		File kernelFile = new File("Kernels/BlurKernel");
 		Scanner kernelScan = new Scanner(kernelFile);
 		StringBuffer sourceBuffer = new StringBuffer();
@@ -81,7 +81,6 @@ public class RedEye {
 		// Set up and run the separate channels kernel.
 		cl_kernel separateKernel = CL.clCreateKernel(program, "separateChannels", null);
 
-		
 		CL.clSetKernelArg(separateKernel, 0, Sizeof.cl_mem, Pointer.to(memSource));
 		CL.clSetKernelArg(separateKernel, 1, Sizeof.cl_mem, Pointer.to(memRed));
 		CL.clSetKernelArg(separateKernel, 2, Sizeof.cl_mem, Pointer.to(memBlue));
@@ -92,24 +91,33 @@ public class RedEye {
 				null, null);
 		double afterOne = System.nanoTime() - startTime;
 
-		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memRed, CL.CL_TRUE, 0, red.length * Sizeof.cl_float,
-				ptrRed, 0, null, null);
-		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memBlue, CL.CL_TRUE, 0, blue.length * Sizeof.cl_float,
-				ptrBlue, 0, null, null);
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memRed, CL.CL_TRUE, 0, red.length * Sizeof.cl_float, ptrRed, 0,
+				null, null);
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memBlue, CL.CL_TRUE, 0, blue.length * Sizeof.cl_float, ptrBlue,
+				0, null, null);
 		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memGreen, CL.CL_TRUE, 0, green.length * Sizeof.cl_float,
 				ptrGreen, 0, null, null);
 	}
-	
+
+	/**
+	 * Reduces the values in an array.
+	 * 
+	 * @param data
+	 *            The data.
+	 * @param result
+	 *            The result array.
+	 * @param resultIndex
+	 *            Whether it is red, blue, or green.
+	 * @throws FileNotFoundException
+	 *             Not thrown.
+	 */
 	public void reduce(int[] data, int[] result, int resultIndex) throws FileNotFoundException {
 		int[] paddedData = BlellochScan.padArray(data);
 		workSize = PixelModifier.getWorkSize(deviceManager, paddedData);
 		Pointer ptrData = Pointer.to(paddedData);
-		Pointer ptrResult = Pointer.to(result);
 
 		cl_mem memData = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * paddedData.length, ptrData, null);
-		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
-				Sizeof.cl_float * result.length, ptrResult, null);
 
 		File kernelFile = new File("Kernels/RedEyeKernel");
 		Scanner kernelScan = new Scanner(kernelFile);
@@ -141,15 +149,18 @@ public class RedEye {
 				null, null);
 		long calculatedRuntime = System.nanoTime() - startTime;
 
-		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0,
-				result.length * Sizeof.cl_float, ptrResult, 0, null, null);
+	
 		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memAccum, CL.CL_TRUE, 0, accumulator.length * Sizeof.cl_float,
 				ptrAccum, 0, null, null);
 
 		if (accumulator.length > 1) {
 			System.out.println("accum length " + accumulator.length + " data length is " + data.length);
+			
 			reduce(accumulator, result, resultIndex);
 		}
+		
+		System.out.println("Accumulator value: " + accumulator[0]);
+		//System.out.println(accumulator[1]);
 		result[resultIndex] = accumulator[0];
 
 	}
@@ -160,7 +171,8 @@ public class RedEye {
 	 * @param data
 	 *            The data of the image.
 	 * @return The average.
-	 * @throws FileNotFoundException Not thrown;
+	 * @throws FileNotFoundException
+	 *             Not thrown;
 	 */
 	public int[] calculateTemplateAverage(int[] data) throws FileNotFoundException {
 		workSize = PixelModifier.getWorkSize(deviceManager, data);
@@ -176,24 +188,30 @@ public class RedEye {
 		reduce(redArray, resultData, redIndex);
 		reduce(greenArray, resultData, greenIndex);
 		reduce(blueArray, resultData, blueIndex);
-		for(int i = 0; i < resultData.length; i++) {
+		System.out.println(data.length);
+		for (int i = 0; i < resultData.length; i++) {
 			resultData[i] = resultData[i] / data.length;
 		}
-		
-//		for (int i = 0; i < data.length; i++) {
-//			int pixel = data[i];
-//			int alpha = (pixel & PixelModifier.getAlphaMask()) >> PixelModifier.getAlphaOffset();
-//			int red = (pixel & PixelModifier.getRedMask()) >> PixelModifier.getRedOffset();
-//			int green = (pixel & PixelModifier.getGreenMask()) >> PixelModifier.getGreenOffset();
-//			int blue = (pixel & PixelModifier.getBlueMask()) >> PixelModifier.getBlueOffset();
-//			redTotal += red;
-//			blueTotal += blue;
-//			greenTotal += green;
-//		}
-//		int redAvg = redTotal / data.length;
-//		int greenAvg = greenTotal / data.length;
-//		int blueAvg = blueTotal / data.length;
-//		int[] averages = { redAvg, greenAvg, blueAvg };
+		System.out.println(data.length);
+
+		// for (int i = 0; i < data.length; i++) {
+		// int pixel = data[i];
+		// int alpha = (pixel & PixelModifier.getAlphaMask()) >>
+		// PixelModifier.getAlphaOffset();
+		// int red = (pixel & PixelModifier.getRedMask()) >>
+		// PixelModifier.getRedOffset();
+		// int green = (pixel & PixelModifier.getGreenMask()) >>
+		// PixelModifier.getGreenOffset();
+		// int blue = (pixel & PixelModifier.getBlueMask()) >>
+		// PixelModifier.getBlueOffset();
+		// redTotal += red;
+		// blueTotal += blue;
+		// greenTotal += green;
+		// }
+		// int redAvg = redTotal / data.length;
+		// int greenAvg = greenTotal / data.length;
+		// int blueAvg = blueTotal / data.length;
+		// int[] averages = { redAvg, greenAvg, blueAvg };
 		return resultData;
 	}
 }
