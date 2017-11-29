@@ -188,11 +188,10 @@ public class RedEye {
 		reduce(redArray, resultData, redIndex);
 		reduce(greenArray, resultData, greenIndex);
 		reduce(blueArray, resultData, blueIndex);
-		System.out.println(data.length);
+		System.out.println("length of data: " + data.length);
 		for (int i = 0; i < resultData.length; i++) {
 			resultData[i] = resultData[i] / data.length;
 		}
-		System.out.println(data.length);
 
 		// for (int i = 0; i < data.length; i++) {
 		// int pixel = data[i];
