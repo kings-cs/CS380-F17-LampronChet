@@ -104,3 +104,43 @@ __kernel void calculateNcc(__global const int *red, __global const int *green,__
 	
 	
 } 
+
+__kernel void convertNcc(__global const int *data, __global const int *lowest, __global int *result){
+		int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
+		int dataAt = data[index];
+		int newVal = dataAt - lowest[0];
+		int finalVal = newVal * 1000;
+		result[index] = finalVal;
+}
+
+__kernel void modifyPixel(__global int *red, __global const int *green, __global const int *blue, __global const int *keyValue,__global const int *dimensions){
+	int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
+	int location = keyValue[index];
+	int imageWidth = dimensions[0];
+	int imageHeight = dimensions[1];
+	int templateWidth = dimensions[3];
+	int templateHeight = dimensions[4];
+	int halfSizeWidth = templateWidth / 2;	
+	int halfSizeHeight = templateHeight / 2;
+	int row = location / imageWidth;			
+	int col = location % imageWidth;
+	int greenTotal = 0;
+	int blueTotal = 0;
+	int usedPixels = 0;
+	for(int tempRow = row - halfSizeHeight; tempRow <= row + halfSizeHeight; tempRow++){
+		for(int tempCol = col - halfSizeWidth; tempCol <= col + halfSizeWidth; tempCol++){
+						int newRow = tempRow;
+						int newCol = tempCol;
+						if(newRow >= 0 && newCol >= 0 && newRow < imageHeight && newCol < imageWidth) {
+							int anIndex = newRow * imageWidth + newCol;
+							greenTotal += green[anIndex];
+							blueTotal += blue[anIndex];
+							usedPixels++;
+						}		
+		} 
+	}
+		int greenAvg = greenTotal / usedPixels;
+		int blueAvg = blueTotal / usedPixels;
+		int average = (greenAvg + blueAvg) >> 1;
+		red[location] = average;
+}

@@ -250,7 +250,7 @@ public class RedEye {
 	 * @throws FileNotFoundException
 	 *             Not thrown.
 	 */
-	public int[] sumDifferenceTemplate(int[] averages, int[] differences) throws FileNotFoundException {
+	public int[] sumDifferenceTemplate(int[] averages, int[] redDifferences, int[] greenDifferences, int[] blueDifferences) throws FileNotFoundException {
 		// int redSum = 0;
 		// int greenSum = 0;
 		// int blueSum = 0;
@@ -261,7 +261,7 @@ public class RedEye {
 		Pointer ptrSource = Pointer.to(redArray);
 		Pointer ptrAverage = Pointer.to(currentAverage);
 		Pointer ptrResult = Pointer.to(currentResult);
-		Pointer ptrDifferences = Pointer.to(differences);
+		Pointer ptrDifferences = Pointer.to(redDifferences);
 
 		cl_mem memSource = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * redArray.length, ptrSource, null);
@@ -271,7 +271,7 @@ public class RedEye {
 		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * currentResult.length, ptrResult, null);
 		cl_mem memDifferences = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
-				Sizeof.cl_float * differences.length, ptrDifferences, null);
+				Sizeof.cl_float * redDifferences.length, ptrDifferences, null);
 
 		File kernelFile = new File("Kernels/RedEyeKernel");
 		Scanner kernelScan = new Scanner(kernelFile);
@@ -303,7 +303,7 @@ public class RedEye {
 		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0,
 				currentResult.length * Sizeof.cl_float, ptrResult, 0, null, null);
 		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memDifferences, CL.CL_TRUE, 0,
-				differences.length * Sizeof.cl_float, ptrDifferences, 0, null, null);
+				redDifferences.length * Sizeof.cl_float, ptrDifferences, 0, null, null);
 		reduce(currentResult, finalSums, RED_INDEX);
 
 		currentAverage[0] = averages[GREEN_INDEX];
@@ -314,8 +314,14 @@ public class RedEye {
 		ptrSource = Pointer.to(greenArray);
 		memSource = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * greenArray.length, ptrSource, null);
+		
+		ptrDifferences = Pointer.to(greenDifferences);
+		memDifferences = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
+				Sizeof.cl_float * greenDifferences.length, ptrDifferences, null);
+		
 		CL.clSetKernelArg(differenceKernel, 0, Sizeof.cl_mem, Pointer.to(memSource));
 		CL.clSetKernelArg(differenceKernel, 1, Sizeof.cl_mem, Pointer.to(memAverage));
+		CL.clSetKernelArg(differenceKernel, 3, Sizeof.cl_mem, Pointer.to(memDifferences));
 
 		startTime = System.nanoTime();
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), differenceKernel, 1, null, globalWorkSize, localWorkSize, 0,
@@ -324,6 +330,8 @@ public class RedEye {
 
 		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0,
 				currentResult.length * Sizeof.cl_float, ptrResult, 0, null, null);
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memDifferences, CL.CL_TRUE, 0,
+				greenDifferences.length * Sizeof.cl_float, ptrDifferences, 0, null, null);
 		reduce(currentResult, finalSums, GREEN_INDEX);
 
 		currentAverage[0] = averages[BLUE_INDEX];
@@ -334,8 +342,13 @@ public class RedEye {
 		ptrSource = Pointer.to(blueArray);
 		memSource = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * blueArray.length, ptrSource, null);
+		ptrDifferences = Pointer.to(blueDifferences);
+		memDifferences = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
+				Sizeof.cl_float * blueDifferences.length, ptrDifferences, null);
+		
 		CL.clSetKernelArg(differenceKernel, 0, Sizeof.cl_mem, Pointer.to(memSource));
 		CL.clSetKernelArg(differenceKernel, 1, Sizeof.cl_mem, Pointer.to(memAverage));
+		CL.clSetKernelArg(differenceKernel, 3, Sizeof.cl_mem, Pointer.to(memDifferences));
 
 		startTime = System.nanoTime();
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), differenceKernel, 1, null, globalWorkSize, localWorkSize, 0,
@@ -344,6 +357,8 @@ public class RedEye {
 
 		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0,
 				currentResult.length * Sizeof.cl_float, ptrResult, 0, null, null);
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memDifferences, CL.CL_TRUE, 0,
+				blueDifferences.length * Sizeof.cl_float, ptrDifferences, 0, null, null);
 		reduce(currentResult, finalSums, BLUE_INDEX);
 		// for (int i = 0; i < redArray.length; i++) {
 		// int difference = (int) Math.pow(redArray[i] - averages[RED_INDEX], 2);
@@ -361,9 +376,74 @@ public class RedEye {
 		return finalSums;
 	}
 	
-	public int[] getNcc(int[] data, int[] tempSumDiff, int[] tempDiff){
+	public int[] getNcc(int[] data, int[] tempSumDiff, int[] tempDiffRed, int[] tempDiffGreen, int[] tempDiffBlue, int[] dimensions) throws FileNotFoundException{
 		int[] nccValues = new int[data.length];
+		int[] red = new int[data.length];
+		int[] green = new int[data.length];
+		int[] blue = new int[data.length];
+		splitChannels(data, red, green, blue);
 		
+		Pointer ptrRed = Pointer.to(red);
+		Pointer ptrGreen = Pointer.to(green);
+		Pointer ptrBlue = Pointer.to(blue);
+		Pointer ptrSumDiff = Pointer.to(tempSumDiff);
+		Pointer ptrDiffRed = Pointer.to(tempDiffRed);
+		Pointer ptrDiffGreen = Pointer.to(tempDiffGreen);
+		Pointer ptrDiffBlue = Pointer.to(tempDiffBlue);
+		Pointer ptrResult = Pointer.to(nccValues);
+		Pointer ptrDimensions = Pointer.to(dimensions);
+		
+		cl_mem memRed = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+				Sizeof.cl_float * red.length, ptrRed, null);
+		cl_mem memGreen = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+				Sizeof.cl_float * green.length, ptrGreen, null);
+		cl_mem memBlue = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+				Sizeof.cl_float * blue.length, ptrBlue, null);
+		cl_mem memSumDiff = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+				Sizeof.cl_float * tempSumDiff.length, ptrSumDiff, null);
+		cl_mem memDiffRed = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+				Sizeof.cl_float * tempDiffRed.length, ptrDiffRed, null);
+		cl_mem memDiffGreen = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+				Sizeof.cl_float * tempDiffGreen.length, ptrDiffGreen, null);
+		cl_mem memDiffBlue = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+				Sizeof.cl_float * tempDiffBlue.length, ptrDiffBlue, null);
+		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
+				Sizeof.cl_float * nccValues.length, ptrResult, null);
+		cl_mem memDimensions = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
+				Sizeof.cl_float * dimensions.length, ptrDimensions, null);
+		
+		File kernelFile = new File("Kernels/RedEyeKernel");
+		Scanner kernelScan = new Scanner(kernelFile);
+		StringBuffer sourceBuffer = new StringBuffer();
+		while (kernelScan.hasNextLine()) {
+			sourceBuffer.append(kernelScan.nextLine());
+			sourceBuffer.append("\n");
+		}
+		cl_program program = CL.clCreateProgramWithSource(deviceManager.getContext(), 1,
+				new String[] { sourceBuffer.toString() }, null, null);
+		workSize = PixelModifier.getWorkSize(deviceManager, red);
+
+		long[] globalWorkSize = new long[] { redArray.length };
+		long[] localWorkSize = new long[] { workSize };
+
+		cl_kernel differenceKernel = CL.clCreateKernel(program, "calculateNcc", null);
+
+		CL.clSetKernelArg(differenceKernel, 0, Sizeof.cl_mem, Pointer.to(memRed));
+		CL.clSetKernelArg(differenceKernel, 1, Sizeof.cl_mem, Pointer.to(memGreen));
+		CL.clSetKernelArg(differenceKernel, 2, Sizeof.cl_mem, Pointer.to(memBlue));
+		CL.clSetKernelArg(differenceKernel, 3, Sizeof.cl_mem, Pointer.to(memDimensions));
+		CL.clSetKernelArg(differenceKernel, 4, Sizeof.cl_mem, Pointer.to(memDiffRed));
+		CL.clSetKernelArg(differenceKernel, 5, Sizeof.cl_mem, Pointer.to(memDiffGreen));
+		CL.clSetKernelArg(differenceKernel, 6, Sizeof.cl_mem, Pointer.to(memDiffBlue));
+		CL.clSetKernelArg(differenceKernel, 7, Sizeof.cl_mem, Pointer.to(memSumDiff));
+		CL.clSetKernelArg(differenceKernel, 8, Sizeof.cl_mem, Pointer.to(memResult));
+		long startTime = System.nanoTime();
+		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), differenceKernel, 1, null, globalWorkSize, localWorkSize, 0,
+				null, null);
+		calculatedTime += System.nanoTime() - startTime;
+
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0,
+				nccValues.length * Sizeof.cl_float, ptrResult, 0, null, null);
 		
 		return nccValues;
 	}
@@ -375,8 +455,61 @@ public class RedEye {
 				smallest = data[i];
 			}
 		}
-		
-		
 		return smallest;
+	}
+	
+	public int[] convertNcc(int smallest, int[] data) throws FileNotFoundException{
+		int[] result = new int[data.length];
+		int[] lowest = {smallest};
+		
+		Pointer ptrData = Pointer.to(data);
+		Pointer ptrLowest = Pointer.to(lowest);
+		Pointer ptrResult = Pointer.to(result);
+		
+		cl_mem memData = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+				Sizeof.cl_float * data.length, ptrData, null);
+		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
+				Sizeof.cl_float * result.length, ptrResult, null);
+		cl_mem memLowest = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
+				Sizeof.cl_float * lowest.length, ptrLowest, null);
+		
+		File kernelFile = new File("Kernels/RedEyeKernel");
+		Scanner kernelScan = new Scanner(kernelFile);
+		StringBuffer sourceBuffer = new StringBuffer();
+		while (kernelScan.hasNextLine()) {
+			sourceBuffer.append(kernelScan.nextLine());
+			sourceBuffer.append("\n");
+		}
+		cl_program program = CL.clCreateProgramWithSource(deviceManager.getContext(), 1,
+				new String[] { sourceBuffer.toString() }, null, null);
+		workSize = PixelModifier.getWorkSize(deviceManager, data);
+
+		long[] globalWorkSize = new long[] { redArray.length };
+		long[] localWorkSize = new long[] { workSize };
+
+		cl_kernel convertKernel = CL.clCreateKernel(program, "convertNcc", null);
+
+		CL.clSetKernelArg(convertKernel, 0, Sizeof.cl_mem, Pointer.to(memData));
+		CL.clSetKernelArg(convertKernel, 1, Sizeof.cl_mem, Pointer.to(memLowest));
+		CL.clSetKernelArg(convertKernel, 2, Sizeof.cl_mem, Pointer.to(memResult));
+		
+		long startTime = System.nanoTime();
+		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), convertKernel, 1, null, globalWorkSize, localWorkSize, 0,
+				null, null);
+		calculatedTime += System.nanoTime() - startTime;
+
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0,
+				result.length * Sizeof.cl_float, ptrResult, 0, null, null);
+		return result;
+	}
+	
+	public int[] reduceRedness(int[] red, int[] green, int[] blue, int[] keyValues, int[] dimensions){
+		Pointer ptrRed = Pointer.to(red);
+		Pointer ptrGreen = Pointer.to(green);
+		Pointer ptrBlue = Pointer.to(blue);
+		Pointer ptrKeyValues = Pointer.to(keyValues);
+		Pointer ptrDimensions = Pointer.to(dimensions);
+		
+		return red;
 	}
 }
