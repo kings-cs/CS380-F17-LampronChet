@@ -51,7 +51,7 @@ __kernel void calculateNcc(__global const int *red, __global const int *green,__
 						int newRow = tempRow;
 						int newCol = tempCol;
 						if(newRow >= 0 || newCol >= 0 || newRow < imageWidth || newCol < imageHeight) {
-							int anIndex = newRow * width + newCol;
+							int anIndex = newRow * imageWidth + newCol;
 							
 							redTotal += red[anIndex];
 							greenTotal += green[anIndex];
@@ -63,10 +63,10 @@ __kernel void calculateNcc(__global const int *red, __global const int *green,__
 	int redAvg = redTotal / usedPixels;
 	int greenAvg = greenTotal / usedPixels;
 	int blueAvg = blueTotal / usedPixels;
-	
-	int redDiff = 0;
-	int greenDiff = 0;
-	int blueDiff = 0;
+	int count = 0;
+	float redDiff = 0;
+	float greenDiff = 0;
+	float blueDiff = 0;
 	int counter = 0;
 	int redProd = 0;
 	int greenProd = 0;
@@ -76,14 +76,14 @@ __kernel void calculateNcc(__global const int *red, __global const int *green,__
 						int newRow = tempRow;
 						int newCol = tempCol;
 						if(newRow >= 0 || newCol >= 0 || newRow < imageWidth || newCol < imageHeight) {
-							int anIndex = newRow * width + newCol;
+							int anIndex = newRow * imageWidth + newCol;
 							int rDiff = red[anIndex] - redAvg;
 							int gDiff = green[anIndex] - greenAvg;
 							int bDiff = blue[anIndex] - blueAvg;
 							redDiff += rDiff * rDiff;
 							greenDiff += gDiff * gDiff;
 							blueDiff += bDiff - bDiff;
-							tempDiff = templateDiff[count];
+							int tempDiff = templateDiff[count];
 							redProd += tempDiff * rDiff;
 							greenProd += tempDiff * gDiff;
 							blueProd += tempDiff * bDiff;
@@ -91,9 +91,9 @@ __kernel void calculateNcc(__global const int *red, __global const int *green,__
 						count++;	
 		} 
 	}
-	redDelta = templateDelta[0];
-	greenDelta = templateDelta[1];
-	blueDelta = templateDelta[2];
+	float redDelta = templateDelta[0];
+	float greenDelta = templateDelta[1];
+	float blueDelta = templateDelta[2];
 	int redNcc = redProd / ((sqrt(redDelta)) * (sqrt(redDiff)));
 	int greenNcc = greenProd / ((sqrt(greenDelta)) * (sqrt(greenDiff)));
 	int blueNcc = blueProd / ((sqrt(blueDelta)) * (sqrt(blueDiff)));
