@@ -25,5 +25,6 @@ __kernel void calculateDifference(__global const int *data, __global const int *
 	int average = averages[0];
 	int current = data[index];
 	int difference = current - average;
-	result[index] = difference;
+	int resultNumber = difference * difference;
+	result[index] = resultNumber;
 }
