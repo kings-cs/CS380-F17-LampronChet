@@ -30,7 +30,7 @@ __kernel void calculateDifference(__global const int *data, __global const int *
 	result[index] = resultNumber;
 }
 
-__kernel void calculateNcc(__global const int *red, __global const int *green,__global const int *blue,__global const int *dimensions, __global const int *templateDiff, __global const int *templateDelta, __global int *nccResult){
+__kernel void calculateNcc(__global const int *red, __global const int *green,__global const int *blue,__global const int *dimensions, __global const int *templateDiffRed, __global const int *templateDiffGreen, __global const int *templateDiffBlue, __global const int *templateDelta, __global int *nccResult){
 	int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
 	int imageWidth = dimensions[0];
 	int imageHeight = dimensions[1];
@@ -85,9 +85,9 @@ __kernel void calculateNcc(__global const int *red, __global const int *green,__
 							greenDiff += gDiff * gDiff;
 							blueDiff += bDiff - bDiff;
 							int tempDiff = templateDiff[count];
-							redProd += tempDiff * rDiff;
-							greenProd += tempDiff * gDiff;
-							blueProd += tempDiff * bDiff;
+							redProd += tempDiffRed[count] * rDiff;
+							greenProd += tempDiffGreen[count] * gDiff;
+							blueProd += tempDiffBlue[count] * bDiff;
 						}	
 						count++;	
 		} 
