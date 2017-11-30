@@ -367,4 +367,14 @@ public class RedEye {
 		
 		return nccValues;
 	}
+	
+	public int findSmallest(int[] data){
+		int smallest = Integer.MAX_VALUE;
+		for(int i = 0; i < data.length; i++){
+			if(data[i] < smallest){
+				smallest = data[i];
+			}
+		}
+		return smallest;
+	}
 }
