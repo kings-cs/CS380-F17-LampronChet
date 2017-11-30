@@ -22,8 +22,11 @@ import testing.BlellochScan;
  *
  */
 public class RedEye {
+	/** Standard red index for value arrays. */
 	private static final int RED_INDEX = 0;
+	/** Standard green index for value arrays. */
 	private static final int GREEN_INDEX = 1;
+	/** Standard blue index for value arrays. */
 	private static final int BLUE_INDEX = 2;
 
 	/** The device manager. */
@@ -33,11 +36,11 @@ public class RedEye {
 	private long calculatedTime;
 	/** The worksize. */
 	private int workSize;
-
+	/** Stores the red channel values. */
 	private int[] redArray;
-
+	/** Stores the green channel values. */
 	private int[] greenArray;
-
+	/** Stores the blue channel values. */
 	private int[] blueArray;
 
 	/**
@@ -51,6 +54,20 @@ public class RedEye {
 		calculatedTime = 0;
 	}
 
+	/**
+	 * Splits data into RGB channels.
+	 * 
+	 * @param data
+	 *            The image data.
+	 * @param red
+	 *            The red channel.
+	 * @param green
+	 *            The green channel.
+	 * @param blue
+	 *            The blue channel.
+	 * @throws FileNotFoundException
+	 *             Not thrown.
+	 */
 	public void splitChannels(int[] data, int red[], int[] green, int[] blue) throws FileNotFoundException {
 		int[] alphaArray = new int[data.length];
 		Pointer ptrSource = Pointer.to(data);
@@ -99,7 +116,7 @@ public class RedEye {
 		double startTime = System.nanoTime();
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), separateKernel, 1, null, globalWorkSize, localWorkSize, 0,
 				null, null);
-		double afterOne = System.nanoTime() - startTime;
+		calculatedTime += System.nanoTime() - startTime;
 
 		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memRed, CL.CL_TRUE, 0, red.length * Sizeof.cl_float, ptrRed, 0,
 				null, null);
@@ -157,22 +174,21 @@ public class RedEye {
 		long startTime = System.nanoTime();
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), averageKernel, 1, null, globalWorkSize, localWorkSize, 0,
 				null, null);
-		long calculatedRuntime = System.nanoTime() - startTime;
+		calculatedTime += System.nanoTime() - startTime;
 
 		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memAccum, CL.CL_TRUE, 0, accumulator.length * Sizeof.cl_float,
 				ptrAccum, 0, null, null);
-		int value = 0;
+		// int value = 0;
 		if (accumulator.length > 1) {
-		//	System.out.println("accum length " + accumulator.length + " data length is " + data.length);
-			//value = accumulator[0];
+			// System.out.println("accum length " + accumulator.length + " data length is "
+			// + data.length);
+			// value = accumulator[0];
 			reduce(accumulator, result, resultIndex);
-		}else{
-			//System.out.println("Accumulator value: " + accumulator[0]);
+		} else {
+			// System.out.println("Accumulator value: " + accumulator[0]);
 			// System.out.println(accumulator[1]);
 			result[resultIndex] = accumulator[0];
 		}
-
-	
 
 	}
 
@@ -199,7 +215,7 @@ public class RedEye {
 		reduce(redArray, resultData, redIndex);
 		reduce(greenArray, resultData, greenIndex);
 		reduce(blueArray, resultData, blueIndex);
-		//System.out.println("length of data: " + data.length);
+		// System.out.println("length of data: " + data.length);
 		for (int i = 0; i < resultData.length; i++) {
 			resultData[i] = resultData[i] / data.length;
 		}
@@ -225,25 +241,34 @@ public class RedEye {
 		return resultData;
 	}
 
+	/**
+	 * Gets the sum of differences using calculated averages.
+	 * 
+	 * @param averages
+	 *            The calculated averages.
+	 * @return The sums of the differences of each channel.
+	 * @throws FileNotFoundException
+	 *             Not thrown.
+	 */
 	public int[] sumDifferenceTemplate(int[] averages) throws FileNotFoundException {
-		int redSum = 0;
-		int greenSum = 0;
-		int blueSum = 0;
-		int[] currentAverage = {averages[0]};
+		// int redSum = 0;
+		// int greenSum = 0;
+		// int blueSum = 0;
+		int[] currentAverage = { averages[0] };
 		int[] finalSums = new int[3];
 		int[] currentResult = new int[redArray.length];
 		Pointer ptrSource = Pointer.to(redArray);
 		Pointer ptrAverage = Pointer.to(currentAverage);
 		Pointer ptrResult = Pointer.to(currentResult);
-		
+
 		cl_mem memSource = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * redArray.length, ptrSource, null);
-		
+
 		cl_mem memAverage = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * currentAverage.length, ptrAverage, null);
 		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * currentResult.length, ptrResult, null);
-		
+
 		File kernelFile = new File("Kernels/RedEyeKernel");
 		Scanner kernelScan = new Scanner(kernelFile);
 		StringBuffer sourceBuffer = new StringBuffer();
@@ -259,7 +284,7 @@ public class RedEye {
 
 		long[] globalWorkSize = new long[] { redArray.length };
 		long[] localWorkSize = new long[] { workSize };
-		
+
 		cl_kernel differenceKernel = CL.clCreateKernel(program, "calculateDifference", null);
 
 		CL.clSetKernelArg(differenceKernel, 0, Sizeof.cl_mem, Pointer.to(memSource));
@@ -268,18 +293,17 @@ public class RedEye {
 		long startTime = System.nanoTime();
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), differenceKernel, 1, null, globalWorkSize, localWorkSize, 0,
 				null, null);
-		long calculatedRuntime = System.nanoTime() - startTime;
+		calculatedTime += System.nanoTime() - startTime;
 
-		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0, currentResult.length * Sizeof.cl_float,
-				ptrResult, 0, null, null);
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0,
+				currentResult.length * Sizeof.cl_float, ptrResult, 0, null, null);
 		reduce(currentResult, finalSums, RED_INDEX);
-		
-		
+
 		currentAverage[0] = averages[GREEN_INDEX];
 		ptrAverage = Pointer.to(currentAverage);
 		memAverage = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * currentAverage.length, ptrAverage, null);
-		
+
 		ptrSource = Pointer.to(greenArray);
 		memSource = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * greenArray.length, ptrSource, null);
@@ -289,44 +313,44 @@ public class RedEye {
 		startTime = System.nanoTime();
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), differenceKernel, 1, null, globalWorkSize, localWorkSize, 0,
 				null, null);
-		calculatedRuntime += System.nanoTime() - startTime;
+		calculatedTime += System.nanoTime() - startTime;
 
-		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0, currentResult.length * Sizeof.cl_float,
-				ptrResult, 0, null, null);
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0,
+				currentResult.length * Sizeof.cl_float, ptrResult, 0, null, null);
 		reduce(currentResult, finalSums, GREEN_INDEX);
-		
+
 		currentAverage[0] = averages[BLUE_INDEX];
 		ptrAverage = Pointer.to(currentAverage);
 		memAverage = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * currentAverage.length, ptrAverage, null);
-		
+
 		ptrSource = Pointer.to(blueArray);
 		memSource = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * blueArray.length, ptrSource, null);
 		CL.clSetKernelArg(differenceKernel, 0, Sizeof.cl_mem, Pointer.to(memSource));
 		CL.clSetKernelArg(differenceKernel, 1, Sizeof.cl_mem, Pointer.to(memAverage));
-		
+
 		startTime = System.nanoTime();
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), differenceKernel, 1, null, globalWorkSize, localWorkSize, 0,
 				null, null);
-		calculatedRuntime += System.nanoTime() - startTime;
+		calculatedTime += System.nanoTime() - startTime;
 
-		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0, currentResult.length * Sizeof.cl_float,
-				ptrResult, 0, null, null);
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0,
+				currentResult.length * Sizeof.cl_float, ptrResult, 0, null, null);
 		reduce(currentResult, finalSums, BLUE_INDEX);
-//		for (int i = 0; i < redArray.length; i++) {
-//			int difference = (int) Math.pow(redArray[i] - averages[RED_INDEX], 2);
-//			redSum += difference;
-//		}
-//		for (int i = 0; i < greenArray.length; i++) {
-//			int difference = (int) Math.pow(greenArray[i] - averages[GREEN_INDEX], 2);
-//			greenSum += difference;
-//		}
-//		for (int i = 0; i < blueArray.length; i++) {
-//			int difference = (int) Math.pow(blueArray[i] - averages[BLUE_INDEX], 2);
-//			blueSum += difference;
-//		}
-//		int[] sumOfDifferences = { redSum, greenSum, blueSum };
+		// for (int i = 0; i < redArray.length; i++) {
+		// int difference = (int) Math.pow(redArray[i] - averages[RED_INDEX], 2);
+		// redSum += difference;
+		// }
+		// for (int i = 0; i < greenArray.length; i++) {
+		// int difference = (int) Math.pow(greenArray[i] - averages[GREEN_INDEX], 2);
+		// greenSum += difference;
+		// }
+		// for (int i = 0; i < blueArray.length; i++) {
+		// int difference = (int) Math.pow(blueArray[i] - averages[BLUE_INDEX], 2);
+		// blueSum += difference;
+		// }
+		// int[] sumOfDifferences = { redSum, greenSum, blueSum };
 		return finalSums;
 	}
 }

@@ -28,3 +28,79 @@ __kernel void calculateDifference(__global const int *data, __global const int *
 	int resultNumber = difference * difference;
 	result[index] = resultNumber;
 }
+
+__kernel void calculateNcc(__global const int *red, __global const int *green,__global const int *blue,__global const int *dimensions, __global const int *templateDiff, __global const int *templateDelta, __global int *nccResult){
+	int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
+	int imageWidth = dimensions[0];
+	int imageHeight = dimensions[1];
+	int templateWidth = dimensions[3];
+	int templateHeight = dimensions[4];
+	int halfSizeWidth = templateWidth / 2;	
+	int halfSizeHeight = templateHeight / 2;
+	int row = index / imageWidth;			
+	int col = index % imageWidth;
+	int redIndex = red[index];
+	int greenIndex = green[index];
+	int blueIndex = blue[index];
+	int redTotal = 0;
+	int greenTotal = 0;
+	int blueTotal = 0;
+	int usedPixels = 0;
+	for(int tempRow = row - halfSizeWidth; tempRow <= row + halfSizeWidth; tempRow++){
+		for(int tempCol = col - halfSizeHeight; tempCol <= col + halfSizeHeight; tempCol++){
+						int newRow = tempRow;
+						int newCol = tempCol;
+						if(newRow >= 0 || newCol >= 0 || newRow < imageWidth || newCol < imageHeight) {
+							int anIndex = newRow * width + newCol;
+							
+							redTotal += red[anIndex];
+							greenTotal += green[anIndex];
+							blueTotal += blue[anIndex];
+							usedPixels++;
+						}		
+		} 
+	}
+	int redAvg = redTotal / usedPixels;
+	int greenAvg = greenTotal / usedPixels;
+	int blueAvg = blueTotal / usedPixels;
+	
+	int redDiff = 0;
+	int greenDiff = 0;
+	int blueDiff = 0;
+	int counter = 0;
+	int redProd = 0;
+	int greenProd = 0;
+	int blueProd = 0;
+	for(int tempRow = row - halfSizeWidth; tempRow <= row + halfSizeWidth; tempRow++){
+		for(int tempCol = col - halfSizeHeight; tempCol <= col + halfSizeHeight; tempCol++){
+						int newRow = tempRow;
+						int newCol = tempCol;
+						if(newRow >= 0 || newCol >= 0 || newRow < imageWidth || newCol < imageHeight) {
+							int anIndex = newRow * width + newCol;
+							int rDiff = red[anIndex] - redAvg;
+							int gDiff = green[anIndex] - greenAvg;
+							int bDiff = blue[anIndex] - blueAvg;
+							redDiff += rDiff * rDiff;
+							greenDiff += gDiff * gDiff;
+							blueDiff += bDiff - bDiff;
+							tempDiff = templateDiff[count];
+							redProd += tempDiff * rDiff;
+							greenProd += tempDiff * gDiff;
+							blueProd += tempDiff * bDiff;
+						}	
+						count++;	
+		} 
+	}
+	redDelta = templateDelta[0];
+	greenDelta = templateDelta[1];
+	blueDelta = templateDelta[2];
+	int redNcc = redProd / ((sqrt(redDelta)) * (sqrt(redDiff)));
+	int greenNcc = greenProd / ((sqrt(greenDelta)) * (sqrt(greenDiff)));
+	int blueNcc = blueProd / ((sqrt(blueDelta)) * (sqrt(blueDiff)));
+	
+	int pixelNcc = redNcc * greenNcc * blueNcc;
+	
+	nccResult[index] = pixelNcc;
+	
+	
+} 

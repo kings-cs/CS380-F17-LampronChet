@@ -19,6 +19,8 @@ import pinkprocessing.FileHandler;
 import pinkprocessing.RedEye;
 
 /**
+ * Tester for the RedEye class.
+ * 
  * @author chetlampron
  *
  */
@@ -27,10 +29,10 @@ public class RedEyeTest {
 	private JoclInitializer deviceManager;
 
 	/**
-	 * @throws java.lang.Exception
+	 * Setup of necessary items for testing.
 	 */
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		CL.setExceptionsEnabled(true);
 		deviceManager = new JoclInitializer();
 		cl_device_id[] devices = deviceManager.getDeviceIds();
@@ -47,9 +49,10 @@ public class RedEyeTest {
 	}
 
 	/**
-	 * Not Found
+	 * Tests calculating the average.
 	 * 
 	 * @throws IOException
+	 *             Not thrown.
 	 */
 	@Test
 	public void testTemplateAverage() throws IOException {
@@ -63,10 +66,12 @@ public class RedEyeTest {
 		assertTrue("Should be 111 for green but was: " + averages[1], averages[1] == 111);
 		assertTrue("Should be 115 for blue but was: " + averages[2], averages[2] == 115);
 	}
+
 	/**
-	 * Not Found
+	 * Tests calculating the difference.
 	 * 
 	 * @throws IOException
+	 *             Not thrown.
 	 */
 	@Test
 	public void testTemplateDifferences() throws IOException {
