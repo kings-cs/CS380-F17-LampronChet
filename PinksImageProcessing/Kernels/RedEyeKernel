@@ -84,10 +84,9 @@ __kernel void calculateNcc(__global const int *red, __global const int *green,__
 							redDiff += rDiff * rDiff;
 							greenDiff += gDiff * gDiff;
 							blueDiff += bDiff - bDiff;
-							int tempDiff = templateDiff[count];
-							redProd += tempDiffRed[count] * rDiff;
-							greenProd += tempDiffGreen[count] * gDiff;
-							blueProd += tempDiffBlue[count] * bDiff;
+							redProd += templateDiffRed[count] * rDiff;
+							greenProd += templateDiffGreen[count] * gDiff;
+							blueProd += templateDiffBlue[count] * bDiff;
 						}	
 						count++;	
 		} 
