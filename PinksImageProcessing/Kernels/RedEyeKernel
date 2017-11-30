@@ -20,12 +20,13 @@ __kernel void calculateAverage(__global const int *data,  __global int *accumula
 		}
 }
 
-__kernel void calculateDifference(__global const int *data, __global const int *averages, __global int *result){
+__kernel void calculateDifference(__global const int *data, __global const int *averages, __global int *result, __global int *differences){
 	int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
 	int average = averages[0];
 	int current = data[index];
 	int difference = current - average;
 	int resultNumber = difference * difference;
+	differences[index] = difference;
 	result[index] = resultNumber;
 }
 
@@ -46,11 +47,11 @@ __kernel void calculateNcc(__global const int *red, __global const int *green,__
 	int greenTotal = 0;
 	int blueTotal = 0;
 	int usedPixels = 0;
-	for(int tempRow = row - halfSizeWidth; tempRow <= row + halfSizeWidth; tempRow++){
-		for(int tempCol = col - halfSizeHeight; tempCol <= col + halfSizeHeight; tempCol++){
+	for(int tempRow = row - halfSizeHeight; tempRow <= row + halfSizeHeight; tempRow++){
+		for(int tempCol = col - halfSizeWidth; tempCol <= col + halfSizeWidth; tempCol++){
 						int newRow = tempRow;
 						int newCol = tempCol;
-						if(newRow >= 0 && newCol >= 0 && newRow < imageWidth && newCol < imageHeight) {
+						if(newRow >= 0 && newCol >= 0 && newRow < imageHeight && newCol < imageWidth) {
 							int anIndex = newRow * imageWidth + newCol;
 							
 							redTotal += red[anIndex];
@@ -71,11 +72,11 @@ __kernel void calculateNcc(__global const int *red, __global const int *green,__
 	int redProd = 0;
 	int greenProd = 0;
 	int blueProd = 0;
-	for(int tempRow = row - halfSizeWidth; tempRow <= row + halfSizeWidth; tempRow++){
-		for(int tempCol = col - halfSizeHeight; tempCol <= col + halfSizeHeight; tempCol++){
+	for(int tempRow = row - halfSizeHeight; tempRow <= row + halfSizeHeight; tempRow++){
+		for(int tempCol = col - halfSizeWidth; tempCol <= col + halfSizeWidth; tempCol++){
 						int newRow = tempRow;
 						int newCol = tempCol;
-						if(newRow >= 0 && newCol >= 0 && newRow < imageWidth && newCol < imageHeight) {
+						if(newRow >= 0 && newCol >= 0 && newRow < imageHeight && newCol < imageWidth) {
 							int anIndex = newRow * imageWidth + newCol;
 							int rDiff = red[anIndex] - redAvg;
 							int gDiff = green[anIndex] - greenAvg;

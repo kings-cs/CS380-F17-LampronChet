@@ -81,7 +81,8 @@ public class RedEyeTest {
 		BufferedImage template = file.createImage("Docs/red_eye_effect_template_5.png");
 		int[] data = modifier.unwrapImage(template);
 		int[] averages = tester.calculateTemplateAverage(data);
-		int[] differences = tester.sumDifferenceTemplate(averages);
+		int[] dummy = new int[data.length];
+		int[] differences = tester.sumDifferenceTemplate(averages, dummy);
 		assertTrue("Should be 2340920 for red but was: " + differences[0], differences[0] == 2340920);
 		assertTrue("Should be 1638475 for green but was: " + differences[1], differences[1] == 1638475);
 		assertTrue("Should be 1384777 for blue but was: " + differences[2], differences[2] == 1384777);

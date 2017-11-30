@@ -250,24 +250,28 @@ public class RedEye {
 	 * @throws FileNotFoundException
 	 *             Not thrown.
 	 */
-	public int[] sumDifferenceTemplate(int[] averages) throws FileNotFoundException {
+	public int[] sumDifferenceTemplate(int[] averages, int[] differences) throws FileNotFoundException {
 		// int redSum = 0;
 		// int greenSum = 0;
 		// int blueSum = 0;
 		int[] currentAverage = { averages[0] };
 		int[] finalSums = new int[3];
 		int[] currentResult = new int[redArray.length];
+		
 		Pointer ptrSource = Pointer.to(redArray);
 		Pointer ptrAverage = Pointer.to(currentAverage);
 		Pointer ptrResult = Pointer.to(currentResult);
+		Pointer ptrDifferences = Pointer.to(differences);
 
 		cl_mem memSource = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * redArray.length, ptrSource, null);
 
 		cl_mem memAverage = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * currentAverage.length, ptrAverage, null);
-		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * currentResult.length, ptrResult, null);
+		cl_mem memDifferences = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
+				Sizeof.cl_float * differences.length, ptrDifferences, null);
 
 		File kernelFile = new File("Kernels/RedEyeKernel");
 		Scanner kernelScan = new Scanner(kernelFile);
@@ -290,6 +294,7 @@ public class RedEye {
 		CL.clSetKernelArg(differenceKernel, 0, Sizeof.cl_mem, Pointer.to(memSource));
 		CL.clSetKernelArg(differenceKernel, 1, Sizeof.cl_mem, Pointer.to(memAverage));
 		CL.clSetKernelArg(differenceKernel, 2, Sizeof.cl_mem, Pointer.to(memResult));
+		CL.clSetKernelArg(differenceKernel, 3, Sizeof.cl_mem, Pointer.to(memDifferences));
 		long startTime = System.nanoTime();
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), differenceKernel, 1, null, globalWorkSize, localWorkSize, 0,
 				null, null);
@@ -297,6 +302,8 @@ public class RedEye {
 
 		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0,
 				currentResult.length * Sizeof.cl_float, ptrResult, 0, null, null);
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memDifferences, CL.CL_TRUE, 0,
+				differences.length * Sizeof.cl_float, ptrDifferences, 0, null, null);
 		reduce(currentResult, finalSums, RED_INDEX);
 
 		currentAverage[0] = averages[GREEN_INDEX];
@@ -352,5 +359,12 @@ public class RedEye {
 		// }
 		// int[] sumOfDifferences = { redSum, greenSum, blueSum };
 		return finalSums;
+	}
+	
+	public int[] getNcc(int[] data, int[] tempSumDiff, int[] tempDiff){
+		int[] nccValues = new int[data.length];
+		
+		
+		return nccValues;
 	}
 }
