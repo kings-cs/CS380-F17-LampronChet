@@ -50,7 +50,7 @@ __kernel void calculateNcc(__global const int *red, __global const int *green,__
 		for(int tempCol = col - halfSizeHeight; tempCol <= col + halfSizeHeight; tempCol++){
 						int newRow = tempRow;
 						int newCol = tempCol;
-						if(newRow >= 0 || newCol >= 0 || newRow < imageWidth || newCol < imageHeight) {
+						if(newRow >= 0 && newCol >= 0 && newRow < imageWidth && newCol < imageHeight) {
 							int anIndex = newRow * imageWidth + newCol;
 							
 							redTotal += red[anIndex];
@@ -75,7 +75,7 @@ __kernel void calculateNcc(__global const int *red, __global const int *green,__
 		for(int tempCol = col - halfSizeHeight; tempCol <= col + halfSizeHeight; tempCol++){
 						int newRow = tempRow;
 						int newCol = tempCol;
-						if(newRow >= 0 || newCol >= 0 || newRow < imageWidth || newCol < imageHeight) {
+						if(newRow >= 0 && newCol >= 0 && newRow < imageWidth && newCol < imageHeight) {
 							int anIndex = newRow * imageWidth + newCol;
 							int rDiff = red[anIndex] - redAvg;
 							int gDiff = green[anIndex] - greenAvg;
