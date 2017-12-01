@@ -30,7 +30,7 @@ __kernel void calculateDifference(__global const int *data, __global const int *
 	result[index] = resultNumber;
 }
 
-__kernel void calculateNcc(__global const int *red, __global const int *green,__global const int *blue,__global const int *dimensions, __global const int *templateDiffRed, __global const int *templateDiffGreen, __global const int *templateDiffBlue, __global const int *templateDelta, __global int *nccResult){
+__kernel void calculateNcc(__global const int *red, __global const int *green,__global const int *blue,__global const int *dimensions, __global const int *templateDiffRed, __global const int *templateDiffGreen, __global const int *templateDiffBlue, __global const int *templateDelta, __global float *nccResult){
 	int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
 	int imageWidth = dimensions[0];
 	int imageHeight = dimensions[1];
@@ -68,7 +68,6 @@ __kernel void calculateNcc(__global const int *red, __global const int *green,__
 	float redDiff = 0;
 	float greenDiff = 0;
 	float blueDiff = 0;
-	int counter = 0;
 	int redProd = 0;
 	int greenProd = 0;
 	int blueProd = 0;
@@ -83,7 +82,7 @@ __kernel void calculateNcc(__global const int *red, __global const int *green,__
 							int bDiff = blue[anIndex] - blueAvg;
 							redDiff += rDiff * rDiff;
 							greenDiff += gDiff * gDiff;
-							blueDiff += bDiff - bDiff;
+							blueDiff += bDiff * bDiff;
 							redProd += templateDiffRed[count] * rDiff;
 							greenProd += templateDiffGreen[count] * gDiff;
 							blueProd += templateDiffBlue[count] * bDiff;
@@ -94,53 +93,66 @@ __kernel void calculateNcc(__global const int *red, __global const int *green,__
 	float redDelta = templateDelta[0];
 	float greenDelta = templateDelta[1];
 	float blueDelta = templateDelta[2];
-	int redNcc = redProd / ((sqrt(redDelta)) * (sqrt(redDiff)));
-	int greenNcc = greenProd / ((sqrt(greenDelta)) * (sqrt(greenDiff)));
-	int blueNcc = blueProd / ((sqrt(blueDelta)) * (sqrt(blueDiff)));
+	float redNcc = redProd / ((sqrt(redDelta)) * (sqrt(redDiff)));
+	float greenNcc = greenProd / ((sqrt(greenDelta)) * (sqrt(greenDiff)));
+	float blueNcc = blueProd / ((sqrt(blueDelta)) * (sqrt(blueDiff)));
 	
-	int pixelNcc = redNcc * greenNcc * blueNcc;
+	float pixelNcc = redNcc * greenNcc * blueNcc;
 	
 	nccResult[index] = pixelNcc;
 	
 	
 } 
 
-__kernel void convertNcc(__global const int *data, __global const int *lowest, __global int *result){
+__kernel void convertNcc(__global const float *data, __global const float *lowest, __global int *result){
 		int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
-		int dataAt = data[index];
-		int newVal = dataAt - lowest[0];
-		int finalVal = newVal * 1000;
-		result[index] = finalVal;
+		result[index] = (data[index] - lowest[0]) * 1000;
 }
 
-__kernel void modifyPixel(__global int *red, __global const int *green, __global const int *blue, __global const int *keyValue,__global const int *dimensions){
+__kernel void modifyPixel(__global int *data, __global const int *keyValue,__global const int *dimensions){
+	int ALPHA_MASK = 0xff000000;
+	int ALPHA_OFFSET = 24;
+	int RED_MASK = 0x00ff0000;
+	int RED_OFFSET = 16;
+	int GREEN_MASK = 0x0000ff00;
+	int GREEN_OFFSET = 8;
+	int BLUE_MASK = 0x000000ff;
+	int BLUE_OFFSET = 0;
+	
+	
+	
 	int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
-	int location = keyValue[index];
+
 	int imageWidth = dimensions[0];
 	int imageHeight = dimensions[1];
 	int templateWidth = dimensions[3];
 	int templateHeight = dimensions[4];
-	int halfSizeWidth = templateWidth / 2;	
-	int halfSizeHeight = templateHeight / 2;
+	int center = dimensions[5];
+	
+	int tempRow = index / templateWidth;	
+	int tempCol = index % templateHeight;
+	
 	int row = location / imageWidth;			
 	int col = location % imageWidth;
-	int greenTotal = 0;
-	int blueTotal = 0;
-	int usedPixels = 0;
-	for(int tempRow = row - halfSizeHeight; tempRow <= row + halfSizeHeight; tempRow++){
-		for(int tempCol = col - halfSizeWidth; tempCol <= col + halfSizeWidth; tempCol++){
-						int newRow = tempRow;
-						int newCol = tempCol;
-						if(newRow >= 0 && newCol >= 0 && newRow < imageHeight && newCol < imageWidth) {
-							int anIndex = newRow * imageWidth + newCol;
-							greenTotal += green[anIndex];
-							blueTotal += blue[anIndex];
-							usedPixels++;
-						}		
-		} 
-	}
-		int greenAvg = greenTotal / usedPixels;
-		int blueAvg = blueTotal / usedPixels;
-		int average = (greenAvg + blueAvg) >> 1;
-		red[location] = average;
+	
+	int cornerRow = row - (templateHeight >> 1);
+	int cornerCol = col - (templateWidth >> 1);
+	
+	int pixelRow = cornerRow + tempRow;
+	int pixelCol = cornerlCol + tempCol;
+	
+	int innerIndex = pixelRow * imageWidth + pixelCol;
+	
+	int pixel = data[innerIndex];
+	
+	int alpha = (pixel & ALPHA_MASK) >> ALPHA_OFFSET;
+		int red = (pixel & RED_MASK) >> RED_OFFSET;
+			int green = (pixel & GREEN_MASK) >> GREEN_OFFSET;
+				int blue = (pixel & BLUE_MASK) >> BLUE_OFFSET;
+				if(red > blue + green){
+					int newRed = (blue + green) >> 1;
+					int newPixel = (alpha << ALPHA_OFFSET) | (newRed << RED_OFFSET) | (green << GREEN_OFFSET) | (blue << BLUE_OFFSET);
+					data[innerIndex] = newPixel;
+				}
+		
 }
