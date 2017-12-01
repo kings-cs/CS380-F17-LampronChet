@@ -42,6 +42,7 @@ II. Image editing:
 	<br>13. Grayscale Histogram Equalization
 	<br>14. Efficient Histogram Equalization
 	<br>15. Zoom in and out in increments of 10%
+	<br>16. Red eye removal
 	<br>Many more to come soon!
 
 III. Close the program:
@@ -51,6 +52,7 @@ IV. Bugs:
 	<br>About is implemented, but only displays the raw text currently. Raw text link must be updated often, when not updated the program will not run. This feature has been removed until a permanent solution is found.
 	<br>.gif will only display the first frame in the file.
 	<br>Saving without a file type does not make PNG, please specify the file type in the name.
+	<br> Red eye blanks out the image. Reducing redness does not work.
 	
 V. Runtime chart:
 
@@ -144,6 +146,13 @@ V. Runtime chart:
   <tr>
     <td> Mosaic Parallel</td>
     <td> 4.27ms </td>
+    <td> Nvidia GTX 745 </td>
+    <td> Ubuntu </td>
+  </tr>
+  
+  <tr>
+    <td> Red eye</td>
+    <td> 159.17ms </td>
     <td> Nvidia GTX 745 </td>
     <td> Ubuntu </td>
   </tr>
