@@ -9,6 +9,7 @@ import org.jocl.cl_device_id;
 import org.junit.Before;
 import org.junit.Test;
 
+import algorithms.PixelModifier;
 import parallel.JoclInitializer;
 
 /**
@@ -83,7 +84,7 @@ public class ScanTest {
 		BlellochScan scan = new BlellochScan(deviceManager);
 
 		try {
-			scan.getWorkSize(deviceManager, data);
+			PixelModifier.getWorkSize(deviceManager, data);
 			scan.scan(data, result);
 		} catch (FileNotFoundException e) {
 			System.out.println("Kernel not found.");
@@ -156,9 +157,9 @@ public class ScanTest {
 	@Test
 	public void testPad() throws FileNotFoundException {
 		int[] data = new int[246];
-		BlellochScan scan = new BlellochScan(deviceManager);
-		scan.getWorkSize(deviceManager, data);
-		int[] result = scan.padArray(data);
+		
+		PixelModifier.getWorkSize(deviceManager, data);
+		int[] result = BlellochScan.padArray(data);
 
 		assertEquals("Should return 256", 256, result.length);
 		assertEquals("Should return 0", 0, (int) result[244]);
