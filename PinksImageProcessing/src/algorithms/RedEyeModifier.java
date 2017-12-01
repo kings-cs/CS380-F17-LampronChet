@@ -66,8 +66,8 @@ public class RedEyeModifier extends PixelModifier {
 		}
 		radix.fullSort(convertedNcc, resultSort, startKeys, endKeys);
 		
-		int[] modifyDimensions = {image.getWidth(), image.getHeight(), redEye.getWidth(), redEye.getHeight(), endKeys[endKeys.length - 1]};
-		redEyeProccess.reduceRedness(sourceData, modifyDimensions);
+		//int[] modifyDimensions = {image.getWidth(), image.getHeight(), redEye.getWidth(), redEye.getHeight(), endKeys[endKeys.length - 1]};
+		//redEyeProccess.reduceRedness(sourceData, modifyDimensions);
 		packageImage(sourceData, image);
 		double time = redEyeProccess.getCalculatedTime() + radix.getRuntime();
 		JOptionPane.showMessageDialog(null, time / 1000000 + "ms");

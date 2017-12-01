@@ -109,7 +109,7 @@ __kernel void convertNcc(__global const float *data, __global const float *lowes
 		result[index] = (data[index] - lowest[0]) * 1000;
 }
 
-__kernel void modifyPixel(__global int *data, __global const int *keyValue,__global const int *dimensions){
+__kernel void modifyPixel(__global int *data,__global const int *dimensions){
 	int ALPHA_MASK = 0xff000000;
 	int ALPHA_OFFSET = 24;
 	int RED_MASK = 0x00ff0000;
@@ -132,14 +132,14 @@ __kernel void modifyPixel(__global int *data, __global const int *keyValue,__glo
 	int tempRow = index / templateWidth;	
 	int tempCol = index % templateHeight;
 	
-	int row = location / imageWidth;			
-	int col = location % imageWidth;
+	int row = center / imageWidth;			
+	int col = center % imageWidth;
 	
 	int cornerRow = row - (templateHeight >> 1);
 	int cornerCol = col - (templateWidth >> 1);
 	
 	int pixelRow = cornerRow + tempRow;
-	int pixelCol = cornerlCol + tempCol;
+	int pixelCol = cornerCol + tempCol;
 	
 	int innerIndex = pixelRow * imageWidth + pixelCol;
 	
