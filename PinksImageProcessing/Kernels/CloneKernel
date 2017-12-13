@@ -1,0 +1,47 @@
+__kernel void convertToFloat(__global const int *alpha, __global const int *red, __global const int *green, __global const int *blue, __global float *returnAlpha, __global float *returnRed, __global float *returnGreen, __global float *returnBlue){
+	int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
+	returnAlpha[index] = (float) alpha[index];
+	returnRed[index] = (float) red[index];
+	returnGreen[index] = (float) green[index];
+	returnBlue[index] = (float) blue[index];
+}
+
+__kernel void getMask(__global const float *alpha, __global float *mask){
+	int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
+	if(alpha[index] == 0){
+		mask[index] = 0;
+	}else{
+		mask[index] = 1;
+	}
+}
+
+__kernel void pixelType(__global const float *alpha, __global const int *dimensions, __global float *pixelCategory){
+	int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
+	int imageWidth = dimensions[0];
+	int imageHeight = dimensions[1];
+	int row = index / imageWidth;			
+	int col = index % imageWidth;
+	int val = alpha[index];
+	int zeroChecker = 0;
+	if(val == 0){
+		pixelCategory[index] = 0;
+	}else{
+		for(int tempRow = row - 1; tempRow <= row + 1; tempRow++){
+			for(int tempCol = col - 1; tempCol <= col + 1; tempCol++){
+				int newRow = tempRow;
+				int newCol = tempCol;
+					if(newRow >= 0 && newCol >= 0 && newRow < imageHeight && newCol < imageWidth) {
+						int anIndex = newRow * imageWidth + newCol;	
+						if(alpha[anIndex] == 0){
+							zeroChecker = 1;
+						}		
+					}
+			}
+		}
+		if(zeroChecker == 1){
+			pixelCategory[index] = 2;
+		}else{
+			pixelCategory[index] = 1;
+		}
+	}
+}

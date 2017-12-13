@@ -215,6 +215,10 @@ public class PiPGui extends JFrame {
 		JMenuItem redEyeRemoval = new JMenuItem("Remove red eye");
 		redEyeRemoval.addActionListener(new RedEyeListener());
 		options.add(redEyeRemoval);
+		
+		JMenuItem seamlessClone = new JMenuItem("Merge images");
+		seamlessClone.addActionListener(new SeamlessListener());
+		options.add(seamlessClone);
 
 		ActionListener zoomListen = new ZoomListener();
 		zoomIn = new JMenuItem("Zoom In");
@@ -983,6 +987,55 @@ public class PiPGui extends JFrame {
 					} catch (FileNotFoundException e) {
 						JOptionPane.showMessageDialog(null, "The Image could not be found: this is the actual image, not the template");
 					}
+					centerPanel.repaint();
+					isSaved = false;
+				}
+			} else {
+				JOptionPane.showMessageDialog(null, "Please load an image first");
+			}
+
+		}
+
+	}
+	
+	/**
+	 * Runs the Grayscale algorithm when prompted.
+	 * 
+	 * @author Chet lampron
+	 *
+	 */
+	private class SeamlessListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			if (image != null) {
+				JOptionPane.showMessageDialog(null, "Select your merging image");
+				JFileChooser choose = new JFileChooser("Select your image: ");
+				FileFilter filter = new FileNameExtensionFilter("Pictures",
+						new String[] { "jpg", "jpeg", "png", "gif" });
+				choose.setFileFilter(filter);
+				int val = choose.showOpenDialog(null);
+
+				if (val == JFileChooser.APPROVE_OPTION) {
+					BufferedImage template = null;
+					try {
+						String filePath = choose.getSelectedFile().getAbsolutePath();
+						template = fileHandler.createImage(filePath);
+					} catch (IOException e) {
+						JOptionPane.showMessageDialog(null, "Image could not be processed");
+					} catch (NullPointerException n) {
+						JOptionPane.showMessageDialog(null,
+								"Oops! Looks like you double clicked your folder instead of a file. Try again!");
+					}
+					//TODO
+					//RedEyeModifier pixelModifier = new RedEyeModifier(deviceManager, template);
+
+//					try {
+//						image = pixelModifier.modifyPixel(image);
+//					} catch (FileNotFoundException e) {
+//						JOptionPane.showMessageDialog(null, "The Image could not be found: this is the actual image, not the template");
+//					}
+					JOptionPane.showMessageDialog(null, "Coming soon!");
 					centerPanel.repaint();
 					isSaved = false;
 				}
