@@ -18,7 +18,9 @@ import algorithms.PixelModifier;
 import parallel.JoclInitializer;
 
 /**
- * @author chetlampron
+ * Helper to merge two images.
+ * 
+ * @author Chet Lampron
  *
  */
 public class MergeClone {
@@ -121,7 +123,7 @@ public class MergeClone {
 		double startTime = System.nanoTime();
 		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), convertKernel, 1, null, globalWorkSize, localWorkSize, 0,
 				null, null);
-		calculatedRuntime += System.nanoTime() - startTime;
+		setRuntime(getCalculatedRuntime() + (System.nanoTime() - startTime));
 		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memRAlpha, CL.CL_TRUE, 0, resultAlpha.length * Sizeof.cl_int,
 				ptrRAlpha, 0, null, null);
 		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memRRed, CL.CL_TRUE, 0, resultAlpha.length * Sizeof.cl_int,
@@ -140,6 +142,7 @@ public class MergeClone {
 		CL.clReleaseMemObject(memRRed);
 		CL.clReleaseMemObject(memRGreen);
 		CL.clReleaseMemObject(memRBlue);
+		kernelScan.close();
 	}
 
 	/**
@@ -168,18 +171,37 @@ public class MergeClone {
 
 		CL.clSetKernelArg(maskKernel, 0, Sizeof.cl_mem, Pointer.to(memAlpha));
 		CL.clSetKernelArg(maskKernel, 1, Sizeof.cl_mem, Pointer.to(memMask));
-		
+
 		double startTime = System.nanoTime();
-		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), maskKernel, 1, null, globalWorkSize, localWorkSize, 0,
-				null, null);
-		calculatedRuntime += System.nanoTime() - startTime;
-		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memMask, CL.CL_TRUE, 0, mask.length * Sizeof.cl_int,
-				ptrMask, 0, null, null);
-		
+		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), maskKernel, 1, null, globalWorkSize, localWorkSize, 0, null,
+				null);
+		setRuntime(getCalculatedRuntime() + (System.nanoTime() - startTime));
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memMask, CL.CL_TRUE, 0, mask.length * Sizeof.cl_int, ptrMask,
+				0, null, null);
+
 		CL.clReleaseKernel(maskKernel);
 		CL.clReleaseMemObject(memAlpha);
 		CL.clReleaseMemObject(memMask);
 
 		return mask;
+	}
+
+	/**
+	 * Gets the runtime.
+	 * 
+	 * @return the calculatedRuntime.
+	 */
+	public double getCalculatedRuntime() {
+		return calculatedRuntime;
+	}
+
+	/**
+	 * Sets the runtime.
+	 * 
+	 * @param calculatedRuntime
+	 *            the calculatedRuntime to set.
+	 */
+	public void setRuntime(double calculatedRuntime) {
+		this.calculatedRuntime = calculatedRuntime;
 	}
 }
