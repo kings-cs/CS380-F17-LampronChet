@@ -22,10 +22,30 @@ __kernel void pixelType(__global const float *alpha, __global const int *dimensi
 	int row = index / imageWidth;			
 	int col = index % imageWidth;
 	int val = alpha[index];
-	int zeroChecker = 0;
+	int zeroCheckerRow1 = 1;
+	int zeroCheckerRow2 = 1;
+	int zeroCheckerCol1 = 1;
+	int zeroCheckerCol1 = 1;
 	if(val == 0){
 		pixelCategory[index] = 0;
 	}else{
+		if(row != 0 &&){
+			int anIndex = (row - 1) * imageWidth + (col);
+			zeroCheckerRow1 = alpha[anIndex];
+		}
+		if(row != imageHeight - 1){
+			int anIndex = (row + 1) * imageWidth + (col);
+			zeroCheckerRow2 = alpha[anIndex];
+		}
+		if(col != 0){
+			int anIndex = row * imageWidth + (col - 1);
+			zeroCheckerCol1 = alpha[anIndex];
+		}
+		if(col != imageWidth - 1){
+			int anIndex = row * imageWidth + (col + 1);
+			zeroCheckerCol2 = alpha[anIndex];
+		}
+		/*
 		for(int tempRow = row - 1; tempRow <= row + 1; tempRow++){
 			for(int tempCol = col - 1; tempCol <= col + 1; tempCol++){
 				int newRow = tempRow;
@@ -38,7 +58,8 @@ __kernel void pixelType(__global const float *alpha, __global const int *dimensi
 					}
 			}
 		}
-		if(zeroChecker == 1){
+		*/
+		if(zeroCheckerRow1 == 1 || zeroCheckerRow2 == 1 || zeroCheckerCol1 == 1 || zeroCheckerCol2 == 1){
 			pixelCategory[index] = 2;
 		}else{
 			pixelCategory[index] = 1;
