@@ -1,3 +1,8 @@
+# define INTERIOR 1
+# define EXTERIOR 0
+# define BORDER 2
+
+
 __kernel void convertToFloat(__global const int *alpha, __global const int *red, __global const int *green, __global const int *blue, __global float *returnAlpha, __global float *returnRed, __global float *returnGreen, __global float *returnBlue){
 	int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
 	returnAlpha[index] = (float) alpha[index];
@@ -9,9 +14,9 @@ __kernel void convertToFloat(__global const int *alpha, __global const int *red,
 __kernel void getMask(__global const float *alpha, __global float *mask){
 	int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
 	if(alpha[index] == 0){
-		mask[index] = 0;
+		mask[index] = EXTERIOR;
 	}else{
-		mask[index] = 1;
+		mask[index] = INTERIOR;
 	}
 }
 
@@ -22,47 +27,52 @@ __kernel void pixelType(__global const float *alpha, __global const int *dimensi
 	int row = index / imageWidth;			
 	int col = index % imageWidth;
 	int val = alpha[index];
-	int zeroCheckerRow1 = 1;
-	int zeroCheckerRow2 = 1;
-	int zeroCheckerCol1 = 1;
-	int zeroCheckerCol1 = 1;
+	float zeroCheckerRow1 = 1;
+	float zeroCheckerRow2 = 1;
+	float zeroCheckerCol1 = 1;
+	float zeroCheckerCol2 = 1;
 	if(val == 0){
-		pixelCategory[index] = 0;
+		pixelCategory[index] = EXTERIOR;
 	}else{
-		if(row != 0 &&){
+		if(row != 0){
+		/* NORTH */
 			int anIndex = (row - 1) * imageWidth + (col);
 			zeroCheckerRow1 = alpha[anIndex];
 		}
 		if(row != imageHeight - 1){
+		/* SOUTH */
 			int anIndex = (row + 1) * imageWidth + (col);
 			zeroCheckerRow2 = alpha[anIndex];
 		}
 		if(col != 0){
+		/* WEST */
 			int anIndex = row * imageWidth + (col - 1);
 			zeroCheckerCol1 = alpha[anIndex];
 		}
 		if(col != imageWidth - 1){
+		/* EAST */
 			int anIndex = row * imageWidth + (col + 1);
 			zeroCheckerCol2 = alpha[anIndex];
 		}
-		/*
-		for(int tempRow = row - 1; tempRow <= row + 1; tempRow++){
-			for(int tempCol = col - 1; tempCol <= col + 1; tempCol++){
-				int newRow = tempRow;
-				int newCol = tempCol;
-					if(newRow >= 0 && newCol >= 0 && newRow < imageHeight && newCol < imageWidth) {
-						int anIndex = newRow * imageWidth + newCol;	
-						if(alpha[anIndex] == 0){
-							zeroChecker = 1;
-						}		
-					}
-			}
-		}
-		*/
-		if(zeroCheckerRow1 == 1 || zeroCheckerRow2 == 1 || zeroCheckerCol1 == 1 || zeroCheckerCol2 == 1){
-			pixelCategory[index] = 2;
+		if(zeroCheckerRow1 == 0 || zeroCheckerRow2 == 0 || zeroCheckerCol1 == 0 || zeroCheckerCol2 == 0){
+			pixelCategory[index] = BORDER;
 		}else{
-			pixelCategory[index] = 1;
+			pixelCategory[index] = INTERIOR;
 		}
 	}
+}
+
+__kernel void initialGuess(__global const float *categories, __global const float *clone, __global const float *scene, __global float *result){
+	int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
+	float category = categories[index];
+	if(category == INTERIOR){
+		result[index] = clone[index];
+	}else{
+		result[index] = scene[index];
+	}
+}
+
+__kernel void floatToInt(__global const float *floats, __global int *returnInt){
+	int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
+	returnInt[index] = (int) floats[index];
 }

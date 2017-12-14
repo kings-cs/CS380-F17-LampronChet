@@ -53,6 +53,7 @@ import algorithms.MosaicModifierParallel;
 import algorithms.RedEyeModifier;
 import algorithms.RotateLeft;
 import algorithms.RotateRight;
+import algorithms.SeamlessCloneModifier;
 import algorithms.SepiaModifier;
 import algorithms.SepiaModifierParallel;
 import algorithms.VerticalFlip;
@@ -215,7 +216,7 @@ public class PiPGui extends JFrame {
 		JMenuItem redEyeRemoval = new JMenuItem("Remove red eye");
 		redEyeRemoval.addActionListener(new RedEyeListener());
 		options.add(redEyeRemoval);
-		
+
 		JMenuItem seamlessClone = new JMenuItem("Merge images");
 		seamlessClone.addActionListener(new SeamlessListener());
 		options.add(seamlessClone);
@@ -985,7 +986,8 @@ public class PiPGui extends JFrame {
 					try {
 						image = pixelModifier.modifyPixel(image);
 					} catch (FileNotFoundException e) {
-						JOptionPane.showMessageDialog(null, "The Image could not be found: this is the actual image, not the template");
+						JOptionPane.showMessageDialog(null,
+								"The Image could not be found: this is the actual image, not the template");
 					}
 					centerPanel.repaint();
 					isSaved = false;
@@ -997,7 +999,7 @@ public class PiPGui extends JFrame {
 		}
 
 	}
-	
+
 	/**
 	 * Runs the Grayscale algorithm when prompted.
 	 * 
@@ -1009,7 +1011,7 @@ public class PiPGui extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			if (image != null) {
-				JOptionPane.showMessageDialog(null, "Select your merging image");
+				JOptionPane.showMessageDialog(null, "Select your clone image");
 				JFileChooser choose = new JFileChooser("Select your image: ");
 				FileFilter filter = new FileNameExtensionFilter("Pictures",
 						new String[] { "jpg", "jpeg", "png", "gif" });
@@ -1017,25 +1019,33 @@ public class PiPGui extends JFrame {
 				int val = choose.showOpenDialog(null);
 
 				if (val == JFileChooser.APPROVE_OPTION) {
-					BufferedImage template = null;
+					BufferedImage clone = null;
 					try {
 						String filePath = choose.getSelectedFile().getAbsolutePath();
-						template = fileHandler.createImage(filePath);
+						clone = fileHandler.createImage(filePath);
 					} catch (IOException e) {
-						JOptionPane.showMessageDialog(null, "Image could not be processed");
+						JOptionPane.showMessageDialog(null, "Clone could not be processed");
 					} catch (NullPointerException n) {
 						JOptionPane.showMessageDialog(null,
 								"Oops! Looks like you double clicked your folder instead of a file. Try again!");
 					}
-					//TODO
-					//RedEyeModifier pixelModifier = new RedEyeModifier(deviceManager, template);
+					CancelOptionPanel cancelOption = new CancelOptionPanel();
+					int result = JOptionPane.showConfirmDialog(null, cancelOption,
+							"Please enter a number of iterations: ", JOptionPane.OK_CANCEL_OPTION);
+					if (result == JOptionPane.OK_OPTION) {
+						int iterations = Integer.parseInt(cancelOption.getTiles().getText());
+						// TODO
+						SeamlessCloneModifier pixelModifier = new SeamlessCloneModifier(clone, deviceManager,
+								iterations);
 
-//					try {
-//						image = pixelModifier.modifyPixel(image);
-//					} catch (FileNotFoundException e) {
-//						JOptionPane.showMessageDialog(null, "The Image could not be found: this is the actual image, not the template");
-//					}
-					JOptionPane.showMessageDialog(null, "Coming soon!");
+						try {
+							image = pixelModifier.modifyPixel(image);
+						} catch (FileNotFoundException e) {
+							JOptionPane.showMessageDialog(null,
+									"The Image could not be found: this is the actual image, not the clone");
+						}
+						// JOptionPane.showMessageDialog(null, "Coming soon!");
+					}
 					centerPanel.repaint();
 					isSaved = false;
 				}

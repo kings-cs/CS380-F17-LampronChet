@@ -162,8 +162,6 @@ public class MergeClone {
 		cl_mem memMask = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * mask.length, ptrMask, null);
 
-		CL.clBuildProgram(program, 0, null, null, null, null);
-
 		long[] globalWorkSize = new long[] { alpha.length };
 		long[] localWorkSize = new long[] { workSize };
 
@@ -184,6 +182,135 @@ public class MergeClone {
 		CL.clReleaseMemObject(memMask);
 
 		return mask;
+	}
+
+	/**
+	 * Categorizes the pixels as interior, exterior, or border.
+	 * 
+	 * @param mask
+	 *            The mask of the clone.
+	 * @param dimensions
+	 *            The dimensions of the image.
+	 * @return The categories of pixels.
+	 */
+	public float[] categorizePixel(float[] mask, int[] dimensions) {
+		float[] categories = new float[mask.length];
+		Pointer ptrMask = Pointer.to(mask);
+		Pointer ptrDimensions = Pointer.to(dimensions);
+		Pointer ptrCategories = Pointer.to(categories);
+
+		cl_mem memMask = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+				Sizeof.cl_float * mask.length, ptrMask, null);
+		cl_mem memDimensions = CL.clCreateBuffer(deviceManager.getContext(),
+				CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * dimensions.length, ptrDimensions,
+				null);
+		cl_mem memCategories = CL.clCreateBuffer(deviceManager.getContext(),
+				CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * categories.length, ptrCategories,
+				null);
+		long[] globalWorkSize = new long[] { mask.length };
+		long[] localWorkSize = new long[] { workSize };
+
+		cl_kernel maskKernel = CL.clCreateKernel(program, "pixelType", null);
+
+		CL.clSetKernelArg(maskKernel, 0, Sizeof.cl_mem, Pointer.to(memMask));
+		CL.clSetKernelArg(maskKernel, 1, Sizeof.cl_mem, Pointer.to(memDimensions));
+		CL.clSetKernelArg(maskKernel, 2, Sizeof.cl_mem, Pointer.to(memCategories));
+
+		double startTime = System.nanoTime();
+		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), maskKernel, 1, null, globalWorkSize, localWorkSize, 0, null,
+				null);
+		setRuntime(getCalculatedRuntime() + (System.nanoTime() - startTime));
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memCategories, CL.CL_TRUE, 0,
+				categories.length * Sizeof.cl_int, ptrCategories, 0, null, null);
+
+		CL.clReleaseKernel(maskKernel);
+		CL.clReleaseMemObject(memMask);
+		CL.clReleaseMemObject(memDimensions);
+		CL.clReleaseMemObject(memCategories);
+		return categories;
+	}
+
+	/**
+	 * Places the image on the other as a guess.
+	 * 
+	 * @param categories
+	 *            The categories of the pixels.
+	 * @param clone
+	 *            The clone image.
+	 * @param scene
+	 *            The scene image.
+	 * @return The inital guess data.
+	 */
+	public float[] initialGuess(float[] categories, float[] clone, float[] scene) {
+		float[] result = new float[clone.length];
+		Pointer ptrCategories = Pointer.to(categories);
+		Pointer ptrClone = Pointer.to(clone);
+		Pointer ptrScene = Pointer.to(scene);
+		Pointer ptrResult = Pointer.to(result);
+
+		cl_mem memCategories = CL.clCreateBuffer(deviceManager.getContext(),
+				CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * categories.length, ptrCategories,
+				null);
+		cl_mem memClone = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+				Sizeof.cl_float * clone.length, ptrClone, null);
+		cl_mem memScene = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+				Sizeof.cl_float * scene.length, ptrScene, null);
+		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+				Sizeof.cl_float * result.length, ptrResult, null);
+
+		long[] globalWorkSize = new long[] { clone.length };
+		long[] localWorkSize = new long[] { workSize };
+
+		cl_kernel guessKernel = CL.clCreateKernel(program, "initialGuess", null);
+
+		CL.clSetKernelArg(guessKernel, 0, Sizeof.cl_mem, Pointer.to(memCategories));
+		CL.clSetKernelArg(guessKernel, 1, Sizeof.cl_mem, Pointer.to(memClone));
+		CL.clSetKernelArg(guessKernel, 2, Sizeof.cl_mem, Pointer.to(memScene));
+		CL.clSetKernelArg(guessKernel, 3, Sizeof.cl_mem, Pointer.to(memResult));
+
+		double startTime = System.nanoTime();
+		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), guessKernel, 1, null, globalWorkSize, localWorkSize, 0,
+				null, null);
+		setRuntime(getCalculatedRuntime() + (System.nanoTime() - startTime));
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0, result.length * Sizeof.cl_int,
+				ptrResult, 0, null, null);
+
+		return result;
+	}
+
+	/**
+	 * Converts flaots to ints.
+	 * 
+	 * @param data
+	 *            The float data.
+	 * @return The int data.
+	 */
+	public int[] floatsToInts(float[] data) {
+		int[] returnInts = new int[data.length];
+		Pointer ptrData = Pointer.to(data);
+		Pointer ptrResult = Pointer.to(returnInts);
+		cl_mem memData = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+				Sizeof.cl_float * data.length, ptrData, null);
+		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+				Sizeof.cl_float * returnInts.length, ptrResult, null);
+
+		long[] globalWorkSize = new long[] { data.length };
+		long[] localWorkSize = new long[] { workSize };
+
+		cl_kernel convertKernel = CL.clCreateKernel(program, "floatToInt", null);
+
+		CL.clSetKernelArg(convertKernel, 0, Sizeof.cl_mem, Pointer.to(memData));
+		CL.clSetKernelArg(convertKernel, 1, Sizeof.cl_mem, Pointer.to(memResult));
+		double startTime = System.nanoTime();
+		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), convertKernel, 1, null, globalWorkSize, localWorkSize, 0,
+				null, null);
+		setRuntime(getCalculatedRuntime() + (System.nanoTime() - startTime));
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0, returnInts.length * Sizeof.cl_int,
+				ptrResult, 0, null, null);
+		CL.clReleaseKernel(convertKernel);
+		CL.clReleaseMemObject(memResult);
+		CL.clReleaseMemObject(memData);
+		return returnInts;
 	}
 
 	/**
