@@ -64,7 +64,7 @@ public class SeamlessCloneModifier extends PixelModifier {
 		float[] guessResult = merge.initialGuess(categories, floatClone, floatImage);
 		int[] guessResultInt = merge.floatsToInts(guessResult);
 		packageImage(guessResultInt, image);
-		JOptionPane.showMessageDialog(null, merge.getCalculatedRuntime() + "ms");
+		JOptionPane.showMessageDialog(null, merge.getCalculatedRuntime() / 1000000.0 + "ms");
 		return image;
 	}
 }
