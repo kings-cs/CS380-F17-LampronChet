@@ -105,6 +105,7 @@ public class MergeClone {
 
 		CL.clBuildProgram(program, 0, null, null, null, null);
 
+		
 		workSize = PixelModifier.getWorkSize(deviceManager, alpha);
 		long[] globalWorkSize = new long[] { alpha.length };
 		long[] localWorkSize = new long[] { workSize };
