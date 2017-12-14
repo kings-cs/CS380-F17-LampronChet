@@ -468,6 +468,7 @@ public class MergeClone {
 		this.calculatedRuntime = calculatedRuntime;
 	}
 
+	
 	/**
 	 * Releases the program.
 	 */
