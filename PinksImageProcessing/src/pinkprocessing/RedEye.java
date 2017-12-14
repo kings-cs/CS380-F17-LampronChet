@@ -72,13 +72,13 @@ public class RedEye {
 	 */
 	public void splitChannels(int[] data, int red[], int[] green, int[] blue, int[] alpha)
 			throws FileNotFoundException {
-		int[] alphaArray = new int[data.length];
+
 		Pointer ptrSource = Pointer.to(data);
 		Pointer ptrRed = Pointer.to(red);
 		Pointer ptrBlue = Pointer.to(blue);
 		Pointer ptrGreen = Pointer.to(green);
 
-		Pointer ptrAlpha = Pointer.to(alphaArray);
+		Pointer ptrAlpha = Pointer.to(alpha);
 
 		cl_mem memSource = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * data.length, ptrSource, null);
@@ -89,7 +89,7 @@ public class RedEye {
 		cl_mem memGreen = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * green.length, ptrGreen, null);
 		cl_mem memAlpha = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
-				Sizeof.cl_float * alphaArray.length, ptrAlpha, null);
+				Sizeof.cl_float * alpha.length, ptrAlpha, null);
 
 		File kernelFile = new File("Kernels/BlurKernel");
 		Scanner kernelScan = new Scanner(kernelFile);

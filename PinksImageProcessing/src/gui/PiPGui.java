@@ -796,7 +796,7 @@ public class PiPGui extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			if (image != null) {
-				CancelOptionPanel cancelOption = new CancelOptionPanel();
+				CancelOptionPanel cancelOption = new CancelOptionPanel("Tiles");
 				int result = JOptionPane.showConfirmDialog(null, cancelOption, "Please enter a number of tiles: ",
 						JOptionPane.OK_CANCEL_OPTION);
 				if (result == JOptionPane.OK_OPTION) {
@@ -929,7 +929,7 @@ public class PiPGui extends JFrame {
 		public void actionPerformed(ActionEvent arg0) {
 			if (image != null) {
 
-				CancelOptionPanel cancelOption = new CancelOptionPanel();
+				CancelOptionPanel cancelOption = new CancelOptionPanel("Tiles");
 				int result = JOptionPane.showConfirmDialog(null, cancelOption, "Please enter a number of tiles: ",
 						JOptionPane.OK_CANCEL_OPTION);
 				if (result == JOptionPane.OK_OPTION) {
@@ -1029,7 +1029,7 @@ public class PiPGui extends JFrame {
 						JOptionPane.showMessageDialog(null,
 								"Oops! Looks like you double clicked your folder instead of a file. Try again!");
 					}
-					CancelOptionPanel cancelOption = new CancelOptionPanel();
+					CancelOptionPanel cancelOption = new CancelOptionPanel("Iterations");
 					int result = JOptionPane.showConfirmDialog(null, cancelOption,
 							"Please enter a number of iterations: ", JOptionPane.OK_CANCEL_OPTION);
 					if (result == JOptionPane.OK_OPTION) {

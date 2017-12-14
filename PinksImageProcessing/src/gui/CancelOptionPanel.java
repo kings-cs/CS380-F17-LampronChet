@@ -23,9 +23,12 @@ public class CancelOptionPanel extends JPanel {
 
 	/**
 	 * Consturucts a CancelOptionPanel.
+	 * 
+	 * @param typeOf
+	 *            The type of things in this quantity.
 	 */
-	public CancelOptionPanel() {
-		add(new JLabel("Tiles: "));
+	public CancelOptionPanel(String typeOf) {
+		add(new JLabel(typeOf + ": "));
 		add(tiles);
 	}
 

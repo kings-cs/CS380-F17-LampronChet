@@ -2,6 +2,22 @@
 # define EXTERIOR 0
 # define BORDER 2
 
+# define ALPHA_MASK 0xff000000
+
+# define ALPHA_OFFSET 24
+
+# define RED_MASK 0x00ff0000
+
+# define RED_OFFSET 16
+
+# define GREEN_MASK 0x0000ff00
+
+# define GREEN_OFFSET 8;
+
+# define BLUE_MASK 0x000000ff
+
+# define BLUE_OFFSET 0
+
 
 __kernel void convertToFloat(__global const int *alpha, __global const int *red, __global const int *green, __global const int *blue, __global float *returnAlpha, __global float *returnRed, __global float *returnGreen, __global float *returnBlue){
 	int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
@@ -62,14 +78,128 @@ __kernel void pixelType(__global const float *alpha, __global const int *dimensi
 	}
 }
 
-__kernel void initialGuess(__global const float *categories, __global const float *clone, __global const float *scene, __global float *result){
+__kernel void initialGuess(__global const float *categories, __global const float *clone, __global const float *scene, __global int *result){
 	int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
 	float category = categories[index];
 	if(category == INTERIOR){
-		result[index] = clone[index];
+		result[index] = (int) clone[index];
+	}else if(category == BORDER){
+		result[index] = (int) scene[index];
 	}else{
-		result[index] = scene[index];
+		result[index] = (int) scene[index];	
 	}
+}
+
+__kernel void blend(__global const float *category, __global const int *dimensions, 
+__global const float *prev_red, __global const float *prev_green, 
+__global const float *prev_blue, __global const float *clone_red, 
+__global const float *clone_green, __global const float *clone_blue, 
+__global const float *scene_red, __global const float *scene_green, 
+__global const float *scene_blue, __global float *result_red, __global float *result_green,
+__global float *result_blue){
+	int index = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
+	int imageWidth = dimensions[0];
+	int imageHeight = dimensions[1];
+	int row = index / imageWidth;			
+	int col = index % imageWidth;
+	float redSum = 0;
+	float greenSum = 0;
+	float blueSum = 0;
+	if(category[index] == INTERIOR){
+		int num_of_neighbors = 0;
+		float iKSumRed = 0;
+		float iKSumGreen = 0;
+		float iKSumBlue = 0;
+		float tSumRed = 0;
+		float tSumGreen = 0;
+		float tSumBlue = 0;
+		float sSumRed = 0;
+		float sSumGreen = 0;
+		float sSumBlue = 0;
+		
+		if(row != 0){
+		/* NORTH */
+			int anIndex = (row - 1) * imageWidth + (col);
+			num_of_neighbors++;
+			if(category[anIndex] == INTERIOR){
+				iKSumRed = iKSumRed + prev_red[anIndex];
+				iKSumGreen = iKSumGreen + prev_green[anIndex];
+				iKSumBlue = iKSumBlue + prev_blue[anIndex];
+			}
+			sSumRed = sSumRed + (clone_red[index] - clone_red[anIndex]);
+			sSumGreen = sSumGreen + (clone_green[index] - clone_green[anIndex]);
+			sSumBlue = sSumBlue + (clone_blue[index] - clone_blue[anIndex]);
+			if(category[anIndex] == BORDER){
+				tSumRed = tSumRed + scene_red[anIndex];
+				tSumGreen = tSumGreen + scene_green[anIndex];
+				tSumBlue = tSumBlue + scene_blue[anIndex];
+			}
+		}
+		if(row != imageHeight - 1){
+		/* SOUTH */
+			int anIndex = (row + 1) * imageWidth + (col);
+			num_of_neighbors++;
+			if(category[anIndex] == INTERIOR){
+				iKSumRed = iKSumRed + prev_red[anIndex];
+				iKSumGreen = iKSumGreen + prev_green[anIndex];
+				iKSumBlue = iKSumBlue + prev_blue[anIndex];
+			}
+			sSumRed = sSumRed + (clone_red[index] - clone_red[anIndex]);
+			sSumGreen = sSumGreen + (clone_green[index] - clone_green[anIndex]);
+			sSumBlue = sSumBlue + (clone_blue[index] - clone_blue[anIndex]);
+			if(category[anIndex] == BORDER){
+				tSumRed = tSumRed + scene_red[anIndex];
+				tSumGreen = tSumGreen + scene_green[anIndex];
+				tSumBlue = tSumBlue + scene_blue[anIndex];
+			}
+		}
+		if(col != 0){
+		/* WEST */
+			int anIndex = row * imageWidth + (col - 1);
+			num_of_neighbors++;
+			if(category[anIndex] == INTERIOR){
+				iKSumRed = iKSumRed + prev_red[anIndex];
+				iKSumGreen = iKSumGreen + prev_green[anIndex];
+				iKSumBlue = iKSumBlue + prev_blue[anIndex];
+			}
+			sSumRed = sSumRed + (clone_red[index] - clone_red[anIndex]);
+			sSumGreen = sSumGreen + (clone_green[index] - clone_green[anIndex]);
+			sSumBlue = sSumBlue + (clone_blue[index] - clone_blue[anIndex]);
+			if(category[anIndex] == BORDER){
+				tSumRed = tSumRed + scene_red[anIndex];
+				tSumGreen = tSumGreen + scene_green[anIndex];
+				tSumBlue = tSumBlue + scene_blue[anIndex];
+			}
+		}
+		if(col != imageWidth - 1){
+		/* EAST */
+			int anIndex = row * imageWidth + (col + 1);
+			num_of_neighbors++;
+			if(category[anIndex] == INTERIOR){
+				iKSumRed = iKSumRed + prev_red[anIndex];
+				iKSumGreen = iKSumGreen + prev_green[anIndex];
+				iKSumBlue = iKSumBlue + prev_blue[anIndex];
+			}
+			sSumRed = sSumRed + (clone_red[index] - clone_red[anIndex]);
+			sSumGreen = sSumGreen + (clone_green[index] - clone_green[anIndex]);
+			sSumBlue = sSumBlue + (clone_blue[index] - clone_blue[anIndex]);
+			if(category[anIndex] == BORDER){
+				tSumRed = tSumRed + scene_red[anIndex];
+				tSumGreen = tSumGreen + scene_green[anIndex];
+				tSumBlue = tSumBlue + scene_blue[anIndex];
+			}
+		}
+		redSum = (iKSumRed + sSumRed + tSumRed) / num_of_neighbors;
+		greenSum = (iKSumGreen + sSumGreen + tSumGreen) / num_of_neighbors;
+		blueSum = (iKSumBlue + sSumBlue + tSumBlue) / num_of_neighbors;
+	}else{
+		redSum = scene_red[index];
+		greenSum = scene_green[index];
+		blueSum = scene_blue[index];
+	}
+	result_red[index] = redSum;
+	result_green[index] = greenSum;
+	result_blue[index] = blueSum;
 }
 
 __kernel void floatToInt(__global const float *floats, __global int *returnInt){

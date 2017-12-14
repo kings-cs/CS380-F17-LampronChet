@@ -91,8 +91,23 @@ int ALPHA_MASK = 0xff000000;
 	int BLUE_OFFSET = 0;
 			int i = (get_group_id(0) * get_local_size(0)) + get_local_id(0);
 			int newRed = modifiedRedArray[i];
+			if(newRed > 255){
+				newRed = 255;
+			}else if(newRed < 0){
+				newRed = 0;
+			}
 			int newGreen = modifiedGreenArray[i];
+			if(newGreen > 255){
+				newGreen = 255;
+			}else if(newGreen < 0){
+				newGreen = 0;
+			}
 			int newBlue = modifiedBlueArray[i];
+			if(newBlue > 255){
+				newBlue = 255;
+			}else if(newBlue < 0){
+				newBlue = 0;
+			}
 			int alpha = alphaArray[i];
 			int newPixel = (alpha << ALPHA_OFFSET) | (newRed << RED_OFFSET) | (newBlue << BLUE_OFFSET)
 					| (newGreen << GREEN_OFFSET);

@@ -84,13 +84,13 @@ public class MergeClone {
 				Sizeof.cl_float * green.length, ptrGreen, null);
 		cl_mem memBlue = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * blue.length, ptrBlue, null);
-		cl_mem memRAlpha = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+		cl_mem memRAlpha = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * resultAlpha.length, ptrRAlpha, null);
-		cl_mem memRRed = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+		cl_mem memRRed = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * resultRed.length, ptrRRed, null);
-		cl_mem memRGreen = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+		cl_mem memRGreen = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * resultGreen.length, ptrRGreen, null);
-		cl_mem memRBlue = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+		cl_mem memRBlue = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * resultBlue.length, ptrRBlue, null);
 
 		File kernelFile = new File("Kernels/CloneKernel");
@@ -159,7 +159,7 @@ public class MergeClone {
 
 		cl_mem memAlpha = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * alpha.length, ptrAlpha, null);
-		cl_mem memMask = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+		cl_mem memMask = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * mask.length, ptrMask, null);
 
 		long[] globalWorkSize = new long[] { alpha.length };
@@ -205,7 +205,7 @@ public class MergeClone {
 				CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * dimensions.length, ptrDimensions,
 				null);
 		cl_mem memCategories = CL.clCreateBuffer(deviceManager.getContext(),
-				CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * categories.length, ptrCategories,
+				CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * categories.length, ptrCategories,
 				null);
 		long[] globalWorkSize = new long[] { mask.length };
 		long[] localWorkSize = new long[] { workSize };
@@ -241,8 +241,8 @@ public class MergeClone {
 	 *            The scene image.
 	 * @return The inital guess data.
 	 */
-	public float[] initialGuess(float[] categories, float[] clone, float[] scene) {
-		float[] result = new float[clone.length];
+	public int[] initialGuess(float[] categories, float[] clone, float[] scene) {
+		int[] result = new int[clone.length];
 		Pointer ptrCategories = Pointer.to(categories);
 		Pointer ptrClone = Pointer.to(clone);
 		Pointer ptrScene = Pointer.to(scene);
@@ -255,7 +255,7 @@ public class MergeClone {
 				Sizeof.cl_float * clone.length, ptrClone, null);
 		cl_mem memScene = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * scene.length, ptrScene, null);
-		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * result.length, ptrResult, null);
 
 		long[] globalWorkSize = new long[] { clone.length };
@@ -279,7 +279,7 @@ public class MergeClone {
 	}
 
 	/**
-	 * Converts flaots to ints.
+	 * Converts floats to ints.
 	 * 
 	 * @param data
 	 *            The float data.
@@ -291,7 +291,7 @@ public class MergeClone {
 		Pointer ptrResult = Pointer.to(returnInts);
 		cl_mem memData = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * data.length, ptrData, null);
-		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+		cl_mem memResult = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR,
 				Sizeof.cl_float * returnInts.length, ptrResult, null);
 
 		long[] globalWorkSize = new long[] { data.length };
@@ -314,6 +314,136 @@ public class MergeClone {
 	}
 
 	/**
+	 * Runs a blend calculation on the image.
+	 * 
+	 * @param categories
+	 *            The category of each pixel.
+	 * @param dimensions
+	 *            The image dimensions.
+	 * @param prevRed
+	 *            The previous red result.
+	 * @param prevGreen
+	 *            The previous green result.
+	 * @param prevBlue
+	 *            The previous blue result.
+	 * @param cloneRed
+	 *            The clone red values.
+	 * @param cloneGreen
+	 *            The clone green values.
+	 * @param cloneBlue
+	 *            The clone blue values.
+	 * @param sceneRed
+	 *            The scene red values.
+	 * @param sceneGreen
+	 *            The scene green values.
+	 * @param sceneBlue
+	 *            The scene blue values.
+	 * @param resultRed
+	 *            The current iteration red results.
+	 * @param resultGreen
+	 *            The current iteration green results.
+	 * @param resultBlue
+	 *            The current iteration blue results.
+	 */
+	public void blend(float[] categories, int[] dimensions, float[] prevRed, float[] prevGreen, float[] prevBlue,
+			float[] cloneRed, float[] cloneGreen, float[] cloneBlue, float[] sceneRed, float[] sceneGreen,
+			float[] sceneBlue, float[] resultRed, float[] resultGreen, float[] resultBlue) {
+		Pointer ptrCategories = Pointer.to(categories);
+		Pointer ptrDimensions = Pointer.to(dimensions);
+		Pointer ptrPrevRed = Pointer.to(prevRed);
+		Pointer ptrPrevGreen = Pointer.to(prevGreen);
+		Pointer ptrPrevBlue = Pointer.to(prevBlue);
+		Pointer ptrCloneRed = Pointer.to(cloneRed);
+		Pointer ptrCloneGreen = Pointer.to(cloneGreen);
+		Pointer ptrCloneBlue = Pointer.to(cloneBlue);
+		Pointer ptrSceneRed = Pointer.to(sceneRed);
+		Pointer ptrSceneGreen = Pointer.to(sceneGreen);
+		Pointer ptrSceneBlue = Pointer.to(sceneBlue);
+		Pointer ptrResultRed = Pointer.to(resultRed);
+		Pointer ptrResultGreen = Pointer.to(resultGreen);
+		Pointer ptrResultBlue = Pointer.to(resultBlue);
+		cl_mem memDimensions = CL.clCreateBuffer(deviceManager.getContext(),
+				CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * dimensions.length, ptrDimensions,
+				null);
+		cl_mem memCategories = CL.clCreateBuffer(deviceManager.getContext(),
+				CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * categories.length, ptrCategories,
+				null);
+		cl_mem memPrevRed = CL.clCreateBuffer(deviceManager.getContext(), CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR,
+				Sizeof.cl_float * prevRed.length, ptrPrevRed, null);
+		cl_mem memPrevGreen = CL.clCreateBuffer(deviceManager.getContext(),
+				CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * prevGreen.length, ptrPrevGreen, null);
+		cl_mem memPrevBlue = CL.clCreateBuffer(deviceManager.getContext(),
+				CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * prevBlue.length, ptrPrevBlue, null);
+		cl_mem memCloneRed = CL.clCreateBuffer(deviceManager.getContext(),
+				CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * cloneRed.length, ptrCloneRed, null);
+		cl_mem memCloneGreen = CL.clCreateBuffer(deviceManager.getContext(),
+				CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * cloneGreen.length, ptrCloneGreen,
+				null);
+		cl_mem memCloneBlue = CL.clCreateBuffer(deviceManager.getContext(),
+				CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * cloneBlue.length, ptrCloneBlue, null);
+		cl_mem memSceneRed = CL.clCreateBuffer(deviceManager.getContext(),
+				CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * sceneRed.length, ptrSceneRed, null);
+		cl_mem memSceneGreen = CL.clCreateBuffer(deviceManager.getContext(),
+				CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * sceneGreen.length, ptrSceneGreen,
+				null);
+		cl_mem memSceneBlue = CL.clCreateBuffer(deviceManager.getContext(),
+				CL.CL_MEM_READ_ONLY | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * sceneBlue.length, ptrSceneBlue, null);
+		cl_mem memResultRed = CL.clCreateBuffer(deviceManager.getContext(),
+				CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * resultRed.length, ptrResultRed, null);
+		cl_mem memResultGreen = CL.clCreateBuffer(deviceManager.getContext(),
+				CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * resultGreen.length, ptrResultGreen,
+				null);
+		cl_mem memResultBlue = CL.clCreateBuffer(deviceManager.getContext(),
+				CL.CL_MEM_READ_WRITE | CL.CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * resultBlue.length, ptrResultBlue,
+				null);
+
+		long[] globalWorkSize = new long[] { categories.length };
+		long[] localWorkSize = new long[] { workSize };
+
+		cl_kernel blendKernel = CL.clCreateKernel(program, "blend", null);
+
+		CL.clSetKernelArg(blendKernel, 0, Sizeof.cl_mem, Pointer.to(memCategories));
+		CL.clSetKernelArg(blendKernel, 1, Sizeof.cl_mem, Pointer.to(memDimensions));
+		CL.clSetKernelArg(blendKernel, 2, Sizeof.cl_mem, Pointer.to(memPrevRed));
+		CL.clSetKernelArg(blendKernel, 3, Sizeof.cl_mem, Pointer.to(memPrevGreen));
+		CL.clSetKernelArg(blendKernel, 4, Sizeof.cl_mem, Pointer.to(memPrevBlue));
+		CL.clSetKernelArg(blendKernel, 5, Sizeof.cl_mem, Pointer.to(memCloneRed));
+		CL.clSetKernelArg(blendKernel, 6, Sizeof.cl_mem, Pointer.to(memCloneGreen));
+		CL.clSetKernelArg(blendKernel, 7, Sizeof.cl_mem, Pointer.to(memCloneBlue));
+		CL.clSetKernelArg(blendKernel, 8, Sizeof.cl_mem, Pointer.to(memSceneRed));
+		CL.clSetKernelArg(blendKernel, 9, Sizeof.cl_mem, Pointer.to(memSceneGreen));
+		CL.clSetKernelArg(blendKernel, 10, Sizeof.cl_mem, Pointer.to(memSceneBlue));
+		CL.clSetKernelArg(blendKernel, 11, Sizeof.cl_mem, Pointer.to(memResultRed));
+		CL.clSetKernelArg(blendKernel, 12, Sizeof.cl_mem, Pointer.to(memResultGreen));
+		CL.clSetKernelArg(blendKernel, 13, Sizeof.cl_mem, Pointer.to(memResultBlue));
+		double startTime = System.nanoTime();
+		CL.clEnqueueNDRangeKernel(deviceManager.getQueue(), blendKernel, 1, null, globalWorkSize, localWorkSize, 0,
+				null, null);
+		setRuntime(getCalculatedRuntime() + (System.nanoTime() - startTime));
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResultRed, CL.CL_TRUE, 0, resultRed.length * Sizeof.cl_int,
+				ptrResultRed, 0, null, null);
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResultGreen, CL.CL_TRUE, 0,
+				resultGreen.length * Sizeof.cl_int, ptrResultGreen, 0, null, null);
+		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResultBlue, CL.CL_TRUE, 0,
+				resultBlue.length * Sizeof.cl_int, ptrResultBlue, 0, null, null);
+		CL.clReleaseKernel(blendKernel);
+		CL.clReleaseMemObject(memResultBlue);
+		CL.clReleaseMemObject(memResultGreen);
+		CL.clReleaseMemObject(memResultRed);
+		CL.clReleaseMemObject(memSceneBlue);
+		CL.clReleaseMemObject(memSceneGreen);
+		CL.clReleaseMemObject(memSceneRed);
+		CL.clReleaseMemObject(memCloneBlue);
+		CL.clReleaseMemObject(memCloneGreen);
+		CL.clReleaseMemObject(memCloneRed);
+		CL.clReleaseMemObject(memPrevBlue);
+		CL.clReleaseMemObject(memPrevGreen);
+		CL.clReleaseMemObject(memPrevRed);
+		CL.clReleaseMemObject(memCategories);
+		CL.clReleaseMemObject(memDimensions);
+	}
+
+	/**
 	 * Gets the runtime.
 	 * 
 	 * @return the calculatedRuntime.
@@ -330,5 +460,12 @@ public class MergeClone {
 	 */
 	public void setRuntime(double calculatedRuntime) {
 		this.calculatedRuntime = calculatedRuntime;
+	}
+
+	/**
+	 * Releases the program.
+	 */
+	public void closeProgram() {
+		CL.clReleaseProgram(program);
 	}
 }
