@@ -43,7 +43,7 @@ II. Image editing:
 	<br>14. Efficient Histogram Equalization
 	<br>15. Zoom in and out in increments of 10%
 	<br>16. Red eye removal
-	<br>Many more to come soon!
+	<br>17. Seamless Clone
 
 III. Close the program:
 	<br>1.You can close the program with the normal x, the close menu option, or alt-f4. 
@@ -157,6 +157,13 @@ V. Runtime chart:
     <td> Ubuntu </td>
   </tr>
   
+   <tr>
+    <td> Seamless clone - lion - 250 iterations</td>
+    <td> 794.41ms </td>
+    <td> Nvidia GTX 745 </td>
+    <td> Ubuntu </td>
+  </tr>
+  
 <tr>
     <td> Grayscale </td>
     <td> 54ms </td>
@@ -254,3 +261,6 @@ VIII. Radix notes:
 <br> I attempted to convert pad array to parallel, but that left me with a division by 0 in my kernel and a log file with a stack trace that I could not read. The code is there, but commented out.
 <br> I have coded all pieces of the radix sort in parallel, the sequential code is left in place but commented out.
 <br> The kernels can be found in /Kernels/RadixKernels.
+
+IX. Seamless clone notes:
+<br> Please select the scene first. Clicking the merge button under options will ask you to select your clone image.
