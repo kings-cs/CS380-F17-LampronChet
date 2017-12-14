@@ -274,6 +274,12 @@ public class MergeClone {
 		setRuntime(getCalculatedRuntime() + (System.nanoTime() - startTime));
 		CL.clEnqueueReadBuffer(deviceManager.getQueue(), memResult, CL.CL_TRUE, 0, result.length * Sizeof.cl_int,
 				ptrResult, 0, null, null);
+		
+		CL.clReleaseKernel(guessKernel);
+		CL.clReleaseMemObject(memResult);
+		CL.clReleaseMemObject(memScene);
+		CL.clReleaseMemObject(memClone);
+		CL.clReleaseMemObject(memCategories);
 
 		return result;
 	}
