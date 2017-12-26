@@ -17,11 +17,11 @@ VI: Supported File types
 ********************************************************
 
 I. Basic instructions:
-	<br>	1. To run the file run the PipGui.java out of the source folder.
+	<br>	1. To run the file run the PipMain.java out of the source folder.
 	<br>	2. Open a file using the Open menu item or ctrl-o.
 	<br>	3. Save a file using the Save menu item or ctrl-s.
  	<br>	//When saving the image, if the filetype is not specified in the filename it will default to the type of png. THIS FEATURE DOES NOT WORK YET PLEASE SEE BUGS.
-	<br> 	4. Open the raw README.md by clicking about or ctrl-a.
+	<br> 	4. Open the raw README.md by clicking about or ctrl-a. PLEASE SEE BUGS. 
 	<br>	5. Close a file using the Close menu item, but be careful I treat this as my garbage collector, the FILE WILL BE LOST!
 	<br>    6. Mosaic asks for a number of tiles. Please enter an integer value like 2048. A custom JOptionPane is used here so that you may cancel your tiles selection without running Mosaic.
 	
@@ -49,10 +49,10 @@ III. Close the program:
 	<br>1.You can close the program with the normal x, the close menu option, or alt-f4. 
 	
 IV. Bugs:
-	<br>About is implemented, but only displays the raw text currently. Raw text link must be updated often, when not updated the program will not run. This feature has been removed until a permanent solution is found.
+	<br>This feature has been removed until a permanent solution is found.
 	<br>.gif will only display the first frame in the file.
 	<br>Saving without a file type does not make PNG, please specify the file type in the name.
-	<br> Red eye blanks out the image. Reducing redness does not work.
+	<br> Red eye blanks out the image. Reducing redness does not work. RED EYE REMOVAL IS NOT FUNCTIONAL. PLEASE DO NOT USE.
 	
 V. Runtime chart:
 
@@ -264,3 +264,5 @@ VIII. Radix notes:
 
 IX. Seamless clone notes:
 <br> Please select the scene first. Clicking the merge button under options will ask you to select your clone image.
+<br> Seamless clone works with a scene image and an object image. The object image must have an alpha value of 0 everywhere other than the object you wish to clone. It will place this object in the scene at the same location as it is in in the object image.
+<br> You may select a number of iterations. 200 is reccomended.
