@@ -961,41 +961,41 @@ public class PiPGui extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			if (image != null) {
-				JOptionPane.showMessageDialog(null, "Select your template");
-				JFileChooser choose = new JFileChooser("Select your template: ");
-				FileFilter filter = new FileNameExtensionFilter("Pictures",
-						new String[] { "jpg", "jpeg", "png", "gif" });
-				choose.setFileFilter(filter);
-				int val = choose.showOpenDialog(null);
-
-				if (val == JFileChooser.APPROVE_OPTION) {
-					BufferedImage template = null;
-					try {
-						String filePath = choose.getSelectedFile().getAbsolutePath();
-						template = fileHandler.createImage(filePath);
-					} catch (IOException e) {
-						JOptionPane.showMessageDialog(null, "Image could not be processed");
-					} catch (NullPointerException n) {
-						JOptionPane.showMessageDialog(null,
-								"Oops! Looks like you double clicked your folder instead of a file. Try again!");
-					}
-
-					RedEyeModifier pixelModifier = new RedEyeModifier(deviceManager, template);
-
-					try {
-						image = pixelModifier.modifyPixel(image);
-					} catch (FileNotFoundException e) {
-						JOptionPane.showMessageDialog(null,
-								"The Image could not be found: this is the actual image, not the template");
-					}
-					centerPanel.repaint();
-					isSaved = false;
-				}
-			} else {
-				JOptionPane.showMessageDialog(null, "Please load an image first");
-			}
-
+//			if (image != null) {
+//				JOptionPane.showMessageDialog(null, "Select your template");
+//				JFileChooser choose = new JFileChooser("Select your template: ");
+//				FileFilter filter = new FileNameExtensionFilter("Pictures",
+//						new String[] { "jpg", "jpeg", "png", "gif" });
+//				choose.setFileFilter(filter);
+//				int val = choose.showOpenDialog(null);
+//
+//				if (val == JFileChooser.APPROVE_OPTION) {
+//					BufferedImage template = null;
+//					try {
+//						String filePath = choose.getSelectedFile().getAbsolutePath();
+//						template = fileHandler.createImage(filePath);
+//					} catch (IOException e) {
+//						JOptionPane.showMessageDialog(null, "Image could not be processed");
+//					} catch (NullPointerException n) {
+//						JOptionPane.showMessageDialog(null,
+//								"Oops! Looks like you double clicked your folder instead of a file. Try again!");
+//					}
+//
+//					RedEyeModifier pixelModifier = new RedEyeModifier(deviceManager, template);
+//
+//					try {
+//						image = pixelModifier.modifyPixel(image);
+//					} catch (FileNotFoundException e) {
+//						JOptionPane.showMessageDialog(null,
+//								"The Image could not be found: this is the actual image, not the template");
+//					}
+//					centerPanel.repaint();
+//					isSaved = false;
+//				}
+//			} else {
+//				JOptionPane.showMessageDialog(null, "Please load an image first");
+//			}
+			JOptionPane.showMessageDialog(null, "This feature does not work properly and has been removed until a solution has been made.");
 		}
 
 	}
